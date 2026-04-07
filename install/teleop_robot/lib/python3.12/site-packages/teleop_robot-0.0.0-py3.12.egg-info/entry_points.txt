@@ -1,2 +1,0 @@
-[console_scripts]
-teleop_key = teleop_robot.teleop_key:main

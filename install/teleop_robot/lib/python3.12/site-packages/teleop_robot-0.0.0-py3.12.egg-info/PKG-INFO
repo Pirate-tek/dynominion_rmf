@@ -1,8 +1,0 @@
-Metadata-Version: 2.1
-Name: teleop-robot
-Version: 0.0.0
-Summary: Teleoperation of Robot
-Maintainer: Jothi Venkatesh K
-Maintainer-email: jothivenkateshk@gmail.com
-License: TODO: License declaration
-Provides-Extra: test
