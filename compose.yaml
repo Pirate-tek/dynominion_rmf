@@ -1,0 +1,38 @@
+# Docker Compose configuration for dynominion_rmf ROS2 package
+# Debugging notes:
+# - Initial error: "display is not open" when running GUI apps (RViz2) inside container.
+#   Cause: X11 forwarding not permitted; host xhost access control blocked.
+#   Fix: Ran `xhost +local:docker` on host.
+# - Subsequent issue: RViz2 timed out under Wayland environment.
+#   Cause: Wayland socket not forwarded, and software rendering fallback used.
+#   Fix: Added Wayland socket mount and environment variables (WAYLAND_DISPLAY, XDG_RUNTIME_DIR).
+#   Removed LIBGL_ALWAYS_SOFTWARE to enable hardware acceleration.
+# - Current configuration includes both X11 and Wayland forwarding for compatibility.
+
+services:
+  dynominion_rmf:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: dynominion_rmf
+      args:
+        DEV_USERNAME: robotoai
+
+    image: dynominion_rmf:build_v1
+    container_name: dynominion_rmf
+    tty: true
+    privileged: true
+    network_mode: host
+
+    volumes:
+      - /dev:/dev:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:/tmp/wayland-0:rw
+      - ${HOME}/.Xauthority:/home/robotoai/.Xauthority:rw
+
+    environment:
+      - DISPLAY=${DISPLAY}
+      - WAYLAND_DISPLAY=wayland-0
+      - XDG_RUNTIME_DIR=/tmp
+      - QT_X11_NO_MITSHM=1
+      - ROS_DOMAIN_ID=5

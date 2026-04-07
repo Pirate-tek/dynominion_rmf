@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+Copied from ROS1 example:
+https://github.com/ros-simulation/gazebo_ros_demos/blob/kinetic-devel/rrbot_description/urdf/materials.xacro
+-->
+<robot>
+
+  <material name="base_link">
+    <color rgba="0.1607843137254902 0.4627450980392157 0.7333333333333333 1.0" />
+  </material>
+  
+  <material name="wheel">
+    <color rgba="0 0 0 1.0"/>
+  </material>
+
+  <material name="lidar">
+    <color rgba="0.4 0.4 0.4 1.0"/>
+  </material>
+
+  <material name="imu">
+    <color rgba="0.79216 0.81961 0.93333 1.0"/>
+  </material>
+
+  <material name="caster">
+    <color rgba="1 1 1 1" />
+  </material>
+
+</robot>

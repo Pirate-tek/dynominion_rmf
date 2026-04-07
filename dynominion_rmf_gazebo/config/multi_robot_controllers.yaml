@@ -1,0 +1,139 @@
+dynominion1:
+  controller_manager:
+    ros__parameters:
+      update_rate: 30
+      use_sim_time: True
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      diff_drive_base_controller:
+        type: diff_drive_controller/DiffDriveController
+  diff_drive_base_controller:
+    ros__parameters:
+      type: diff_drive_controller/DiffDriveController
+      left_wheel_names: ["left_wheel_joint"]
+      right_wheel_names: ["right_wheel_joint"]
+      wheel_separation: 0.583
+      wheel_radius: 0.0925
+      odom_frame_id: dynominion1/odom
+      base_frame_id: dynominion1/base_footprint
+      open_loop: false
+      enable_odom_tf: true
+      cmd_vel_timeout: 0.5
+      use_stamped_vel: false
+      linear.x.has_velocity_limits: true
+      linear.x.max_velocity: 1.0
+      angular.z.has_velocity_limits: true
+      angular.z.max_velocity: 1.0
+      use_sim_time: True
+
+dynominion2:
+  controller_manager:
+    ros__parameters:
+      update_rate: 30
+      use_sim_time: True
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      diff_drive_base_controller:
+        type: diff_drive_controller/DiffDriveController
+  diff_drive_base_controller:
+    ros__parameters:
+      type: diff_drive_controller/DiffDriveController
+      left_wheel_names: ["left_wheel_joint"]
+      right_wheel_names: ["right_wheel_joint"]
+      wheel_separation: 0.583
+      wheel_radius: 0.0925
+      odom_frame_id: dynominion2/odom
+      base_frame_id: dynominion2/base_footprint
+      open_loop: false
+      enable_odom_tf: true
+      cmd_vel_timeout: 0.5
+      use_stamped_vel: false
+      linear.x.has_velocity_limits: true
+      linear.x.max_velocity: 1.0
+      angular.z.has_velocity_limits: true
+      angular.z.max_velocity: 1.0
+      use_sim_time: True
+
+dynominion3:
+  controller_manager:
+    ros__parameters:
+      update_rate: 30
+      use_sim_time: True
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      diff_drive_base_controller:
+        type: diff_drive_controller/DiffDriveController
+  diff_drive_base_controller:
+    ros__parameters:
+      type: diff_drive_controller/DiffDriveController
+      left_wheel_names: ["left_wheel_joint"]
+      right_wheel_names: ["right_wheel_joint"]
+      wheel_separation: 0.583
+      wheel_radius: 0.0925
+      odom_frame_id: dynominion3/odom
+      base_frame_id: dynominion3/base_footprint
+      open_loop: false
+      enable_odom_tf: true
+      cmd_vel_timeout: 0.5
+      use_stamped_vel: false
+      linear.x.has_velocity_limits: true
+      linear.x.max_velocity: 1.0
+      angular.z.has_velocity_limits: true
+      angular.z.max_velocity: 1.0
+      use_sim_time: True
+
+dynominion4:
+  controller_manager:
+    ros__parameters:
+      update_rate: 30
+      use_sim_time: True
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      diff_drive_base_controller:
+        type: diff_drive_controller/DiffDriveController
+  diff_drive_base_controller:
+    ros__parameters:
+      type: diff_drive_controller/DiffDriveController
+      left_wheel_names: ["left_wheel_joint"]
+      right_wheel_names: ["right_wheel_joint"]
+      wheel_separation: 0.583
+      wheel_radius: 0.0925
+      odom_frame_id: dynominion4/odom
+      base_frame_id: dynominion4/base_footprint
+      open_loop: false
+      enable_odom_tf: true
+      cmd_vel_timeout: 0.5
+      use_stamped_vel: false
+      linear.x.has_velocity_limits: true
+      linear.x.max_velocity: 1.0
+      angular.z.has_velocity_limits: true
+      angular.z.max_velocity: 1.0
+      use_sim_time: True
+
+dynominion5:
+  controller_manager:
+    ros__parameters:
+      update_rate: 30
+      use_sim_time: True
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+      diff_drive_base_controller:
+        type: diff_drive_controller/DiffDriveController
+  diff_drive_base_controller:
+    ros__parameters:
+      type: diff_drive_controller/DiffDriveController
+      left_wheel_names: ["left_wheel_joint"]
+      right_wheel_names: ["right_wheel_joint"]
+      wheel_separation: 0.583
+      wheel_radius: 0.0925
+      odom_frame_id: dynominion5/odom
+      base_frame_id: dynominion5/base_footprint
+      open_loop: false
+      enable_odom_tf: true
+      cmd_vel_timeout: 0.5
+      use_stamped_vel: false
+      linear.x.has_velocity_limits: true
+      linear.x.max_velocity: 1.0
+      angular.z.has_velocity_limits: true
+      angular.z.max_velocity: 1.0
+      use_sim_time: True

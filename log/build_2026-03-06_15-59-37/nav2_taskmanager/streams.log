@@ -1,0 +1,246 @@
+[0.020s] Invoking command in '/home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jazzy/ros2_ws/install/teleop_robot:/home/jazzy/ros2_ws/install/meca_description:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/jazzy/ros2_ws/src/nav2_taskmanager -DCMAKE_INSTALL_PREFIX=/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager
+[0.124s] -- The C compiler identification is GNU 13.3.0
+[0.223s] -- The CXX compiler identification is GNU 13.3.0
+[0.256s] -- Detecting C compiler ABI info
+[0.454s] -- Detecting C compiler ABI info - done
+[0.472s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.472s] -- Detecting C compile features
+[0.473s] -- Detecting C compile features - done
+[0.493s] -- Detecting CXX compiler ABI info
+[0.683s] -- Detecting CXX compiler ABI info - done
+[0.700s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.701s] -- Detecting CXX compile features
+[0.702s] -- Detecting CXX compile features - done
+[0.713s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.005s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.252s] -- Found geometry_msgs: 5.3.6 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[1.379s] -- Found rosidl_generator_c: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[1.417s] -- Found rosidl_generator_cpp: 4.6.7 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[1.460s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.515s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.617s] -- Found action_msgs: 2.0.3 (/opt/ros/jazzy/share/action_msgs/cmake)
+[1.718s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[1.761s] -- Found rosidl_adapter: 4.6.7 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[2.857s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[4.386s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[4.978s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[4.988s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[5.226s] -- Found PythonExtra: /usr/bin/python3  
+[5.976s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[6.089s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[6.162s] -- Added test 'flake8' to check Python code syntax and style conventions
+[6.162s] -- Configured 'flake8' exclude dirs and/or files: 
+[6.164s] -- Added test 'lint_cmake' to check CMake code style
+[6.166s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[6.168s] -- Added test 'xmllint' to check XML markup files
+[6.175s] -- Configuring done (6.1s)
+[6.252s] -- Generating done (0.1s)
+[6.272s] -- Build files have been written to: /home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager
+[6.292s] Invoked command in '/home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jazzy/ros2_ws/install/teleop_robot:/home/jazzy/ros2_ws/install/meca_description:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/jazzy/ros2_ws/src/nav2_taskmanager -DCMAKE_INSTALL_PREFIX=/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager
+[6.292s] Invoking command in '/home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jazzy/ros2_ws/install/teleop_robot:/home/jazzy/ros2_ws/install/meca_description:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager -- -j16 -l16
+[6.390s] [  2%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[6.408s] [  2%] Built target ament_cmake_python_copy_nav2_taskmanager
+[6.712s] [  2%] Built target nav2_taskmanager__rosidl_generator_type_description
+[6.732s] [  5%] [34m[1mGenerating C code for ROS interfaces[0m
+[6.754s] [  8%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[6.832s] running egg_info
+[6.833s] creating nav2_taskmanager.egg-info
+[6.875s] writing nav2_taskmanager.egg-info/PKG-INFO
+[6.875s] writing dependency_links to nav2_taskmanager.egg-info/dependency_links.txt
+[6.876s] writing top-level names to nav2_taskmanager.egg-info/top_level.txt
+[6.876s] writing manifest file 'nav2_taskmanager.egg-info/SOURCES.txt'
+[7.004s] reading manifest file 'nav2_taskmanager.egg-info/SOURCES.txt'
+[7.005s] writing manifest file 'nav2_taskmanager.egg-info/SOURCES.txt'
+[7.049s] [  8%] Built target ament_cmake_python_build_nav2_taskmanager_egg
+[7.375s] [  8%] Built target nav2_taskmanager__cpp
+[7.432s] [ 17%] [32mBuilding C object CMakeFiles/nav2_taskmanager__rosidl_generator_c.dir/rosidl_generator_c/nav2_taskmanager/action/detail/mission_task__description.c.o[0m
+[7.432s] [ 17%] [32mBuilding C object CMakeFiles/nav2_taskmanager__rosidl_generator_c.dir/rosidl_generator_c/nav2_taskmanager/action/detail/mission_task__functions.c.o[0m
+[7.433s] [ 17%] [32mBuilding C object CMakeFiles/nav2_taskmanager__rosidl_generator_c.dir/rosidl_generator_c/nav2_taskmanager/action/detail/mission_task__type_support.c.o[0m
+[7.684s] [ 20%] [32m[1mLinking C shared library libnav2_taskmanager__rosidl_generator_c.so[0m
+[7.759s] [ 20%] Built target nav2_taskmanager__rosidl_generator_c
+[7.779s] [ 29%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[7.779s] [ 26%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[7.779s] [ 29%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[7.780s] [ 32%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[7.780s] [ 35%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[7.780s] [ 38%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[8.198s] [ 44%] [32mBuilding CXX object CMakeFiles/nav2_taskmanager__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/nav2_taskmanager/action/mission_task__type_support.cpp.o[0m
+[8.198s] [ 44%] [32mBuilding CXX object CMakeFiles/nav2_taskmanager__rosidl_typesupport_c.dir/rosidl_typesupport_c/nav2_taskmanager/action/mission_task__type_support.cpp.o[0m
+[8.293s] [ 47%] [32mBuilding CXX object CMakeFiles/nav2_taskmanager__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/nav2_taskmanager/action/detail/mission_task__type_support.cpp.o[0m
+[8.297s] [ 50%] [32m[1mLinking CXX shared library libnav2_taskmanager__rosidl_typesupport_c.so[0m
+[8.316s] [ 52%] [32mBuilding C object CMakeFiles/nav2_taskmanager__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/nav2_taskmanager/action/detail/mission_task__type_support.c.o[0m
+[8.373s] [ 52%] Built target nav2_taskmanager__rosidl_typesupport_c
+[8.430s] [ 55%] [32m[1mLinking C shared library libnav2_taskmanager__rosidl_typesupport_introspection_c.so[0m
+[8.489s] [ 55%] Built target nav2_taskmanager__rosidl_typesupport_introspection_c
+[8.494s] [ 58%] [32mBuilding CXX object CMakeFiles/nav2_taskmanager__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/nav2_taskmanager/action/detail/dds_fastrtps/mission_task__type_support.cpp.o[0m
+[8.524s] [ 61%] [32mBuilding CXX object CMakeFiles/nav2_taskmanager__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/nav2_taskmanager/action/detail/mission_task__type_support_c.cpp.o[0m
+[9.102s] [ 64%] [32m[1mLinking CXX shared library libnav2_taskmanager__rosidl_typesupport_cpp.so[0m
+[9.197s] [ 64%] Built target nav2_taskmanager__rosidl_typesupport_cpp
+[9.228s] [ 67%] [32m[1mLinking CXX shared library libnav2_taskmanager__rosidl_typesupport_fastrtps_c.so[0m
+[9.238s] [ 70%] [32m[1mLinking CXX shared library libnav2_taskmanager__rosidl_typesupport_introspection_cpp.so[0m
+[9.319s] [ 70%] Built target nav2_taskmanager__rosidl_typesupport_fastrtps_c
+[9.333s] [ 70%] Built target nav2_taskmanager__rosidl_typesupport_introspection_cpp
+[9.604s] [ 73%] [32m[1mLinking CXX shared library libnav2_taskmanager__rosidl_typesupport_fastrtps_cpp.so[0m
+[9.676s] [ 73%] Built target nav2_taskmanager__rosidl_typesupport_fastrtps_cpp
+[9.697s] [ 73%] Built target nav2_taskmanager
+[9.720s] [ 76%] [34m[1mGenerating Python code for ROS interfaces[0m
+[10.237s] [ 76%] Built target nav2_taskmanager__py
+[10.258s] [ 79%] [32mBuilding C object CMakeFiles/nav2_taskmanager__rosidl_generator_py.dir/rosidl_generator_py/nav2_taskmanager/action/_mission_task_s.c.o[0m
+[10.422s] [ 82%] [32m[1mLinking C shared library libnav2_taskmanager__rosidl_generator_py.so[0m
+[10.467s] [ 82%] Built target nav2_taskmanager__rosidl_generator_py
+[10.489s] [ 91%] [32mBuilding C object CMakeFiles/nav2_taskmanager_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/nav2_taskmanager/_nav2_taskmanager_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[10.489s] [ 91%] [32mBuilding C object CMakeFiles/nav2_taskmanager_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/nav2_taskmanager/_nav2_taskmanager_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[10.489s] [ 91%] [32mBuilding C object CMakeFiles/nav2_taskmanager_s__rosidl_typesupport_c.dir/rosidl_generator_py/nav2_taskmanager/_nav2_taskmanager_s.ep.rosidl_typesupport_c.c.o[0m
+[10.603s] [ 97%] [32m[1mLinking C shared module rosidl_generator_py/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_introspection_c.so[0m
+[10.603s] [ 97%] [32m[1mLinking C shared module rosidl_generator_py/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_c.so[0m
+[10.610s] [100%] [32m[1mLinking C shared module rosidl_generator_py/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_fastrtps_c.so[0m
+[10.637s] [100%] Built target nav2_taskmanager_s__rosidl_typesupport_introspection_c
+[10.637s] [100%] Built target nav2_taskmanager_s__rosidl_typesupport_c
+[10.645s] [100%] Built target nav2_taskmanager_s__rosidl_typesupport_fastrtps_c
+[10.657s] Invoked command in '/home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jazzy/ros2_ws/install/teleop_robot:/home/jazzy/ros2_ws/install/meca_description:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager -- -j16 -l16
+[10.668s] Invoking command in '/home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jazzy/ros2_ws/install/teleop_robot:/home/jazzy/ros2_ws/install/meca_description:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager
+[10.676s] -- Install configuration: ""
+[10.676s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/ament_index/resource_index/rosidl_interfaces/nav2_taskmanager
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/action/MissionTask.json
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__struct.h
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__type_support.c
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__functions.c
+[10.677s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__description.c
+[10.678s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__functions.h
+[10.678s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__type_support.h
+[10.678s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/mission_task.h
+[10.678s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg
+[10.678s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg/rosidl_generator_c__visibility_control.h
+[10.678s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/library_path.sh
+[10.679s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/library_path.dsv
+[10.679s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_generator_c.so
+[10.679s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_generator_c.so" to ""
+[10.679s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager
+[10.679s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action
+[10.679s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail
+[10.680s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__rosidl_typesupport_fastrtps_c.h
+[10.680s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg
+[10.680s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[10.680s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_fastrtps_c.so
+[10.680s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_fastrtps_c.so" to ""
+[10.680s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager
+[10.680s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action
+[10.680s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/mission_task.hpp
+[10.681s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail
+[10.681s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__type_support.hpp
+[10.681s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__struct.hpp
+[10.681s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__traits.hpp
+[10.681s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__builder.hpp
+[10.681s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg
+[10.681s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg/rosidl_generator_cpp__visibility_control.hpp
+[10.681s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager
+[10.681s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action
+[10.681s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail
+[10.682s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__rosidl_typesupport_fastrtps_cpp.hpp
+[10.682s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/dds_fastrtps
+[10.682s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg
+[10.682s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[10.682s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_fastrtps_cpp.so
+[10.682s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_fastrtps_cpp.so" to ""
+[10.683s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager
+[10.683s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action
+[10.683s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail
+[10.683s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__type_support.c
+[10.683s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__rosidl_typesupport_introspection_c.h
+[10.683s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg
+[10.683s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[10.683s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_introspection_c.so
+[10.684s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_introspection_c.so" to ""
+[10.684s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_c.so
+[10.684s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_c.so" to ""
+[10.684s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager
+[10.684s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action
+[10.684s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail
+[10.684s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__type_support.cpp
+[10.684s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/include/nav2_taskmanager/nav2_taskmanager/action/detail/mission_task__rosidl_typesupport_introspection_cpp.hpp
+[10.684s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_introspection_cpp.so
+[10.685s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_introspection_cpp.so" to ""
+[10.685s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_cpp.so
+[10.686s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_typesupport_cpp.so" to ""
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/pythonpath.sh
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/pythonpath.dsv
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager-0.0.0-py3.12.egg-info
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager-0.0.0-py3.12.egg-info/SOURCES.txt
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager-0.0.0-py3.12.egg-info/dependency_links.txt
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager-0.0.0-py3.12.egg-info/top_level.txt
+[10.686s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager-0.0.0-py3.12.egg-info/PKG-INFO
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/_nav2_taskmanager_s.ep.rosidl_typesupport_fastrtps_c.c
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/_nav2_taskmanager_s.ep.rosidl_typesupport_c.c
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action/_mission_task.py
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action/_mission_task_s.c
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action/__init__.py
+[10.687s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_c.so
+[10.688s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_introspection_c.so
+[10.688s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/__init__.py
+[10.688s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/_nav2_taskmanager_s.ep.rosidl_typesupport_introspection_c.c
+[10.688s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_fastrtps_c.so
+[10.729s] Listing '/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager'...
+[10.729s] Compiling '/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/__init__.py'...
+[10.729s] Listing '/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action'...
+[10.729s] Compiling '/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action/__init__.py'...
+[10.729s] Compiling '/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/action/_mission_task.py'...
+[10.735s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_fastrtps_c.so
+[10.735s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_fastrtps_c.so" to ""
+[10.735s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_introspection_c.so
+[10.736s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_introspection_c.so" to ""
+[10.736s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_c.so
+[10.736s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/python3.12/site-packages/nav2_taskmanager/nav2_taskmanager_s__rosidl_typesupport_c.so" to ""
+[10.736s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_generator_py.so
+[10.737s] -- Set non-toolchain portion of runtime path of "/home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/libnav2_taskmanager__rosidl_generator_py.so" to ""
+[10.737s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/action/MissionTask.idl
+[10.737s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/action/MissionTask.action
+[10.737s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/nav2_taskmanager/execution_node
+[10.738s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/nav2_taskmanager/control_node
+[10.738s] -- Up-to-date: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/nav2_taskmanager
+[10.738s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/nav2_taskmanager/execution_node.py
+[10.738s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/lib/nav2_taskmanager/control_node.py
+[10.738s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/ament_index/resource_index/package_run_dependencies/nav2_taskmanager
+[10.739s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/ament_index/resource_index/parent_prefix_path/nav2_taskmanager
+[10.739s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/ament_prefix_path.sh
+[10.739s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/ament_prefix_path.dsv
+[10.739s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/path.sh
+[10.739s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/environment/path.dsv
+[10.740s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/local_setup.bash
+[10.740s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/local_setup.sh
+[10.740s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/local_setup.zsh
+[10.740s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/local_setup.dsv
+[10.740s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/package.dsv
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/ament_index/resource_index/packages/nav2_taskmanager
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_generator_cExport.cmake
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_generator_cExport-noconfig.cmake
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_typesupport_fastrtps_cExport.cmake
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_generator_cppExport.cmake
+[10.741s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_typesupport_fastrtps_cppExport.cmake
+[10.742s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[10.742s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_introspection_cExport.cmake
+[10.742s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[10.742s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_cExport.cmake
+[10.742s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_cExport-noconfig.cmake
+[10.742s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_introspection_cppExport.cmake
+[10.743s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[10.743s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_cppExport.cmake
+[10.743s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanager__rosidl_typesupport_cppExport-noconfig.cmake
+[10.743s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_generator_pyExport.cmake
+[10.743s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/export_nav2_taskmanager__rosidl_generator_pyExport-noconfig.cmake
+[10.743s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/rosidl_cmake-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/ament_cmake_export_dependencies-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/ament_cmake_export_include_directories-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/ament_cmake_export_libraries-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/ament_cmake_export_targets-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[10.744s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanagerConfig.cmake
+[10.745s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/cmake/nav2_taskmanagerConfig-version.cmake
+[10.745s] -- Installing: /home/jazzy/ros2_ws/src/dynominion/install/nav2_taskmanager/share/nav2_taskmanager/package.xml
+[10.747s] Invoked command in '/home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/jazzy/ros2_ws/install/teleop_robot:/home/jazzy/ros2_ws/install/meca_description:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/jazzy/ros2_ws/src/dynominion/build/nav2_taskmanager
