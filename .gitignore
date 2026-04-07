@@ -1,4 +1,13 @@
 .vscode
 __pycache__/**
-
 **/__pycache__/
+
+# ROS 2 Build Artifacts
+build/
+install/
+log/
+
+# TF Views and frames outputs
+frames*
+*.gv
+*.pdf
