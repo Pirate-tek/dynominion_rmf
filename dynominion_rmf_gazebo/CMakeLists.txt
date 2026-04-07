@@ -19,7 +19,7 @@ install(DIRECTORY models rviz worlds urdf launch config
 )
 
 install(
-  DIRECTORY dynominion_rmf_gazebo/
+  DIRECTORY scripts/
   DESTINATION lib/${PROJECT_NAME}
   USE_SOURCE_PERMISSIONS
 )

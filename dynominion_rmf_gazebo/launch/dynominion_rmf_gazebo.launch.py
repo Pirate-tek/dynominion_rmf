@@ -61,12 +61,7 @@ def generate_launch_description():
     # Note: The user said "generate per-robot in the launch file".
     bridge_params = ReplaceString(
         source_file=config_path,
-        replacements={
-            'GZ_SCAN': ['/', robot_name, '/scan'],
-            'GZ_IMU': ['/', robot_name, '/imu'],
-            'GZ_CMD_VEL': ['/model/', robot_name, '/cmd_vel'],
-            'GZ_ODOM': ['/model/', robot_name, '/odom']
-        }
+        replacements={'GZ_SCAN': ['/', robot_name, '/scan'], 'GZ_IMU': ['/', robot_name, '/imu']}
     )
 
     configured_controllers = PathJoinSubstitution(
@@ -95,7 +90,6 @@ def generate_launch_description():
             'robot_description': robot_description_content,
             'use_sim_time': use_sim_time,
         }],
-        remappings=[('joint_states', 'joint_states_republished')]
     )
 
     gz_spawn_entity = Node(
@@ -114,13 +108,16 @@ def generate_launch_description():
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', ['/', robot_name, '/controller_manager']],
+        arguments=['joint_state_broadcaster', '--inactive', '--controller-ros-args', '-r /joint_states:=joint_states'],
     )
 
     diff_drive_base_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['diff_drive_base_controller', '--controller-manager', ['/', robot_name, '/controller_manager']],
+        arguments=['diff_drive_base_controller', 
+                   '--inactive',
+                   '--controller-ros-args', '-r diff_drive_base_controller/cmd_vel:=cmd_vel',
+                   '--controller-ros-args', '-r diff_drive_base_controller/odom:=odom'],
         output='screen'
     )
 
@@ -135,11 +132,7 @@ def generate_launch_description():
     odom_modifier = Node(
         package='dynominion_rmf_gazebo',
         executable='odom_modifier.py',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-            'input_topic': 'wheelodom',
-            'output_topic': 'odom'
-        }],
+        parameters=[{'use_sim_time': use_sim_time}],
         output='screen'
     )
 

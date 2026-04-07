@@ -1,7 +1,7 @@
 dynominion1:
   controller_manager:
     ros__parameters:
-      update_rate: 30
+      update_rate: 100
       use_sim_time: True
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
@@ -19,7 +19,7 @@ dynominion1:
       open_loop: false
       enable_odom_tf: true
       cmd_vel_timeout: 0.5
-      use_stamped_vel: false
+      use_stamped_vel: true
       linear.x.has_velocity_limits: true
       linear.x.max_velocity: 1.0
       angular.z.has_velocity_limits: true
@@ -29,7 +29,7 @@ dynominion1:
 dynominion2:
   controller_manager:
     ros__parameters:
-      update_rate: 30
+      update_rate: 100
       use_sim_time: True
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
@@ -47,7 +47,7 @@ dynominion2:
       open_loop: false
       enable_odom_tf: true
       cmd_vel_timeout: 0.5
-      use_stamped_vel: false
+      use_stamped_vel: true
       linear.x.has_velocity_limits: true
       linear.x.max_velocity: 1.0
       angular.z.has_velocity_limits: true
@@ -57,7 +57,7 @@ dynominion2:
 dynominion3:
   controller_manager:
     ros__parameters:
-      update_rate: 30
+      update_rate: 100
       use_sim_time: True
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
@@ -75,7 +75,7 @@ dynominion3:
       open_loop: false
       enable_odom_tf: true
       cmd_vel_timeout: 0.5
-      use_stamped_vel: false
+      use_stamped_vel: true
       linear.x.has_velocity_limits: true
       linear.x.max_velocity: 1.0
       angular.z.has_velocity_limits: true
@@ -85,7 +85,7 @@ dynominion3:
 dynominion4:
   controller_manager:
     ros__parameters:
-      update_rate: 30
+      update_rate: 100
       use_sim_time: True
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
@@ -103,7 +103,7 @@ dynominion4:
       open_loop: false
       enable_odom_tf: true
       cmd_vel_timeout: 0.5
-      use_stamped_vel: false
+      use_stamped_vel: true
       linear.x.has_velocity_limits: true
       linear.x.max_velocity: 1.0
       angular.z.has_velocity_limits: true
@@ -113,7 +113,7 @@ dynominion4:
 dynominion5:
   controller_manager:
     ros__parameters:
-      update_rate: 30
+      update_rate: 100
       use_sim_time: True
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
@@ -131,7 +131,7 @@ dynominion5:
       open_loop: false
       enable_odom_tf: true
       cmd_vel_timeout: 0.5
-      use_stamped_vel: false
+      use_stamped_vel: true
       linear.x.has_velocity_limits: true
       linear.x.max_velocity: 1.0
       angular.z.has_velocity_limits: true

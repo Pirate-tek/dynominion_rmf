@@ -27,8 +27,8 @@ class JointStateRepublisher(Node):
         # ensure frame_id empty (normal for joint_states)
         fixed.header.frame_id = ''
         fixed.name = msg.name
-        fixed.position = [round(p, 4) for p in msg.position]
-        fixed.velocity = [round(v, 4) for v in msg.velocity]
+        fixed.position = [0.0 if not p == p else round(p, 4) for p in msg.position]
+        fixed.velocity = [0.0 if not v == v else round(v, 4) for v in msg.velocity]
         fixed.effort   = [0.0 if not v == v else round(v, 4) for v in msg.effort]
         # publish corrected topic
         self.pub.publish(fixed)

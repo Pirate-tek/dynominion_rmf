@@ -126,3 +126,76 @@ Starting 5 independent robot launch sequences simultaneously caused race conditi
 2. **Staggered Launch**: Implemented a 5-second delay between robot spawns using `TimerAction` to ensure the system has adequate time to allocate resources for each instance sequentially.
 3. **Global Clock Bridge**: Added a dedicated global `/clock` bridge to prevent "No clock received" warnings in namespaced `controller_manager` nodes.
 
+---
+
+## Error 8: `spawner: error: unrecognized arguments` (ROS 2 Jazzy)
+
+### **Symptoms:**
+The controller spawner failed to start with the error: `spawner: error: unrecognized arguments: -r diff_drive_base_controller/odom:=odom`.
+
+### **Root Cause:**
+In ROS 2 Jazzy, the `controller_manager` spawner requires each individual remapping argument to be preceded by its own `--controller-ros-args` flag. Grouping multiple remappings under a single flag or passing them as separate list items without individual flags causes parsing failures.
+
+### **Fix:**
+Updated the spawner `arguments` in the launch file to prefix every remapping with its own flag:
+```python
+arguments=[
+    'diff_drive_base_controller', 
+    '--controller-ros-args', '-r diff_drive_base_controller/cmd_vel:=cmd_vel',
+    '--controller-ros-args', '-r diff_drive_base_controller/odom:=odom'
+]
+```
+
+---
+
+## Error 9: Double Prefixing in `robot_state_publisher`
+
+### **Symptoms:**
+TF frames were appearing with a doubled name prefix, e.g., `dynominion1/dynominion1/base_link`.
+
+### **Root Cause:**
+The `robot_state_publisher` node was being passed a `frame_prefix` parameter (`dynominionX/`) while also being placed inside a ROS namespace (`/dynominionX`). In ROS 2, `robot_state_publisher` automatically applies the namespace as a prefix to the URDF frames, leading to redundant doubling when `frame_prefix` is also set.
+
+### **Fix:**
+Removed the explicit `frame_prefix` parameter from the `robot_state_publisher` node configuration in the launch file.
+
+---
+
+## Error 10: `XML Element[gz_frame_id]... not defined in SDF`
+
+### **Symptoms:**
+Gazebo logs showed warnings about `gz_frame_id` not being a valid SDF element for sensors.
+
+### **Root Cause:**
+The `<gz_frame_id>` tag is a deprecated or non-standard element for modern Gazebo Sim (Harmonic/Jazzy). The standard element for defining the coordinate frame of a sensor is `<frame_id>`.
+
+### **Fix:**
+Renamed all `<gz_frame_id>` tags to `<frame_id>` in the `gazebo_sensor_plugin.xacro` file and ensured they were correctly placed within the `<sensor>` block.
+
+---
+
+## Error 11: `Executor is not available during hardware component initialization`
+
+### **Symptoms:**
+Warnings appeared during launch indicating that the `controller_manager` could not create nodes because the executor was not yet available. This often led to controllers failing to load or "Waiting for RM" indefinitely.
+
+### **Root Cause:**
+A race condition where the `spawner` nodes were attempting to load controllers before the Gazebo `ros2_control` plugin had finished initializing the hardware interface and its internal executor.
+
+### **Fix:**
+1. **Timed Delay**: Wrapped the spawner nodes in a `TimerAction` to delay their execution by 5 seconds, giving Gazebo enough time to fully initialize.
+2. **Inactive Loading**: Added the `--inactive` flag to the spawners so they load the controllers into a dormant state, allowing the system to stabilize before activation.
+
+---
+
+## Error 12: `Desired controller update period is slower than the gazebo simulation period`
+
+### **Symptoms:**
+Warnings in Gazebo: `[WARN] [dynominion1.gz_ros_control]: Desired controller update period (0.0333333 s) is slower than the gazebo simulation period (0.001 s).`
+
+### **Root Cause:**
+The `controller_manager` update rate was set to 30 Hz (0.033s), which is significantly slower than the 1000 Hz (0.001s) simulation step. This can cause jittery control and integration issues.
+
+### **Fix:**
+Raised the `update_rate` to **100 Hz** in the `multi_robot_controllers.yaml` file to provide more frequent control updates and reduce the rate mismatch warning.
+
