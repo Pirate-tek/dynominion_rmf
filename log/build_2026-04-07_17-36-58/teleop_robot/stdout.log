@@ -1,0 +1,35 @@
+running egg_info
+creating ../build/teleop_robot/teleop_robot.egg-info
+writing ../build/teleop_robot/teleop_robot.egg-info/PKG-INFO
+writing dependency_links to ../build/teleop_robot/teleop_robot.egg-info/dependency_links.txt
+writing entry points to ../build/teleop_robot/teleop_robot.egg-info/entry_points.txt
+writing requirements to ../build/teleop_robot/teleop_robot.egg-info/requires.txt
+writing top-level names to ../build/teleop_robot/teleop_robot.egg-info/top_level.txt
+writing manifest file '../build/teleop_robot/teleop_robot.egg-info/SOURCES.txt'
+reading manifest file '../build/teleop_robot/teleop_robot.egg-info/SOURCES.txt'
+writing manifest file '../build/teleop_robot/teleop_robot.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build
+creating /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build/lib
+creating /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build/lib/teleop_robot
+copying teleop_robot/teleop_key.py -> /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build/lib/teleop_robot
+copying teleop_robot/__init__.py -> /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build/lib/teleop_robot
+running install
+running install_lib
+creating /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/python3.12/site-packages/teleop_robot
+copying /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build/lib/teleop_robot/teleop_key.py -> /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/python3.12/site-packages/teleop_robot
+copying /home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/build/lib/teleop_robot/__init__.py -> /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/python3.12/site-packages/teleop_robot
+byte-compiling /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/python3.12/site-packages/teleop_robot/teleop_key.py to teleop_key.cpython-312.pyc
+byte-compiling /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/python3.12/site-packages/teleop_robot/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/share/ament_index
+creating /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/share/ament_index/resource_index
+creating /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/share/ament_index/resource_index/packages
+copying resource/teleop_robot -> /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/share/ament_index/resource_index/packages
+copying package.xml -> /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/share/teleop_robot
+running install_egg_info
+Copying ../build/teleop_robot/teleop_robot.egg-info to /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/python3.12/site-packages/teleop_robot-0.0.0-py3.12.egg-info
+running install_scripts
+Installing teleop_key script to /home/jazzy/Desktop/dynominion_rmf/install/teleop_robot/lib/teleop_robot
+writing list of installed files to '/home/jazzy/Desktop/dynominion_rmf/build/teleop_robot/install.log'

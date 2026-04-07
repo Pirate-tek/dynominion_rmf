@@ -1,0 +1,322 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="robot_name" default="dynominion1" />
+  <xacro:property name="robot_name" value="$(arg robot_name)/" />
+
+  <xacro:macro name="dynominion_rmf_base">
+
+  <xacro:macro name="visual_collision" params="stl material">
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="file://$(find dynominion_rmf_description)/meshes/${stl}" />
+        </geometry>
+        <material
+          name="${material}"/>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="file://$(find dynominion_rmf_description)/meshes/${stl}" />
+        </geometry>
+      </collision>
+  </xacro:macro>
+
+  <link name="${robot_name}base_footprint" />
+
+  <joint name="base_joint" type="fixed">
+    <parent link="${robot_name}base_footprint"/>
+    <child link="${robot_name}base_link"/>
+    <origin xyz="0 0 0.0925" rpy="0 0 0"/>
+  </joint>
+
+  <link name="${robot_name}base_link">
+    <inertial>
+      <origin
+        xyz="-0.0012031 -0.00067857 0.11523"
+        rpy="0 0 0" />
+      <mass
+        value="38.194" />
+      <inertia
+        ixx="0.92708"
+        ixy="0.00025177"
+        ixz="5.5591E-05"
+        iyy="0.68737"
+        iyz="3.0979E-06"
+        izz="1.5405" />
+    </inertial>
+    <xacro:visual_collision stl="base_link.STL" material="base_link"/>
+  </link>
+
+
+  <joint name="left_wheel_joint" type="continuous">
+    <origin
+      xyz="0 0.306 0.0500"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}left_wheel" />
+    <axis
+      xyz="0 1 0" />
+    <dynamics damping="0.3"/>
+  </joint>
+
+  <link name="${robot_name}left_wheel">
+    <inertial>
+      <origin
+        xyz="-6.8084E-18 -0.0145 2.0817E-17"
+        rpy="0 0 0" />
+      <mass
+        value="2.6657" />
+      <inertia
+        ixx="0.0063899"
+        ixy="3.4604E-19"
+        ixz="2.4937E-19"
+        iyy="0.012138"
+        iyz="-2.6948E-19"
+        izz="0.0063899" />
+    </inertial>
+    <xacro:visual_collision stl="left_wheel_l2.STL" material="wheel"/>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <origin
+      xyz="0 -0.306 0.0500"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}right_wheel" />
+    <axis
+      xyz="0 1 0" />
+    <dynamics damping="0.3"/>
+  </joint>
+
+  <link name="${robot_name}right_wheel">
+    <inertial>
+      <origin
+        xyz="-1.3266E-15 0.0145 1.8319E-15"
+        rpy="0 0 0" />
+      <mass
+        value="2.6657" />
+      <inertia
+        ixx="0.0063899"
+        ixy="1.0787E-18"
+        ixz="-6.3978E-19"
+        iyy="0.012138"
+        iyz="1.1621E-18"
+        izz="0.0063899" />
+    </inertial>
+    <xacro:visual_collision stl="right_wheel_l1.STL" material="wheel"/>
+  </link>
+
+  <link name="${robot_name}laser">
+    <inertial>
+      <origin
+        xyz="-0.00041464 -8.5349E-05 -0.017667"
+        rpy="0 0 0" />
+      <mass
+        value="0.035797" />
+      <inertia
+        ixx="1.2463E-05"
+        ixy="-2.4586E-09"
+        ixz="1.6242E-08"
+        iyy="1.2418E-05"
+        iyz="-4.2084E-09"
+        izz="2.2872E-05" />
+    </inertial>
+    <xacro:visual_collision stl="lidar_l3.STL" material="lidar"/>
+  </link>
+
+  <joint name="laser_joint" type="fixed">
+    <origin
+      xyz="0.24971 0 0.1932"
+      rpy="0 0 3.1415926535897931" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}laser" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="${robot_name}imu_link">
+    <inertial>
+      <origin
+        xyz="-0.092447 -0.001269 -0.012304"
+        rpy="0 0 0" />
+      <mass
+        value="0.40139" />
+      <inertia
+        ixx="0.0041061"
+        ixy="3.6427E-06"
+        ixz="-7.2802E-06"
+        iyy="0.0018697"
+        iyz="-9.9936E-08"
+        izz="0.0059728" />
+    </inertial>
+    <xacro:visual_collision stl="imu_l4.STL" material="imu"/>
+  </link> 
+
+  <joint name="imu_joint" type="fixed">
+    <origin
+      xyz="0.2785 0 0.101"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}imu_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="${robot_name}gps"/>
+
+  <joint name="gps_joint" type="fixed">
+    <origin
+      xyz="0.275 0 0.230"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}gps" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link
+    name="${robot_name}castor_1">
+    <inertial>
+      <origin
+        xyz="0.0276 -2.6305E-10 -0.050548"
+        rpy="0 0 0" />
+      <mass
+        value="0.1915" />
+      <inertia
+        ixx="7.6816E-05"
+        ixy="-1.6051E-11"
+        ixz="1.5845E-06"
+        iyy="0.00011695"
+        iyz="1.2642E-11"
+        izz="9.0525E-05" />
+    </inertial>
+    <xacro:visual_collision stl="castor_1.STL" material="caster"/>
+  </link>
+
+  <joint name="castor1_joint" type="fixed">
+    <origin
+      xyz="0.218 -0.09 0.0624"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}castor_1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link
+    name="${robot_name}castor_2">
+    <inertial>
+      <origin
+        xyz="0.0276 -2.6305E-10 -0.050548"
+        rpy="0 0 0" />
+      <mass
+        value="0.1915" />
+      <inertia
+        ixx="7.6816E-05"
+        ixy="-1.6051E-11"
+        ixz="1.5845E-06"
+        iyy="0.00011695"
+        iyz="1.2642E-11"
+        izz="9.0525E-05" />
+    </inertial>
+    <xacro:visual_collision stl="castor_2.STL" material="caster"/>
+  </link>
+
+  <joint name="castor2_joint" type="fixed">
+    <origin
+      xyz="0.218 0.09 0.0624"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}castor_2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="${robot_name}castor_3">
+    <inertial>
+      <origin
+        xyz="0.0276 -2.6305E-10 -0.050548"
+        rpy="0 0 0" />
+      <mass
+        value="0.1915" />
+      <inertia
+        ixx="7.6816E-05"
+        ixy="-1.6051E-11"
+        ixz="1.5845E-06"
+        iyy="0.00011695"
+        iyz="1.2642E-11"
+        izz="9.0525E-05" />
+    </inertial>
+    <xacro:visual_collision stl="castor_3.STL" material="caster"/>
+  </link>
+
+  <joint name="castor3_joint" type="fixed">
+    <origin
+      xyz="-0.2 -0.09 0.0624"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}castor_3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link
+    name="${robot_name}castor_4">
+    <inertial>
+      <origin
+        xyz="0.0276 -2.6305E-10 -0.050548"
+        rpy="0 0 0" />
+      <mass
+        value="0.1915" />
+      <inertia
+        ixx="7.6816E-05"
+        ixy="-1.6051E-11"
+        ixz="1.5845E-06"
+        iyy="0.00011695"
+        iyz="1.2642E-11"
+        izz="9.0525E-05" />
+    </inertial>
+    <xacro:visual_collision stl="castor_4.STL" material="caster"/>
+  </link>
+
+  <joint
+    name="castor4_joint"
+    type="fixed">
+    <origin
+      xyz="-0.2 0.09 0.0624"
+      rpy="0 0 0" />
+    <parent
+      link="${robot_name}base_link" />
+    <child
+      link="${robot_name}castor_4" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  
+  </xacro:macro>
+
+</robot>

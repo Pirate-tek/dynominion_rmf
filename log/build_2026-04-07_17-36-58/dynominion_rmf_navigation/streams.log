@@ -1,0 +1,58 @@
+[0.033s] Invoking command in '/home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/jazzy/Desktop/dynominion_rmf/dynominion_rmf_navigation -DCMAKE_INSTALL_PREFIX=/home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation
+[0.128s] -- The C compiler identification is GNU 13.3.0
+[0.226s] -- The CXX compiler identification is GNU 13.3.0
+[0.254s] -- Detecting C compiler ABI info
+[0.422s] -- Detecting C compiler ABI info - done
+[0.435s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.438s] -- Detecting C compile features
+[0.438s] -- Detecting C compile features - done
+[0.454s] -- Detecting CXX compiler ABI info
+[0.639s] -- Detecting CXX compiler ABI info - done
+[0.656s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.656s] -- Detecting CXX compile features
+[0.657s] -- Detecting CXX compile features - done
+[0.666s] -- Found ament_cmake: 2.5.5 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.937s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.178s] -- Found nav2_bringup: 1.3.10 (/opt/ros/jazzy/share/nav2_bringup/cmake)
+[1.186s] -- Found ament_lint_auto: 0.17.4 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.401s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.401s] -- Configured 'flake8' exclude dirs and/or files: 
+[1.403s] -- Added test 'lint_cmake' to check CMake code style
+[1.404s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.408s] -- Added test 'xmllint' to check XML markup files
+[1.411s] -- Configuring done (1.4s)
+[1.417s] -- Generating done (0.0s)
+[1.420s] -- Build files have been written to: /home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation
+[1.428s] Invoked command in '/home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/jazzy/Desktop/dynominion_rmf/dynominion_rmf_navigation -DCMAKE_INSTALL_PREFIX=/home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation
+[1.430s] Invoking command in '/home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation -- -j16 -l16
+[1.509s] Invoked command in '/home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation -- -j16 -l16
+[1.511s] Invoking command in '/home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation
+[1.526s] -- Install configuration: ""
+[1.526s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/rviz
+[1.526s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/rviz/nav2_view.rviz
+[1.527s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/launch
+[1.527s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/launch/navigation_launch.py
+[1.527s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/launch/dynominion_rmf_nav_bringup.launch.py
+[1.527s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/config
+[1.528s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/config/nav_param_delay.yaml
+[1.528s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/config/nav_param.yaml
+[1.528s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/config/nav_param(issue).yaml
+[1.528s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/maps
+[1.529s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/maps/dynominion_rmf_map.yaml
+[1.529s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/maps/dynominion_rmf_map.pgm
+[1.530s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/ament_index/resource_index/package_run_dependencies/dynominion_rmf_navigation
+[1.530s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/ament_index/resource_index/parent_prefix_path/dynominion_rmf_navigation
+[1.530s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/environment/ament_prefix_path.sh
+[1.531s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/environment/ament_prefix_path.dsv
+[1.531s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/environment/path.sh
+[1.531s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/environment/path.dsv
+[1.532s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/local_setup.bash
+[1.532s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/local_setup.sh
+[1.532s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/local_setup.zsh
+[1.532s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/local_setup.dsv
+[1.533s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/package.dsv
+[1.533s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/ament_index/resource_index/packages/dynominion_rmf_navigation
+[1.534s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/cmake/dynominion_rmf_navigationConfig.cmake
+[1.534s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/cmake/dynominion_rmf_navigationConfig-version.cmake
+[1.534s] -- Installing: /home/jazzy/Desktop/dynominion_rmf/install/dynominion_rmf_navigation/share/dynominion_rmf_navigation/package.xml
+[1.539s] Invoked command in '/home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/jazzy/Desktop/dynominion_rmf/build/dynominion_rmf_navigation

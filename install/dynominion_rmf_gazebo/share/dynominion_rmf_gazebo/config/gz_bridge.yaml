@@ -1,0 +1,13 @@
+# Full set of configurations
+- ros_topic_name: "scan"
+  gz_topic_name: "GZ_SCAN"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  direction: GZ_TO_ROS
+
+
+- ros_topic_name: "imu/data"
+  gz_topic_name: "GZ_IMU"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS

@@ -48,7 +48,7 @@ bt_navigator:
   ros__parameters:
     global_frame: map
     robot_base_frame: base_footprint
-    odom_topic: /wheelodom
+    odom_topic: wheelodom
     bt_loop_duration: 10
     default_server_timeout: 20
     wait_for_service_timeout: 1000
@@ -79,7 +79,7 @@ controller_server:
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
-    odom_topic: /wheelodom
+    odom_topic: wheelodom
     enable_stamped_cmd_vel: true
     progress_checker_plugins: ["progress_checker"]
     goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
@@ -223,7 +223,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -254,7 +254,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
