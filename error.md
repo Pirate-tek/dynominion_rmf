@@ -199,3 +199,53 @@ The `controller_manager` update rate was set to 30 Hz (0.033s), which is signifi
 ### **Fix:**
 Raised the `update_rate` to **100 Hz** in the `multi_robot_controllers.yaml` file to provide more frequent control updates and reduce the rate mismatch warning.
 
+---
+
+## Error 13: `Can't accept new commands. subscriber is inactive`
+
+### **Symptoms:**
+Robots were stationary in Gazebo despite receiving navigation goals. The console was flooded with warnings from `diff_drive_base_controller` stating "Can't accept new commands. subscriber is inactive."
+
+### **Root Cause:**
+The controller spawner nodes in the launch file were configured with the `--inactive` flag. This loaded the controllers but did not move them to the `ACTIVE` state. In ROS 2 Control (specifically Jazzy/Humble), an inactive controller does not activate its `cmd_vel` subscriber, leading to the warning and complete lack of movement.
+
+### **Fix:**
+1. **Removed `--inactive` flag**: Allowed the spawner to automatically transition controllers to the `ACTIVE` state upon successful loading.
+2. **Extended Spawner Delay**: Increased the `TimerAction` delay from 5 to 10 seconds to ensure the Gazebo simulation and hardware interfaces are fully initialized before the spawner attempts to communicate with the `controller_manager`.
+
+---
+
+## Error 14: Odom -> Base Link Transform Pipeline Failure
+
+### **Symptoms:**
+Robots were unable to localize or plan paths. The TF tree showed disconnected transforms, and the console was flooded with `dynominion3/dynominion3/odom` double namespacing.
+
+### **Three-Way Namespace Conflict:**
+
+1.  **Double-Prepending Paradox (Controller Config)**:
+    - **Issue**: `multi_robot_controllers.yaml` explicitly used `dynominion1/odom`.
+    - **Effect**: Since the controller was already namespaced (`/dynominion1`), it automatically prepended its namespace, creating **`dynominion1/dynominion1/odom`**.
+    - **Fix**: Removed prefixes from YAML, setting frames as `odom` and `base_footprint`.
+
+2.  **Global Topic Lock-in (Nav2)**:
+    - **Issue**: `nav_param.yaml` used leading slashes on topics (e.g., `/wheelodom`).
+    - **Effect**: Nav2 nodes (AMCL, Local Planner) ignored local namespaced data and waited for a global root-level topic that did not exist.
+    - **Fix**: Removed leading slashes to make topics relative (e.g., `wheelodom`).
+
+3.  **Frame Identity Mismatch (Odom Modifier)**:
+    - **Issue**: `odom_modifier.py` script hardcoded static frame names (`odom`).
+    - **Effect**: TF could not link incoming odometry data to the actual robot model (whose links are namespaced in URDF like `dynominion1/base_link`).
+    - **Fix**: Updated the script to programmatically detect the node namespace and prefix the frames accordingly.
+
+---
+
+## Error 15: `RCLError: failed to shutdown: rcl_shutdown already called` 
+
+### **Symptoms:**
+Python scripts like `odom_modifier.py` reported a traceback pointing to `rclpy.shutdown()` upon terminating the launch session.
+
+### **Root Cause:**
+Attempting to call `rclpy.shutdown()` when the ROS 2 context has already been terminated. In ROS 2 Jazzy, this raises an explicit `RCLError`.
+
+### **Fix:**
+Updated scripts to check `if rclpy.ok(): rclpy.shutdown()` to ensure a clean exit.
