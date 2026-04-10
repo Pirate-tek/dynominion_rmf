@@ -51,6 +51,7 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
     use_localization = LaunchConfiguration('use_localization')
+    use_rviz = LaunchConfiguration('use_rviz', default='True')
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
@@ -89,7 +90,7 @@ def generate_launch_description():
 
     declare_use_namespace_cmd = DeclareLaunchArgument(
         'use_namespace',
-        default_value='true',
+        default_value='True',
         description='Whether to apply a namespace to the navigation stack',
     )
 
@@ -128,7 +129,7 @@ def generate_launch_description():
 
     declare_autostart_cmd = DeclareLaunchArgument(
         'autostart',
-        default_value='true',
+        default_value='True',
         description='Automatically startup the nav2 stack',
     )
 
@@ -146,6 +147,10 @@ def generate_launch_description():
 
     declare_log_level_cmd = DeclareLaunchArgument(
         'log_level', default_value='info', description='log level'
+    )
+
+    declare_use_rviz_cmd = DeclareLaunchArgument(
+        'use_rviz', default_value='True', description='Whether to start RVIZ'
     )
 
     # Specify the actions
@@ -209,6 +214,7 @@ def generate_launch_description():
     )
 
     start_rviz_cmd = Node(
+        condition=IfCondition(use_rviz),
         package='rviz2',
         executable='rviz2',
         arguments=['-d', rviz_config_file],
@@ -235,6 +241,7 @@ def generate_launch_description():
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_use_localization_cmd)
+    ld.add_action(declare_use_rviz_cmd)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(bringup_cmd_group)

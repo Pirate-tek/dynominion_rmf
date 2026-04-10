@@ -98,7 +98,7 @@ def generate_launch_description():
         output='screen',
         arguments=['-topic', 'robot_description', 
                    '-name', robot_name,
-                   '-allow_renaming', 'true',
+                   '-allow_renaming', 'True',
                    '-x', x_pose,
                    '-y', y_pose,
                    '-z', z_pose
@@ -159,18 +159,18 @@ def generate_launch_description():
         ),
     ])
 
-    launch_simulation = LaunchConfiguration('launch_simulation', default='true')
+    launch_simulation = LaunchConfiguration('launch_simulation', default='True')
 
     return LaunchDescription([
         stdout_linebuf_envvar,
         gz_resource_path,
-        DeclareLaunchArgument('use_sim_time', default_value='true'),
+        DeclareLaunchArgument('use_sim_time', default_value='True'),
         DeclareLaunchArgument('world', default_value='cafe.world'),
         DeclareLaunchArgument('robot_name', default_value='dynominion1'),
         DeclareLaunchArgument('x', default_value='0.0'),
         DeclareLaunchArgument('y', default_value='0.0'),
         DeclareLaunchArgument('z', default_value='0.5'),
-        DeclareLaunchArgument('launch_simulation', default_value='true'),
+        DeclareLaunchArgument('launch_simulation', default_value='True'),
         
         # Gazebo Sim
         IncludeLaunchDescription(

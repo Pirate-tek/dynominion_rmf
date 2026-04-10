@@ -1,0 +1,103 @@
+building_name: dynominion
+doors: {}
+levels:
+  L1:
+    lanes:
+    - - 0
+      - 1
+      - {dock_name: charger_1}
+    - - 1
+      - 0
+      - {undock_name: charger_1}
+    - - 1
+      - 2
+      - {undock_name: charger_1}
+    - - 2
+      - 1
+      - {dock_name: charger_1}
+    - - 2
+      - 3
+      - {}
+    - - 3
+      - 2
+      - {}
+    - - 3
+      - 4
+      - {dock_name: charger_2}
+    - - 4
+      - 3
+      - {undock_name: charger_2}
+    - - 4
+      - 5
+      - {undock_name: charger_2}
+    - - 5
+      - 4
+      - {dock_name: charger_2}
+    - - 4
+      - 1
+      - {dock_name: charger_1, undock_name: charger_2}
+    - - 1
+      - 4
+      - {dock_name: charger_2, undock_name: charger_1}
+    - - 6
+      - 0
+      - {}
+    - - 0
+      - 6
+      - {}
+    - - 6
+      - 1
+      - {dock_name: charger_1}
+    - - 1
+      - 6
+      - {undock_name: charger_1}
+    - - 6
+      - 4
+      - {dock_name: charger_2}
+    - - 4
+      - 6
+      - {undock_name: charger_2}
+    - - 7
+      - 2
+      - {}
+    - - 2
+      - 7
+      - {}
+    - - 7
+      - 3
+      - {}
+    - - 3
+      - 7
+      - {}
+    - - 7
+      - 6
+      - {}
+    - - 6
+      - 7
+      - {}
+    vertices:
+    - - 3.06100093335734
+      - 9.246002819281923
+      - {name: entry_point}
+    - - 3.1670009656787634
+      - 2.2050006723465976
+      - {dock_name: charger_1, is_charger: true, is_parking: true, name: charger_1}
+    - - 1.0040003061387681
+      - -5.876001791704583
+      - {name: table_1}
+    - - -3.043000927868796
+      - -8.876002706461858
+      - {name: table_2}
+    - - -2.7410008357832307
+      - 0.5750001753284777
+      - {dock_name: charger_2, is_charger: true, is_parking: true, name: charger_2}
+    - - -3.9480012038205743
+      - -5.653001723707625
+      - {name: exit_point}
+    - - 0.0
+      - 2.0000006098381835
+      - {is_parking: true, name: waiting_zone_1}
+    - - 0.0
+      - -3.0000009147572753
+      - {is_parking: true, name: waiting_zone_2}
+lifts: {}

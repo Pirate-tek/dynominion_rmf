@@ -23,13 +23,13 @@ def generate_launch_description():
     ]
 
     # Launch configuration variables
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     world = LaunchConfiguration('world', default='cafe.world')
 
     ld = LaunchDescription()
 
     # Declare the launch arguments
-    ld.add_action(DeclareLaunchArgument('use_sim_time', default_value='true'))
+    ld.add_action(DeclareLaunchArgument('use_sim_time', default_value='True'))
     ld.add_action(DeclareLaunchArgument('world', default_value='cafe.world'))
 
     # Global bridge for clock
@@ -45,7 +45,7 @@ def generate_launch_description():
     for i, robot in enumerate(robots):
         # We only launch simulation for the first robot (or we could launch it separately)
         # Here, we set launch_simulation to true only for the first one.
-        launch_sim = 'true' if i == 0 else 'false'
+        launch_sim = 'True' if i == 0 else 'False'
         
         spawn_robot = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(

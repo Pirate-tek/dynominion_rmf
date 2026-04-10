@@ -1,0 +1,22 @@
+fleet_manager:
+  fleet_name: "dynominion_fleet"
+  nav_graph_path: "nav_graphs/0.yaml"
+  nominal_elevation: 0.0
+  robots:
+    dynominion1:
+      charger: "charger_1"
+    dynominion2:
+      charger: "charger_2"
+    dynominion3:
+      charger: "charger_1"
+    dynominion4:
+      charger: "charger_2"
+    dynominion5:
+      charger: "charger_1"
+  robot_profile:
+    footprint_radius: 0.4
+    max_linear_speed: 1.0
+    max_linear_acceleration: 1.0
+    max_angular_speed: 1.0
+    max_angular_acceleration: 1.0
+    can_reverse: true

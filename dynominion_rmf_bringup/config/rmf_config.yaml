@@ -1,0 +1,14 @@
+# RMF Global Configuration
+rmf_traffic_schedule:
+  ros__parameters:
+    use_sim_time: true
+    # schedule_node parameters
+
+rmf_task_dispatcher:
+  ros__parameters:
+    use_sim_time: true
+    # task_dispatcher parameters
+
+rmf_traffic_blockade:
+  ros__parameters:
+    use_sim_time: true

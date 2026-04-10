@@ -249,3 +249,54 @@ Attempting to call `rclpy.shutdown()` when the ROS 2 context has already been te
 
 ### **Fix:**
 Updated scripts to check `if rclpy.ok(): rclpy.shutdown()` to ensure a clean exit.
+
+# Build Errors and Resolutions — Dynominion Fleet Adapter
+
+This document tracks the issues encountered during the implementation and build of the `dynominion_fleet_adapter` package and how they were resolved.
+
+## 1. File Naming Inconsistency
+- **Error**: `CMake Error: Cannot find source file: src/FleetAdapter.cpp`
+- **Why it occurred**: The source files were intermittently renamed to `fleetadapter.cpp` and `nav2robotHandle.cpp` on the filesystem. Since Linux filesystems are case-sensitive, CMake could not locate the files specified in `add_executable`.
+- **Fix**: Standardized all filenames to PascalCase (`FleetAdapter.cpp`, `Nav2RobotHandle.cpp`) to match the `CMakeLists.txt` configuration.
+
+## 2. Missing Link Target (`rmf_fleet_adapter::read_only`)
+- **Error**: `Target "fleet_adapter_node" links to: rmf_fleet_adapter::read_only but the target was not found.`
+- **Why it occurred**: In ROS 2 Jazzy, `rmf_fleet_adapter` exports several executable targets (like `read_only`). `ament_target_dependencies` sometimes attempts to link against all exported targets, causing failures if the internal dependency tree is not perfectly resolved or if specific components are expected as libraries.
+- **Fix**: Replaced the high-level ament dependency for RMF with explicit `target_link_libraries` pointing to the core libraries: `rmf_fleet_adapter::rmf_fleet_adapter`, `rmf_utils::rmf_utils`, and `rmf_traffic::rmf_traffic`.
+
+## 3. RMF API Version Mismatch (EasyFullControl)
+- **Error**: `no matching member function for call to 'add_robot'` and type mismatches in navigation callbacks.
+- **Why it occurred**: The initial implementation used a legacy prototype of the `EasyFullControl` API. The version in ROS 2 Jazzy is more structured and requires explicit `RobotConfiguration`, `RobotCallbacks`, and `RobotState` objects instead of direct lambda arguments.
+- **Fix**: Refactored the registration logic in `FleetAdapter.cpp` to use the new Jazzy API structures.
+
+## 4. `update_position` Signature Change
+- **Error**: `no matching member function for call to 'update_position'`
+- **Why it occurred**: The `update_position` method in Jazzy's `RobotUpdateHandle` requires a map name and an `Eigen::Vector3d` object, whereas the legacy code passed a `std::vector` and a timestamp.
+- **Fix**: Updated `Nav2RobotHandle.cpp` to use the `update()` method (or appropriate `update_position` overload) with `Eigen::Vector3d` and the map name `"L1"`.
+
+## 5. `VehicleTraits` Constructor Parameters
+- **Error**: `no matching constructor for initialization of 'rmf_traffic::agv::VehicleTraits'`
+- **Why it occurred**: The constructor for `VehicleTraits` now requires a `rmf_traffic::Profile` object as a mandatory third argument to define the robot's physical footprint.
+- **Fix**: Created an `rmf_traffic::Profile` from the robot's footprint radius and used it to initialize the traits.
+
+## 6. Invalid Use of `shared_from_this()`
+- **Error**: Logical/Potential runtime crash.
+- **Why it occurred**: The registration logic was initially placed in the `FleetAdapterNode` constructor. Calling `shared_from_this()` inside a constructor is illegal because the object is not yet managed by a `std::shared_ptr`.
+- **Fix**: Moved the fleet and robot registration logic into a separate `init()` method, which is called in `main()` after the node has been safely wrapped in a `std::shared_ptr`.
+
+## 7. Eigen3 Dependency and Includes
+- **Error**: Compilation errors regarding Eigen types or missing headers.
+- **Why it occurred**: RMF depends heavily on Eigen for geometry calculations, but `CMakeLists.txt` did not explicitly include the Eigen headers or link against the target.
+- **Fix**: Added `find_package(Eigen3 REQUIRED)` to `CMakeLists.txt` and added `Eigen3::Eigen` to the link libraries and include paths.
+
+---
+
+## 16. `name 'true' is not defined` in Launch Files
+- **Error**: `[ERROR] [launch]: Caught exception in launch: name 'true' is not defined`.
+- **Why it occurred**: In ROS 2 Python launch files, boolean values passed in `launch_arguments` that are later evaluated inside a `PythonExpression` (e.g., in Nav2) must follow Python syntax (`True`/`False`). Lowercase `'true'` causes Python to attempt a variable lookup for `true`, which fails.
+- **Fix**: Capitalized `'true'`/`'false'` to `'True'`/`'False'` project-wide in launch scripts.
+
+## 17. Missing `nav2_delay_gate` Plugin
+- **Error**: `Failed to create behavior delay_gate of type nav2_delay_gate/DelayGate`.
+- **Why it occurred**: The `nav2_delay_gate` plugin was referenced in the navigation configuration but is not available in the current Nav2 distribution or environment.
+- **Fix**: Removed the plugin reference from `nav_param.yaml`.
