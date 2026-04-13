@@ -142,6 +142,13 @@ def generate_launch_description():
         output='screen'
     )
 
+    scan_frame_normalizer = Node(
+        package='dynominion_rmf_gazebo',
+        executable='scan_frame_normalizer.py',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
     # Group all robot-specific nodes into a namespace
     robot_group = GroupAction([
         PushROSNamespace(robot_name),
@@ -150,6 +157,7 @@ def generate_launch_description():
         bridge,
         odom_modifier,
         joint_state_republisher,
+        scan_frame_normalizer,
         TimerAction(
             period=10.0,
             actions=[

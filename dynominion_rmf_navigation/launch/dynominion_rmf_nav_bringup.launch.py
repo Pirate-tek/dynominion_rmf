@@ -53,30 +53,12 @@ def generate_launch_description():
     use_localization = LaunchConfiguration('use_localization')
     use_rviz = LaunchConfiguration('use_rviz', default='True')
 
-    # Map fully qualified names to relative ones so the node's namespace can be prepended.
-    remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
-
-    # Create our own temporary YAML file that includes substitutions
-    param_substitutions = {
-        'use_sim_time': use_sim_time,
-        'autostart': autostart,
-        'base_frame_id': [namespace, '/base_footprint'],
-        'odom_frame_id': [namespace, '/odom'],
-        'global_frame_id': 'map',
-        'robot_base_frame': [namespace, '/base_footprint'],
-        'odom_topic': 'wheelodom',
-        'scan_topic': 'scan',
-        'local_frame': [namespace, '/odom'],
-        'global_frame': 'map'
-    }
+    # Keep TF on the global topics so the isolated Nav2 container shares the
+    # same TF tree as the rest of the robot stack.
+    remappings = []
 
     configured_params = ParameterFile(
-        RewrittenYaml(
-            source_file=params_file,
-            root_key=namespace,
-            param_rewrites=param_substitutions,
-            convert_types=True,
-        ),
+        params_file,
         allow_substs=True,
     )
 
@@ -182,7 +164,7 @@ def generate_launch_description():
             ),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(launch_dir, 'localization_launch.py')
+                    os.path.join(working_dir, 'launch', 'localization_launch.py')
                 ),
                 condition=IfCondition(PythonExpression(['not ', slam, ' and ', use_localization])),
                 launch_arguments={

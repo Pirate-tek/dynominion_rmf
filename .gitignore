@@ -11,3 +11,6 @@ log/
 frames*
 *.gv
 *.pdf
+
+# Ignore .md files in the directory
+*.md

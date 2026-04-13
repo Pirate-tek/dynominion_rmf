@@ -14,10 +14,10 @@ dynominion1:
       right_wheel_names: ["right_wheel_joint"]
       wheel_separation: 0.583
       wheel_radius: 0.0925
-      odom_frame_id: odom
-      base_frame_id: base_footprint
+      odom_frame_id: dynominion1/odom
+      base_frame_id: dynominion1/base_footprint
       open_loop: false
-      enable_odom_tf: true
+      enable_odom_tf: false
       cmd_vel_timeout: 0.5
       use_stamped_vel: true
       linear.x.has_velocity_limits: true
@@ -42,10 +42,10 @@ dynominion2:
       right_wheel_names: ["right_wheel_joint"]
       wheel_separation: 0.583
       wheel_radius: 0.0925
-      odom_frame_id: odom
-      base_frame_id: base_footprint
+      odom_frame_id: dynominion2/odom
+      base_frame_id: dynominion2/base_footprint
       open_loop: false
-      enable_odom_tf: true
+      enable_odom_tf: false
       cmd_vel_timeout: 0.5
       use_stamped_vel: true
       linear.x.has_velocity_limits: true
@@ -70,10 +70,10 @@ dynominion3:
       right_wheel_names: ["right_wheel_joint"]
       wheel_separation: 0.583
       wheel_radius: 0.0925
-      odom_frame_id: odom
-      base_frame_id: base_footprint
+      odom_frame_id: dynominion3/odom
+      base_frame_id: dynominion3/base_footprint
       open_loop: false
-      enable_odom_tf: true
+      enable_odom_tf: false
       cmd_vel_timeout: 0.5
       use_stamped_vel: true
       linear.x.has_velocity_limits: true
@@ -98,10 +98,10 @@ dynominion4:
       right_wheel_names: ["right_wheel_joint"]
       wheel_separation: 0.583
       wheel_radius: 0.0925
-      odom_frame_id: odom
-      base_frame_id: base_footprint
+      odom_frame_id: dynominion4/odom
+      base_frame_id: dynominion4/base_footprint
       open_loop: false
-      enable_odom_tf: true
+      enable_odom_tf: false
       cmd_vel_timeout: 0.5
       use_stamped_vel: true
       linear.x.has_velocity_limits: true
@@ -126,10 +126,10 @@ dynominion5:
       right_wheel_names: ["right_wheel_joint"]
       wheel_separation: 0.583
       wheel_radius: 0.0925
-      odom_frame_id: odom
-      base_frame_id: base_footprint
+      odom_frame_id: dynominion5/odom
+      base_frame_id: dynominion5/base_footprint
       open_loop: false
-      enable_odom_tf: true
+      enable_odom_tf: false
       cmd_vel_timeout: 0.5
       use_stamped_vel: true
       linear.x.has_velocity_limits: true

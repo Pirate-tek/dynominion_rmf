@@ -2,8 +2,9 @@
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
-from builtin_interfaces.msg import Time
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
+from geometry_msgs.msg import TransformStamped
+from tf2_ros import TransformBroadcaster
 
 
 
@@ -12,13 +13,15 @@ class OdomRepublisher(Node):
         super().__init__('odom_republisher')
 
         # Parameters
-        self.declare_parameter('input_topic', 'diff_drive_base_controller/odom')
+        self.declare_parameter('input_topic', 'odom')
         self.declare_parameter('output_topic', 'wheelodom')
         self.declare_parameter('new_frame_id', 'odom') # Note: Frames will be prefixed in controller or here if needed
         self.declare_parameter('new_child_frame_id', 'base_footprint')
+        self.declare_parameter('publish_tf', True)
 
         input_topic = self.get_parameter('input_topic').get_parameter_value().string_value
         output_topic = self.get_parameter('output_topic').get_parameter_value().string_value
+        self.publish_tf = self.get_parameter('publish_tf').get_parameter_value().bool_value
 
         qos = QoSProfile(
             reliability=ReliabilityPolicy.RELIABLE,
@@ -34,6 +37,7 @@ class OdomRepublisher(Node):
             10
         )
         self.publisher = self.create_publisher(Odometry, output_topic, 10)
+        self.tf_broadcaster = TransformBroadcaster(self)
 
         self.get_logger().info(f"Subscribed to {input_topic}, republishing to {output_topic}")
 
@@ -61,6 +65,17 @@ class OdomRepublisher(Node):
 
         # Publish modified message
         self.publisher.publish(new_msg)
+
+        if self.publish_tf:
+            transform = TransformStamped()
+            transform.header.stamp = new_msg.header.stamp
+            transform.header.frame_id = new_msg.header.frame_id
+            transform.child_frame_id = new_msg.child_frame_id
+            transform.transform.translation.x = new_msg.pose.pose.position.x
+            transform.transform.translation.y = new_msg.pose.pose.position.y
+            transform.transform.translation.z = new_msg.pose.pose.position.z
+            transform.transform.rotation = new_msg.pose.pose.orientation
+            self.tf_broadcaster.sendTransform(transform)
 
 
 def main(args=None):

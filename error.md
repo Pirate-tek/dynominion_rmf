@@ -300,3 +300,65 @@ This document tracks the issues encountered during the implementation and build 
 - **Error**: `Failed to create behavior delay_gate of type nav2_delay_gate/DelayGate`.
 - **Why it occurred**: The `nav2_delay_gate` plugin was referenced in the navigation configuration but is not available in the current Nav2 distribution or environment.
 - **Fix**: Removed the plugin reference from `nav_param.yaml`.
+# Multi-Robot TF Tree and AMCL Pipeline Debugging Guide
+
+## Issue Overview
+When launching a multi-robot Nav2 simulation using Gazebo and ROS 2, the `amcl` localization pipeline (which calculates the `map -> odom` transform) may fail to publish its transform. This results in errors such as `Tf has two or more unconnected trees` or local costmap timeouts:
+
+```text
+Timed out waiting for transform from dynominion1/base_footprint to dynominion1/odom to become available, tf error: Invalid frame ID "dynominion1/odom" passed to canTransform argument target_frame - frame does not exist
+```
+
+## Root Cause Analysis
+The failure of AMCL to broadcast the `map -> odom` transform is often treated as an AMCL problem. In multi-robot setups, however, **the actual root cause is usually a break lower in the TF tree—specifically the missing `odom -> base_footprint` transform.**
+
+AMCL works by calculating the robot's pose in the `map` frame (i.e. finding the `map -> base_footprint` transform) and then mathematically *subtracting* the `odom -> base_footprint` transform to publish the resulting offset as the `map -> odom` transform. If the odometry frame `odom -> base_footprint` is missing, AMCL physically cannot calculate the offset and will silently drop the publication of `map -> odom`.
+
+### Why the `odom -> base_footprint` Transform Was Missing
+In this architecture, `odom_modifier.py` subscribes to the odometry topic to broadcast the missing TF frame. However:
+1. The `diff_drive_base_controller` was publishing odometry to the nested topic `diff_drive_base_controller/odom` instead of the expected `odom` topic.
+2. The user attempted to resolve this by passing remapping arguments (`--ros-args -r diff_drive_base_controller/odom:=odom`) to the `controller_manager` spawner node inside the Python launch file.
+3. **The ROS 2 `spawner` executable ignores runtime argument remappings for controllers.** Controllers do not launch as independent nodes; they run as dynamic plugins directly inside the `controller_manager` process, which in this case is owned by the Gazebo Simulation itself (`gz_ros2_control-system` plugin).
+
+Because the topic remained `diff_drive_base_controller/odom`, the `odom_modifier.py` script (which was listening for `odom`) never received a single Odometry message, and therefore never broadcast the `odom -> base_footprint` TF transform. Because `odom` was missing, AMCL collapsed.
+
+## The Solution
+To successfully remap topics for a controller running inside Gazebo's `ign_ros2_control` or `gz_ros2_control` ecosystem, **you must apply the remapping parameters at the URDF/XACRO level where the Gazebo plugin is instantiated.**
+
+### 1. Modify the `gazebo_ros2_control.xacro`
+Locate the `<plugin>` definition for `GazeboSimROS2ControlPlugin`. Inside the `<ros>` tag, explicitly declare the `<remapping>` parameters.
+
+**Before:**
+```xml
+    <gazebo>
+        <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <parameters>$(arg controller_config)</parameters>
+          <ros>
+            <namespace>$(arg robot_name)</namespace>
+          </ros>
+        </plugin>
+    </gazebo>
+```
+
+**After (The Fix):**
+```xml
+    <gazebo>
+        <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+          <parameters>$(arg controller_config)</parameters>
+          <ros>
+            <namespace>$(arg robot_name)</namespace>
+            <!-- Explicitly force the controller to publish directly to the root namespace odom/cmd_vel -->
+            <remapping>diff_drive_base_controller/cmd_vel:=cmd_vel</remapping>
+            <remapping>diff_drive_base_controller/odom:=odom</remapping>
+          </ros>
+        </plugin>
+    </gazebo>
+```
+
+### 2. Verify Fixes
+By configuring the URDF to remap the topics natively on startup:
+1. The odometry publishes perfectly to `/dynominion1/odom`.
+2. `odom_modifier.py` successfully consumes the data and broadcasts `/dynominion1/odom -> /dynominion1/base_footprint`.
+3. AMCL now has access to the full base transform chain, allowing it to calculate the position offset and broadcast the `/map -> /dynominion1/odom` transform perfectly.
+
+*Note: Upon booting the simulation, AMCL will log `unconnected trees` for the first 10-25 seconds of initialization before emitting its first valid `map -> odom` transform. This transient warning is normal in Nav2 bringups.*

@@ -53,24 +53,12 @@ def generate_launch_description():
         'docking_server',
     ]
 
-    # Map fully qualified names to relative ones so the node's namespace can be prepended.
-    # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
-    # https://github.com/ros/geometry2/issues/32
-    # https://github.com/ros/robot_state_publisher/pull/30
-    # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
-    remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
-
-    # Create our own temporary YAML files that include substitutions
-    param_substitutions = {'autostart': autostart}
+    # Keep TF on the global topics so every Nav2 component consumes the same TF
+    # tree as the state publisher and controllers.
+    remappings = []
 
     configured_params = ParameterFile(
-        RewrittenYaml(
-            source_file=params_file,
-            root_key=namespace,
-            param_rewrites=param_substitutions,
-            convert_types=True,
-        ),
+        params_file,
         allow_substs=True,
     )
 
@@ -239,7 +227,7 @@ def generate_launch_description():
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
-                name='lifecycle_manager_navigation',
+                name=['lifecycle_manager_navigation_', namespace],
                 output='screen',
                 arguments=['--ros-args', '--log-level', log_level],
                 parameters=[{'autostart': autostart}, {'node_names': lifecycle_nodes}],
@@ -328,7 +316,7 @@ def generate_launch_description():
                     ComposableNode(
                         package='nav2_lifecycle_manager',
                         plugin='nav2_lifecycle_manager::LifecycleManager',
-                        name='lifecycle_manager_navigation',
+                        name=['lifecycle_manager_navigation_', namespace],
                         parameters=[
                             {'autostart': autostart, 'node_names': lifecycle_nodes}
                         ],

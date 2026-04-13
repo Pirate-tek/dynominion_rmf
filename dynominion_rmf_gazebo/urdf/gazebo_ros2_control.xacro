@@ -31,6 +31,8 @@
           <parameters>$(arg controller_config)</parameters>
           <ros>
             <namespace>$(arg robot_name)</namespace>
+            <remapping>diff_drive_base_controller/cmd_vel:=cmd_vel</remapping>
+            <remapping>diff_drive_base_controller/odom:=odom</remapping>
           </ros>
         </plugin>
     </gazebo>
