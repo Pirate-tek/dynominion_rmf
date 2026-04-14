@@ -176,6 +176,7 @@ def generate_launch_description():
                     'use_composition': use_composition,
                     'use_respawn': use_respawn,
                     'container_name': 'nav2_container',
+                    'launch_map_server': LaunchConfiguration('launch_map_server'),
                 }.items(),
             ),
             IncludeLaunchDescription(
@@ -224,6 +225,10 @@ def generate_launch_description():
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_use_localization_cmd)
     ld.add_action(declare_use_rviz_cmd)
+    ld.add_action(DeclareLaunchArgument(
+        'launch_map_server', default_value='True',
+        description='Whether to launch the map server'
+    ))
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(bringup_cmd_group)

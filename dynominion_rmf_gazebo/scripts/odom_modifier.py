@@ -41,6 +41,19 @@ class OdomRepublisher(Node):
 
         self.get_logger().info(f"Subscribed to {input_topic}, republishing to {output_topic}")
 
+    @staticmethod
+    def _qualify_frame(ns: str, frame_id: str) -> str:
+        if not ns or not frame_id:
+            return frame_id
+
+        if frame_id.startswith('/'):
+            frame_id = frame_id.lstrip('/')
+
+        if frame_id.startswith(f"{ns}/"):
+            return frame_id
+
+        return f"{ns}/{frame_id}"
+
     def odom_callback(self, msg: Odometry):
         # Create a new message based on the received one
         new_msg = msg  # msg is already an Odometry object
@@ -53,12 +66,8 @@ class OdomRepublisher(Node):
         child_frame_id = self.get_parameter('new_child_frame_id').get_parameter_value().string_value
 
         # Prefix frames if namespace exists
-        if ns:
-            new_msg.header.frame_id = f"{ns}/{frame_id}"
-            new_msg.child_frame_id = f"{ns}/{child_frame_id}"
-        else:
-            new_msg.header.frame_id = frame_id
-            new_msg.child_frame_id = child_frame_id
+        new_msg.header.frame_id = self._qualify_frame(ns, frame_id)
+        new_msg.child_frame_id = self._qualify_frame(ns, child_frame_id)
 
         # Optionally update timestamp to current time
         new_msg.header.stamp = self.get_clock().now().to_msg()

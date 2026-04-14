@@ -6,39 +6,7 @@ from launch.actions import (DeclareLaunchArgument, IncludeLaunchDescription,
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-import yaml
-import tempfile
-
-def create_robot_nav_params(robot_name, template_path):
-    with open(template_path, 'r') as f:
-        nav_params = yaml.safe_load(f)
-        
-    def replace_frames(d):
-        if isinstance(d, dict):
-            if 'ros__parameters' in d:
-                d['ros__parameters']['use_sim_time'] = True
-                d['ros__parameters']['autostart'] = True
-                
-            for k, v in d.items():
-                if k in ['base_frame_id', 'robot_base_frame', 'base_frame']:
-                    d[k] = f"{robot_name}/base_footprint"
-                elif k in ['odom_frame_id', 'local_frame', 'fixed_frame']:
-                    d[k] = f"{robot_name}/odom"
-                elif k == 'global_frame' and v == 'odom':
-                    d[k] = f"{robot_name}/odom"
-                elif isinstance(v, dict):
-                    replace_frames(v)
-
-    for node_config in nav_params.values():
-        replace_frames(node_config)
-
-    namespaced_params = {robot_name: nav_params}
-    
-    out_path = os.path.join(tempfile.gettempdir(), f"{robot_name}_nav_param.yaml")
-    with open(out_path, 'w') as f:
-        yaml.dump(namespaced_params, f)
-        
-    return out_path
+from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
     pkg_gazebo = get_package_share_directory('dynominion_rmf_gazebo')
@@ -57,7 +25,26 @@ def generate_launch_description():
         default=os.path.join(pkg_nav, 'config', 'nav_param.yaml')
     )
 
-    # 1. Gazebo & Spawns
+    # 1. Global Map Server
+    map_server_node = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[{'yaml_filename': map_file}, {'use_sim_time': use_sim_time}]
+    )
+
+    map_lifecycle_node = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_map',
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time},
+                    {'autostart': True},
+                    {'node_names': ['map_server']}]
+    )
+
+    # 2. Gazebo & Spawns
     sim_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo, 'launch', 'multi_robot_gazebo.launch.py')
@@ -66,14 +53,38 @@ def generate_launch_description():
     )
 
     # 2. Navigation instances per robot
-    robots = ['dynominion1', 'dynominion2', 'dynominion3', 'dynominion4', 'dynominion5']
+    robots = [
+        {'name': 'dynominion1', 'x': 0.0, 'y': 0.0, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x': 2.0, 'y': 3.0, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': -2.0, 'y': 3.0, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x': 3.0, 'y': -2.0, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': -3.0, 'y': -2.0, 'yaw': 0.0},
+    ]
     nav_instances = []
     
     # Stagger navigation launches to reduce startup load
     for i, robot in enumerate(robots):
-        robot_params_file = create_robot_nav_params(
-            robot, 
-            os.path.join(pkg_nav, 'config', 'nav_param.yaml')
+        param_substitutions = {
+            'use_sim_time': use_sim_time,
+            'autostart': 'True',
+            'base_frame_id': [robot['name'], '/base_footprint'],
+            'robot_base_frame': [robot['name'], '/base_footprint'],
+            'base_frame': [robot['name'], '/base_footprint'],
+            'odom_frame_id': [robot['name'], '/odom'],
+            'local_frame': [robot['name'], '/odom'],
+            'fixed_frame': [robot['name'], '/odom'],
+            'set_initial_pose': 'True',
+            'initial_pose_x': str(float(robot.get('x', 0.0))),
+            'initial_pose_y': str(float(robot.get('y', 0.0))),
+            'initial_pose_z': str(float(robot.get('z', 0.0))),
+            'initial_pose_yaw': str(float(robot.get('yaw', 0.0)))
+        }
+
+        robot_params_file = RewrittenYaml(
+            source_file=os.path.join(pkg_nav, 'config', 'nav_param.yaml'),
+            root_key=robot['name'],
+            param_rewrites=param_substitutions,
+            convert_types=True
         )
         
         nav_launch = IncludeLaunchDescription(
@@ -81,14 +92,15 @@ def generate_launch_description():
                 os.path.join(pkg_nav, 'launch', 'dynominion_rmf_nav_bringup.launch.py')
             ),
             launch_arguments={
-                'namespace': robot,
+                'namespace': robot['name'],
                 'use_namespace': 'True',
                 'map': map_file,
                 'use_sim_time': use_sim_time,
                 'params_file': robot_params_file,
                 'autostart': 'True',
                 'use_localization': 'True',
-                'use_rviz': 'False'
+                'use_rviz': 'False',
+                'launch_map_server': 'False'
             }.items()
         )
         
@@ -116,6 +128,8 @@ def generate_launch_description():
     ld.add_action(DeclareLaunchArgument('map', default_value=os.path.join(pkg_maps, 'maps', 'dynominion_map.yaml')))
     ld.add_action(DeclareLaunchArgument('params_file', default_value=os.path.join(pkg_nav, 'config', 'nav_param.yaml')))
 
+    ld.add_action(map_server_node)
+    ld.add_action(map_lifecycle_node)
     ld.add_action(sim_gazebo)
     for nav in nav_instances:
         ld.add_action(nav)

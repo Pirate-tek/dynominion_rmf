@@ -53,9 +53,10 @@ def generate_launch_description():
         'docking_server',
     ]
 
-    # Keep TF on the global topics so every Nav2 component consumes the same TF
-    # tree as the state publisher and controllers.
-    remappings = []
+    # Allow TF and TF_STATIC to be managed through namespaces correctly.
+    # This prevents timing conflicts and global TF tree corruption when running
+    # multiple robots.
+    remappings = [('map', '/map')]
 
     configured_params = ParameterFile(
         params_file,

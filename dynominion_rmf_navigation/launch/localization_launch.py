@@ -43,13 +43,22 @@ def generate_launch_description():
     container_name_full = (namespace, '/', container_name)
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
+    launch_map_server = LaunchConfiguration('launch_map_server')
 
-    lifecycle_nodes = ['map_server', 'amcl']
+    lifecycle_nodes = ['amcl']
+    if_launch_map_server = IfCondition(launch_map_server)
 
-    # Keep TF on the global topics so AMCL publishes to the same TF tree used by
-    # robot_state_publisher and ros2_control. The frame ids themselves are
-    # namespaced per robot by the generated parameter file.
+    # Allow TF and TF_STATIC to be managed through namespaces correctly.
+    # This prevents timing conflicts and global TF tree corruption when running
+    # multiple robots.
     remappings = []
+    
+    # Remap map to global /map if we are not launching a local map server
+    if_not_launch_map_server = PythonExpression(['not ', launch_map_server])
+    # Note: remappings in ROS 2 launch are a bit tricky with conditions if they are just lists.
+    # We will just add it and rely on the fact that if it's namespaced and we want global, 
+    # we should always remap 'map' to '/map' if we expect a shared map.
+    remappings.append(('map', '/map'))
 
     configured_params = ParameterFile(
         params_file,
@@ -108,13 +117,18 @@ def generate_launch_description():
         'log_level', default_value='info', description='log level'
     )
 
+    declare_launch_map_server_cmd = DeclareLaunchArgument(
+        'launch_map_server', default_value='True',
+        description='Whether to launch the map server or not'
+    )
+
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(['not ', use_composition])),
         actions=[
             SetParameter('use_sim_time', use_sim_time),
             Node(
                 condition=IfCondition(
-                    EqualsSubstitution(LaunchConfiguration('map'), '')
+                    PythonExpression([launch_map_server, ' and ', EqualsSubstitution(LaunchConfiguration('map'), '')])
                 ),
                 package='nav2_map_server',
                 executable='map_server',
@@ -128,7 +142,7 @@ def generate_launch_description():
             ),
             Node(
                 condition=IfCondition(
-                    NotEqualsSubstitution(LaunchConfiguration('map'), '')
+                    PythonExpression([launch_map_server, ' and ', NotEqualsSubstitution(LaunchConfiguration('map'), '')])
                 ),
                 package='nav2_map_server',
                 executable='map_server',
@@ -157,7 +171,8 @@ def generate_launch_description():
                 name=['lifecycle_manager_localization_', namespace],
                 output='screen',
                 arguments=['--ros-args', '--log-level', log_level],
-                parameters=[{'autostart': autostart}, {'node_names': lifecycle_nodes}],
+                parameters=[{'autostart': autostart}, 
+                            {'node_names': PythonExpression(["['map_server', 'amcl'] if '", launch_map_server, "' == 'True' else ['amcl']"])}],
             ),
         ],
     )
@@ -182,6 +197,9 @@ def generate_launch_description():
                         name='map_server',
                         parameters=[configured_params],
                         remappings=remappings,
+                        condition=IfCondition(
+                            PythonExpression([launch_map_server, ' and ', EqualsSubstitution(LaunchConfiguration('map'), '')])
+                        ),
                     ),
                 ],
             ),
@@ -200,6 +218,9 @@ def generate_launch_description():
                             {'yaml_filename': map_yaml_file},
                         ],
                         remappings=remappings,
+                        condition=IfCondition(
+                            PythonExpression([launch_map_server, ' and ', NotEqualsSubstitution(LaunchConfiguration('map'), '')])
+                        ),
                     ),
                 ],
             ),
@@ -218,7 +239,8 @@ def generate_launch_description():
                         plugin='nav2_lifecycle_manager::LifecycleManager',
                         name=['lifecycle_manager_localization_', namespace],
                         parameters=[
-                            {'autostart': autostart, 'node_names': lifecycle_nodes}
+                            {'autostart': autostart, 
+                             'node_names': PythonExpression(["['map_server', 'amcl'] if '", launch_map_server, "' == 'True' else ['amcl']"])}
                         ],
                     ),
                 ],
@@ -242,6 +264,7 @@ def generate_launch_description():
     ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
+    ld.add_action(declare_launch_map_server_cmd)
 
     # Add the actions to launch all of the localiztion nodes
     ld.add_action(load_nodes)
