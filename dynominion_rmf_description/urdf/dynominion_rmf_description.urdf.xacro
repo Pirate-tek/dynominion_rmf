@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:arg name="robot_name" default="dynominion1" />
-  <xacro:property name="robot_name" value="$(arg robot_name)/" />
+  <xacro:property name="robot_name" value="$(arg robot_name)" />
 
   <xacro:macro name="dynominion_rmf_base">
 
@@ -29,15 +29,15 @@
       </collision>
   </xacro:macro>
 
-  <link name="${robot_name}base_footprint" />
+  <link name="base_footprint" />
 
   <joint name="base_joint" type="fixed">
-    <parent link="${robot_name}base_footprint"/>
-    <child link="${robot_name}base_link"/>
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
     <origin xyz="0 0 0.0925" rpy="0 0 0"/>
   </joint>
 
-  <link name="${robot_name}base_link">
+  <link name="base_link">
     <inertial>
       <origin
         xyz="-0.0012031 -0.00067857 0.11523"
@@ -61,15 +61,15 @@
       xyz="0 0.306 0.0500"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}left_wheel" />
+      link="left_wheel" />
     <axis
       xyz="0 1 0" />
     <dynamics damping="0.3"/>
   </joint>
 
-  <link name="${robot_name}left_wheel">
+  <link name="left_wheel">
     <inertial>
       <origin
         xyz="-6.8084E-18 -0.0145 2.0817E-17"
@@ -92,15 +92,15 @@
       xyz="0 -0.306 0.0500"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}right_wheel" />
+      link="right_wheel" />
     <axis
       xyz="0 1 0" />
     <dynamics damping="0.3"/>
   </joint>
 
-  <link name="${robot_name}right_wheel">
+  <link name="right_wheel">
     <inertial>
       <origin
         xyz="-1.3266E-15 0.0145 1.8319E-15"
@@ -118,7 +118,7 @@
     <xacro:visual_collision stl="right_wheel_l1.STL" material="wheel"/>
   </link>
 
-  <link name="${robot_name}laser">
+  <link name="laser">
     <inertial>
       <origin
         xyz="-0.00041464 -8.5349E-05 -0.017667"
@@ -141,14 +141,14 @@
       xyz="0.24971 0 0.1932"
       rpy="0 0 3.1415926535897931" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}laser" />
+      link="laser" />
     <axis
       xyz="0 0 0" />
   </joint>
 
-  <link name="${robot_name}imu_link">
+  <link name="imu_link">
     <inertial>
       <origin
         xyz="-0.092447 -0.001269 -0.012304"
@@ -171,29 +171,29 @@
       xyz="0.2785 0 0.101"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}imu_link" />
+      link="imu_link" />
     <axis
       xyz="0 0 0" />
   </joint>
 
-  <link name="${robot_name}gps"/>
+  <link name="gps"/>
 
   <joint name="gps_joint" type="fixed">
     <origin
       xyz="0.275 0 0.230"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}gps" />
+      link="gps" />
     <axis
       xyz="0 0 0" />
   </joint>
 
   <link
-    name="${robot_name}castor_1">
+    name="castor_1">
     <inertial>
       <origin
         xyz="0.0276 -2.6305E-10 -0.050548"
@@ -216,15 +216,15 @@
       xyz="0.218 -0.09 0.0624"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}castor_1" />
+      link="castor_1" />
     <axis
       xyz="0 0 0" />
   </joint>
 
   <link
-    name="${robot_name}castor_2">
+    name="castor_2">
     <inertial>
       <origin
         xyz="0.0276 -2.6305E-10 -0.050548"
@@ -247,14 +247,14 @@
       xyz="0.218 0.09 0.0624"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}castor_2" />
+      link="castor_2" />
     <axis
       xyz="0 0 0" />
   </joint>
 
-  <link name="${robot_name}castor_3">
+  <link name="castor_3">
     <inertial>
       <origin
         xyz="0.0276 -2.6305E-10 -0.050548"
@@ -277,15 +277,15 @@
       xyz="-0.2 -0.09 0.0624"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}castor_3" />
+      link="castor_3" />
     <axis
       xyz="0 0 0" />
   </joint>
 
   <link
-    name="${robot_name}castor_4">
+    name="castor_4">
     <inertial>
       <origin
         xyz="0.0276 -2.6305E-10 -0.050548"
@@ -310,9 +310,9 @@
       xyz="-0.2 0.09 0.0624"
       rpy="0 0 0" />
     <parent
-      link="${robot_name}base_link" />
+      link="base_link" />
     <child
-      link="${robot_name}castor_4" />
+      link="castor_4" />
     <axis
       xyz="0 0 0" />
   </joint>

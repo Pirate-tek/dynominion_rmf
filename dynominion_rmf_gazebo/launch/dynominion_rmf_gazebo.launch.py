@@ -89,6 +89,7 @@ def generate_launch_description():
         parameters=[{
             'robot_description': robot_description_content,
             'use_sim_time': use_sim_time,
+            'frame_prefix': [robot_name, '/']
         }],
     )
 

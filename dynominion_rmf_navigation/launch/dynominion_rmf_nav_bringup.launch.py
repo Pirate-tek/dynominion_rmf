@@ -52,13 +52,22 @@ def generate_launch_description():
     log_level = LaunchConfiguration('log_level')
     use_localization = LaunchConfiguration('use_localization')
     use_rviz = LaunchConfiguration('use_rviz', default='True')
+    initial_pose_x   = LaunchConfiguration('initial_pose_x',   default='0.0')
+    initial_pose_y   = LaunchConfiguration('initial_pose_y',   default='0.0')
+    initial_pose_yaw = LaunchConfiguration('initial_pose_yaw', default='0.0')
 
     # Keep TF on the global topics so the isolated Nav2 container shares the
     # same TF tree as the rest of the robot stack.
     remappings = []
 
+    # Replace the placeholder in the params file with the actual namespace
+    params_file_substituted = ReplaceString(
+        source_file=params_file,
+        replacements={'<robot_namespace>': namespace}
+    )
+
     configured_params = ParameterFile(
-        params_file,
+        params_file_substituted,
         allow_substs=True,
     )
 
@@ -135,6 +144,16 @@ def generate_launch_description():
         'use_rviz', default_value='True', description='Whether to start RVIZ'
     )
 
+    declare_initial_pose_x_cmd = DeclareLaunchArgument(
+        'initial_pose_x', default_value='0.0', description='Initial pose X for AMCL'
+    )
+    declare_initial_pose_y_cmd = DeclareLaunchArgument(
+        'initial_pose_y', default_value='0.0', description='Initial pose Y for AMCL'
+    )
+    declare_initial_pose_yaw_cmd = DeclareLaunchArgument(
+        'initial_pose_yaw', default_value='0.0', description='Initial pose Yaw for AMCL'
+    )
+
     # Specify the actions
     bringup_cmd_group = GroupAction(
         [
@@ -172,11 +191,14 @@ def generate_launch_description():
                     'map': map_yaml_file,
                     'use_sim_time': use_sim_time,
                     'autostart': autostart,
-                    'params_file': params_file,
+                    'params_file': params_file_substituted,
                     'use_composition': use_composition,
                     'use_respawn': use_respawn,
                     'container_name': 'nav2_container',
                     'launch_map_server': LaunchConfiguration('launch_map_server'),
+                    'initial_pose_x':   initial_pose_x,
+                    'initial_pose_y':   initial_pose_y,
+                    'initial_pose_yaw': initial_pose_yaw,
                 }.items(),
             ),
             IncludeLaunchDescription(
@@ -187,7 +209,7 @@ def generate_launch_description():
                     'namespace': namespace,
                     'use_sim_time': use_sim_time,
                     'autostart': autostart,
-                    'params_file': params_file,
+                    'params_file': params_file_substituted,
                     'use_composition': use_composition,
                     'use_respawn': use_respawn,
                     'container_name': 'nav2_container',
@@ -225,6 +247,9 @@ def generate_launch_description():
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_use_localization_cmd)
     ld.add_action(declare_use_rviz_cmd)
+    ld.add_action(declare_initial_pose_x_cmd)
+    ld.add_action(declare_initial_pose_y_cmd)
+    ld.add_action(declare_initial_pose_yaw_cmd)
     ld.add_action(DeclareLaunchArgument(
         'launch_map_server', default_value='True',
         description='Whether to launch the map server'

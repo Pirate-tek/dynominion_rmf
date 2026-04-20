@@ -3,7 +3,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dynominion_rmf">
 
   <xacro:arg name="robot_name" default="dynominion1" />
-  <xacro:property name="robot_name" value="$(arg robot_name)/" />
+  <xacro:property name="robot_name" value="$(arg robot_name)" />
 
   <xacro:include filename="$(find dynominion_rmf_description)/urdf/dynominion_rmf_description.urdf.xacro" />
 

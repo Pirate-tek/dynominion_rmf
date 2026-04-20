@@ -32,24 +32,44 @@ def generate_launch_description():
     )
 
     # 2. Navigation instances per robot
-    robots = ['dynominion1', 'dynominion2', 'dynominion3', 'dynominion4', 'dynominion5']
+    # Positions match multi_robot_gazebo.launch.py spawns exactly
+    robots = [
+        {'name': 'dynominion1', 'x':  0.0, 'y':  0.0, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x':  2.0, 'y':  3.0, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': -2.0, 'y':  3.0, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x':  3.0, 'y': -2.0, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': -3.0, 'y': -2.0, 'yaw': 0.0},
+    ]
+
     nav_instances = []
-    for robot in robots:
+    # Stagger matches Gazebo spawn: robot i spawns at i*5s.
+    # Add a 20s base buffer on top to let TF, controllers and sensors settle.
+    NAV_BASE_DELAY = 20.0   # seconds after launch before first robot's Nav2 starts
+    NAV_STAGGER    =  5.0   # seconds between each subsequent robot
+
+    for i, robot in enumerate(robots):
+        nav_launch = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(pkg_nav, 'launch', 'dynominion_rmf_nav_bringup.launch.py')
+            ),
+            launch_arguments={
+                'namespace':        robot['name'],
+                'use_namespace':    'True',
+                'map':              map_file,
+                'use_sim_time':     use_sim_time,
+                'params_file':      params_file,
+                'autostart':        'True',
+                'use_localization': 'True',
+                'use_rviz':         'False',
+                'initial_pose_x':   str(robot['x']),
+                'initial_pose_y':   str(robot['y']),
+                'initial_pose_yaw': str(robot['yaw']),
+            }.items()
+        )
         nav_instances.append(
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    os.path.join(pkg_nav, 'launch', 'dynominion_rmf_nav_bringup.launch.py')
-                ),
-                launch_arguments={
-                    'namespace': robot,
-                    'use_namespace': 'True',
-                    'map': map_file,
-                    'use_sim_time': use_sim_time,
-                    'params_file': params_file,
-                    'autostart': 'True',
-                    'use_localization': 'True',
-                    'use_rviz': 'False'
-                }.items()
+            TimerAction(
+                period=NAV_BASE_DELAY + i * NAV_STAGGER,
+                actions=[nav_launch]
             )
         )
 

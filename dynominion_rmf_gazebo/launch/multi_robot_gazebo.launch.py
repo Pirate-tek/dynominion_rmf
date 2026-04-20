@@ -64,7 +64,7 @@ def generate_launch_description():
         
         # Stagger the launches by 5 seconds each
         staggered_spawn = TimerAction(
-            period=float(i * 5.0),
+            period=float(i * 10.0),
             actions=[spawn_robot]
         )
         ld.add_action(staggered_spawn)

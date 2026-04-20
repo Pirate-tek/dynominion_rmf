@@ -44,6 +44,9 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
     launch_map_server = LaunchConfiguration('launch_map_server')
+    initial_pose_x   = LaunchConfiguration('initial_pose_x',   default='0.0')
+    initial_pose_y   = LaunchConfiguration('initial_pose_y',   default='0.0')
+    initial_pose_yaw = LaunchConfiguration('initial_pose_yaw', default='0.0')
 
     lifecycle_nodes = ['amcl']
     if_launch_map_server = IfCondition(launch_map_server)
@@ -122,6 +125,16 @@ def generate_launch_description():
         description='Whether to launch the map server or not'
     )
 
+    declare_initial_pose_x_cmd = DeclareLaunchArgument(
+        'initial_pose_x', default_value='0.0', description='AMCL initial X'
+    )
+    declare_initial_pose_y_cmd = DeclareLaunchArgument(
+        'initial_pose_y', default_value='0.0', description='AMCL initial Y'
+    )
+    declare_initial_pose_yaw_cmd = DeclareLaunchArgument(
+        'initial_pose_yaw', default_value='0.0', description='AMCL initial Yaw'
+    )
+
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(['not ', use_composition])),
         actions=[
@@ -161,7 +174,15 @@ def generate_launch_description():
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[
+                    configured_params,
+                    {
+                        'initial_pose_x':   initial_pose_x,
+                        'initial_pose_y':   initial_pose_y,
+                        'initial_pose_yaw': initial_pose_yaw,
+                        'set_initial_pose': True,
+                    }
+                ],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings,
             ),
@@ -231,7 +252,15 @@ def generate_launch_description():
                         package='nav2_amcl',
                         plugin='nav2_amcl::AmclNode',
                         name='amcl',
-                        parameters=[configured_params],
+                        parameters=[
+                            configured_params,
+                            {
+                                'initial_pose_x':   initial_pose_x,
+                                'initial_pose_y':   initial_pose_y,
+                                'initial_pose_yaw': initial_pose_yaw,
+                                'set_initial_pose': True,
+                            }
+                        ],
                         remappings=remappings,
                     ),
                     ComposableNode(
@@ -265,6 +294,9 @@ def generate_launch_description():
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
     ld.add_action(declare_launch_map_server_cmd)
+    ld.add_action(declare_initial_pose_x_cmd)
+    ld.add_action(declare_initial_pose_y_cmd)
+    ld.add_action(declare_initial_pose_yaw_cmd)
 
     # Add the actions to launch all of the localiztion nodes
     ld.add_action(load_nodes)

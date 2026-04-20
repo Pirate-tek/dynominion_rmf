@@ -8,7 +8,7 @@ Panels:
         - /TF1/Frames1
         - /TF1/Tree1
       Splitter Ratio: 0.5833333134651184
-    Tree Height: 287
+    Tree Height: 487
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -21,12 +21,6 @@ Panels:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.3333333432674408
-  - Class: nav2_rviz_plugins/Navigation 2
-    Name: Navigation 2
-  - Class: nav2_rviz_plugins/Selector
-    Name: Selector
-  - Class: nav2_rviz_plugins/Docking
-    Name: Docking
 Visualization Manager:
   Class: ""
   Displays:
@@ -49,6 +43,8 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
+      Binary representation: false
+      Binary threshold: 100
       Class: rviz_default_plugins/Map
       Color Scheme: map
       Draw Behind: true
@@ -89,11 +85,64 @@ Visualization Manager:
             Expand Link Details: false
             Expand Tree: false
             Link Tree Style: Links in Alphabetic Order
+            dynominion1/base_footprint:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion1/base_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/castor_1:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/castor_2:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/castor_3:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/castor_4:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/gps:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion1/imu_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/laser:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/left_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion1/right_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
           Mass Properties:
             Inertia: false
             Mass: false
           Name: RobotModel1
-          TF Prefix: ""
+          TF Prefix: dynominion1
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -136,6 +185,9 @@ Visualization Manager:
           Class: rviz_default_plugins/Path
           Color: 255; 0; 0
           Enabled: true
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
           Line Width: 0.029999999329447746
           Name: Path1
@@ -143,6 +195,11 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -151,7 +208,9 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion1/plan
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -172,7 +231,9 @@ Visualization Manager:
             Value: /dynominion1/local_costmap/costmap_updates
           Use Timestamp: false
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -192,11 +253,15 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion1/global_costmap/costmap_updates
           Use Timestamp: false
-          Value: true
-        - Class: nav2_rviz_plugins/ParticleCloud
+          Value: false
+        - Alpha: 1
+          Class: nav2_rviz_plugins/ParticleCloud
           Color: 255; 0; 0
           Enabled: true
+          Max Arrow Length: 0.30000001192092896
+          Min Arrow Length: 0.019999999552965164
           Name: AMCL Particles
+          Shape: Arrow (Flat)
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -227,11 +292,64 @@ Visualization Manager:
             Expand Link Details: false
             Expand Tree: false
             Link Tree Style: Links in Alphabetic Order
+            dynominion2/base_footprint:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion2/base_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/castor_1:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/castor_2:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/castor_3:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/castor_4:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/gps:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion2/imu_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/laser:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/left_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion2/right_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
           Mass Properties:
             Inertia: false
             Mass: false
           Name: RobotModel2
-          TF Prefix: ""
+          TF Prefix: dynominion2
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -274,6 +392,9 @@ Visualization Manager:
           Class: rviz_default_plugins/Path
           Color: 0; 255; 0
           Enabled: true
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
           Line Width: 0.029999999329447746
           Name: Path2
@@ -281,6 +402,11 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -289,7 +415,9 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion2/plan
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -310,7 +438,9 @@ Visualization Manager:
             Value: /dynominion2/local_costmap/costmap_updates
           Use Timestamp: false
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -330,11 +460,15 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion2/global_costmap/costmap_updates
           Use Timestamp: false
-          Value: true
-        - Class: nav2_rviz_plugins/ParticleCloud
+          Value: false
+        - Alpha: 1
+          Class: nav2_rviz_plugins/ParticleCloud
           Color: 0; 255; 0
           Enabled: true
+          Max Arrow Length: 0.30000001192092896
+          Min Arrow Length: 0.019999999552965164
           Name: AMCL Particles
+          Shape: Arrow (Flat)
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -365,11 +499,64 @@ Visualization Manager:
             Expand Link Details: false
             Expand Tree: false
             Link Tree Style: Links in Alphabetic Order
+            dynominion3/base_footprint:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion3/base_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/castor_1:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/castor_2:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/castor_3:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/castor_4:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/gps:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion3/imu_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/laser:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/left_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion3/right_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
           Mass Properties:
             Inertia: false
             Mass: false
           Name: RobotModel3
-          TF Prefix: ""
+          TF Prefix: dynominion3
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -412,6 +599,9 @@ Visualization Manager:
           Class: rviz_default_plugins/Path
           Color: 0; 0; 255
           Enabled: true
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
           Line Width: 0.029999999329447746
           Name: Path3
@@ -419,6 +609,11 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -427,7 +622,9 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion3/plan
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -448,7 +645,9 @@ Visualization Manager:
             Value: /dynominion3/local_costmap/costmap_updates
           Use Timestamp: false
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -468,11 +667,15 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion3/global_costmap/costmap_updates
           Use Timestamp: false
-          Value: true
-        - Class: nav2_rviz_plugins/ParticleCloud
+          Value: false
+        - Alpha: 1
+          Class: nav2_rviz_plugins/ParticleCloud
           Color: 0; 0; 255
           Enabled: true
+          Max Arrow Length: 0.30000001192092896
+          Min Arrow Length: 0.019999999552965164
           Name: AMCL Particles
+          Shape: Arrow (Flat)
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -503,11 +706,64 @@ Visualization Manager:
             Expand Link Details: false
             Expand Tree: false
             Link Tree Style: Links in Alphabetic Order
+            dynominion4/base_footprint:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion4/base_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/castor_1:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/castor_2:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/castor_3:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/castor_4:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/gps:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion4/imu_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/laser:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/left_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion4/right_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
           Mass Properties:
             Inertia: false
             Mass: false
           Name: RobotModel4
-          TF Prefix: ""
+          TF Prefix: dynominion4
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -550,6 +806,9 @@ Visualization Manager:
           Class: rviz_default_plugins/Path
           Color: 255; 255; 0
           Enabled: true
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
           Line Width: 0.029999999329447746
           Name: Path4
@@ -557,6 +816,11 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -565,7 +829,9 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion4/plan
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -586,7 +852,9 @@ Visualization Manager:
             Value: /dynominion4/local_costmap/costmap_updates
           Use Timestamp: false
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -606,11 +874,15 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion4/global_costmap/costmap_updates
           Use Timestamp: false
-          Value: true
-        - Class: nav2_rviz_plugins/ParticleCloud
+          Value: false
+        - Alpha: 1
+          Class: nav2_rviz_plugins/ParticleCloud
           Color: 255; 255; 0
           Enabled: true
+          Max Arrow Length: 0.30000001192092896
+          Min Arrow Length: 0.019999999552965164
           Name: AMCL Particles
+          Shape: Arrow (Flat)
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -641,11 +913,64 @@ Visualization Manager:
             Expand Link Details: false
             Expand Tree: false
             Link Tree Style: Links in Alphabetic Order
+            dynominion5/base_footprint:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion5/base_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/castor_1:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/castor_2:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/castor_3:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/castor_4:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/gps:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+            dynominion5/imu_link:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/laser:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/left_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
+            dynominion5/right_wheel:
+              Alpha: 1
+              Show Axes: false
+              Show Trail: false
+              Value: true
           Mass Properties:
             Inertia: false
             Mass: false
           Name: RobotModel5
-          TF Prefix: ""
+          TF Prefix: dynominion5
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -688,6 +1013,9 @@ Visualization Manager:
           Class: rviz_default_plugins/Path
           Color: 255; 0; 255
           Enabled: true
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
           Line Style: Lines
           Line Width: 0.029999999329447746
           Name: Path5
@@ -695,6 +1023,11 @@ Visualization Manager:
             X: 0
             Y: 0
             Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -703,7 +1036,9 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion5/plan
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -724,7 +1059,9 @@ Visualization Manager:
             Value: /dynominion5/local_costmap/costmap_updates
           Use Timestamp: false
           Value: true
-        - Alpha: 0.7
+        - Alpha: 0.699999988079071
+          Binary representation: false
+          Binary threshold: 100
           Class: rviz_default_plugins/Map
           Color Scheme: costmap
           Draw Behind: false
@@ -744,11 +1081,15 @@ Visualization Manager:
             Reliability Policy: Reliable
             Value: /dynominion5/global_costmap/costmap_updates
           Use Timestamp: false
-          Value: true
-        - Class: nav2_rviz_plugins/ParticleCloud
+          Value: false
+        - Alpha: 1
+          Class: nav2_rviz_plugins/ParticleCloud
           Color: 255; 0; 255
           Enabled: true
+          Max Arrow Length: 0.30000001192092896
+          Min Arrow Length: 0.019999999552965164
           Name: AMCL Particles
+          Shape: Arrow (Flat)
           Topic:
             Depth: 5
             Durability Policy: Volatile
@@ -764,16 +1105,249 @@ Visualization Manager:
       Filter (blacklist): ""
       Filter (whitelist): ""
       Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        dynominion1/base_footprint:
+          Value: true
+        dynominion1/base_link:
+          Value: true
+        dynominion1/castor_1:
+          Value: true
+        dynominion1/castor_2:
+          Value: true
+        dynominion1/castor_3:
+          Value: true
+        dynominion1/castor_4:
+          Value: true
+        dynominion1/gps:
+          Value: true
+        dynominion1/imu_link:
+          Value: true
+        dynominion1/laser:
+          Value: true
+        dynominion1/left_wheel:
+          Value: true
+        dynominion1/odom:
+          Value: true
+        dynominion1/right_wheel:
+          Value: true
+        dynominion2/base_footprint:
+          Value: true
+        dynominion2/base_link:
+          Value: true
+        dynominion2/castor_1:
+          Value: true
+        dynominion2/castor_2:
+          Value: true
+        dynominion2/castor_3:
+          Value: true
+        dynominion2/castor_4:
+          Value: true
+        dynominion2/gps:
+          Value: true
+        dynominion2/imu_link:
+          Value: true
+        dynominion2/laser:
+          Value: true
+        dynominion2/left_wheel:
+          Value: true
+        dynominion2/odom:
+          Value: true
+        dynominion2/right_wheel:
+          Value: true
+        dynominion3/base_footprint:
+          Value: true
+        dynominion3/base_link:
+          Value: true
+        dynominion3/castor_1:
+          Value: true
+        dynominion3/castor_2:
+          Value: true
+        dynominion3/castor_3:
+          Value: true
+        dynominion3/castor_4:
+          Value: true
+        dynominion3/gps:
+          Value: true
+        dynominion3/imu_link:
+          Value: true
+        dynominion3/laser:
+          Value: true
+        dynominion3/left_wheel:
+          Value: true
+        dynominion3/odom:
+          Value: true
+        dynominion3/right_wheel:
+          Value: true
+        dynominion4/base_footprint:
+          Value: true
+        dynominion4/base_link:
+          Value: true
+        dynominion4/castor_1:
+          Value: true
+        dynominion4/castor_2:
+          Value: true
+        dynominion4/castor_3:
+          Value: true
+        dynominion4/castor_4:
+          Value: true
+        dynominion4/gps:
+          Value: true
+        dynominion4/imu_link:
+          Value: true
+        dynominion4/laser:
+          Value: true
+        dynominion4/left_wheel:
+          Value: true
+        dynominion4/odom:
+          Value: true
+        dynominion4/right_wheel:
+          Value: true
+        dynominion5/base_footprint:
+          Value: true
+        dynominion5/base_link:
+          Value: true
+        dynominion5/castor_1:
+          Value: true
+        dynominion5/castor_2:
+          Value: true
+        dynominion5/castor_3:
+          Value: true
+        dynominion5/castor_4:
+          Value: true
+        dynominion5/gps:
+          Value: true
+        dynominion5/imu_link:
+          Value: true
+        dynominion5/laser:
+          Value: true
+        dynominion5/left_wheel:
+          Value: true
+        dynominion5/odom:
+          Value: true
+        dynominion5/right_wheel:
+          Value: true
+        map:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
+      Tree:
+        map:
+          dynominion1/odom:
+            dynominion1/base_footprint:
+              dynominion1/base_link:
+                dynominion1/castor_1:
+                  {}
+                dynominion1/castor_2:
+                  {}
+                dynominion1/castor_3:
+                  {}
+                dynominion1/castor_4:
+                  {}
+                dynominion1/gps:
+                  {}
+                dynominion1/imu_link:
+                  {}
+                dynominion1/laser:
+                  {}
+                dynominion1/left_wheel:
+                  {}
+                dynominion1/right_wheel:
+                  {}
+          dynominion2/odom:
+            dynominion2/base_footprint:
+              dynominion2/base_link:
+                dynominion2/castor_1:
+                  {}
+                dynominion2/castor_2:
+                  {}
+                dynominion2/castor_3:
+                  {}
+                dynominion2/castor_4:
+                  {}
+                dynominion2/gps:
+                  {}
+                dynominion2/imu_link:
+                  {}
+                dynominion2/laser:
+                  {}
+                dynominion2/left_wheel:
+                  {}
+                dynominion2/right_wheel:
+                  {}
+          dynominion3/odom:
+            dynominion3/base_footprint:
+              dynominion3/base_link:
+                dynominion3/castor_1:
+                  {}
+                dynominion3/castor_2:
+                  {}
+                dynominion3/castor_3:
+                  {}
+                dynominion3/castor_4:
+                  {}
+                dynominion3/gps:
+                  {}
+                dynominion3/imu_link:
+                  {}
+                dynominion3/laser:
+                  {}
+                dynominion3/left_wheel:
+                  {}
+                dynominion3/right_wheel:
+                  {}
+          dynominion4/odom:
+            dynominion4/base_footprint:
+              dynominion4/base_link:
+                dynominion4/castor_1:
+                  {}
+                dynominion4/castor_2:
+                  {}
+                dynominion4/castor_3:
+                  {}
+                dynominion4/castor_4:
+                  {}
+                dynominion4/gps:
+                  {}
+                dynominion4/imu_link:
+                  {}
+                dynominion4/laser:
+                  {}
+                dynominion4/left_wheel:
+                  {}
+                dynominion4/right_wheel:
+                  {}
+          dynominion5/odom:
+            dynominion5/base_footprint:
+              dynominion5/base_link:
+                dynominion5/castor_1:
+                  {}
+                dynominion5/castor_2:
+                  {}
+                dynominion5/castor_3:
+                  {}
+                dynominion5/castor_4:
+                  {}
+                dynominion5/gps:
+                  {}
+                dynominion5/imu_link:
+                  {}
+                dynominion5/laser:
+                  {}
+                dynominion5/left_wheel:
+                  {}
+                dynominion5/right_wheel:
+                  {}
       Update Interval: 0
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: MarkerArray
+      Namespaces:
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -784,6 +1358,8 @@ Visualization Manager:
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: RMF Markers
+      Namespaces:
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -804,18 +1380,30 @@ Visualization Manager:
     - Class: rviz_default_plugins/Measure
       Line color: 128; 128; 0
     - Class: rviz_default_plugins/SetInitialPose
-      Topic: /initialpose
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /initialpose
     - Class: rviz_default_plugins/PublishPoint
       Single click: true
-      Topic: /clicked_point
-    - Class: nav2_rviz_plugins/GoalTool
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /clicked_point
   Transformation:
     Current:
       Class: rviz_default_plugins/TF
   Value: true
   Views:
     Current:
-      Angle: -0.0008007669821381569
+      Angle: -0.025800831615924835
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -834,22 +1422,16 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Docking:
-    collapsed: false
-  Height: 893
+  Height: 1011
   Hide Left Dock: false
   Hide Right Dock: false
-  Navigation 2:
-    collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000015600000327fc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000100044006900730070006c006100790073010000003b0000015a000000c700fffffffb00000018004e0061007600690067006100740069006f006e00200032010000019b000001c7000001c700fffffffb0000001e005200650061006c00730065006e0073006500430061006d00650072006100000002c6000000c10000001600ffffff000000010000014700000327fc0200000005fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003b00000128000000a000fffffffb0000000e0044006f0063006b0069006e00670100000169000001390000013900fffffffb0000001000530065006c006500630074006f007201000002a8000000ba000000ba00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003a10000032700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000001c900000395fc0200000004fb000000100044006900730070006c006100790073010000003f00000227000000cc00fffffffb0000001200530065006c0065006300740069006f006e000000019c000000a60000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007300000001ec000000cd0000005d00fffffffb0000000a00560069006500770073010000026c00000168000000a900ffffff0000055f0000039500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
-    collapsed: false
-  Selector:
     collapsed: false
   Tool Properties:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1610
-  X: 310
-  Y: 150
+  Width: 1838
+  X: 82
+  Y: 32

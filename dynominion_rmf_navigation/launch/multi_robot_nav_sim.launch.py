@@ -6,7 +6,7 @@ from launch.actions import (DeclareLaunchArgument, IncludeLaunchDescription,
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from nav2_common.launch import RewrittenYaml
+from nav2_common.launch import RewrittenYaml, ReplaceString
 
 def generate_launch_description():
     pkg_gazebo = get_package_share_directory('dynominion_rmf_gazebo')
@@ -80,8 +80,13 @@ def generate_launch_description():
             'initial_pose_yaw': str(float(robot.get('yaw', 0.0)))
         }
 
-        robot_params_file = RewrittenYaml(
+        namespaced_params_file = ReplaceString(
             source_file=os.path.join(pkg_nav, 'config', 'nav_param.yaml'),
+            replacements={'<robot_namespace>': robot['name']}
+        )
+
+        robot_params_file = RewrittenYaml(
+            source_file=namespaced_params_file,
             root_key=robot['name'],
             param_rewrites=param_substitutions,
             convert_types=True
@@ -100,13 +105,16 @@ def generate_launch_description():
                 'autostart': 'True',
                 'use_localization': 'True',
                 'use_rviz': 'False',
-                'launch_map_server': 'False'
+                'launch_map_server': 'False',
+                'initial_pose_x': str(float(robot.get('x', 0.0))),
+                'initial_pose_y': str(float(robot.get('y', 0.0))),
+                'initial_pose_yaw': str(float(robot.get('yaw', 0.0)))
             }.items()
         )
         
         # Start navigation slightly after Gazebo spawner for each to avoid tf issues during init
         staggered_nav = TimerAction(
-            period=float(5.0 + i * 5.0),
+            period=float(10.0 + i * 10.0),
             actions=[nav_launch]
         )
         nav_instances.append(staggered_nav)

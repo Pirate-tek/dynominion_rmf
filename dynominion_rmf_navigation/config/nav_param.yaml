@@ -5,7 +5,7 @@ amcl:
     alpha3: 0.2
     alpha4: 0.2
     alpha5: 0.2
-    base_frame_id: "base_footprint"
+    base_frame_id: <robot_namespace>/base_footprint
     beam_skip_distance: 0.5
     beam_skip_error_threshold: 0.9
     beam_skip_threshold: 0.3
@@ -19,7 +19,7 @@ amcl:
     max_beams: 60
     max_particles: 2000
     min_particles: 500
-    odom_frame_id: "odom"
+    odom_frame_id: <robot_namespace>/odom
     pf_err: 0.05
     pf_z: 0.99
     recovery_alpha_fast: 0.0
@@ -38,7 +38,7 @@ amcl:
     z_short: 0.05
     scan_topic: scan_corrected
     map_topic: "/map"
-    set_initial_pose: true
+    set_initial_pose: false
     initial_pose_x: 0.0
     initial_pose_y: 0.0
     initial_pose_z: 0.0
@@ -47,7 +47,7 @@ amcl:
 bt_navigator:
   ros__parameters:
     global_frame: map
-    robot_base_frame: base_footprint
+    robot_base_frame: <robot_namespace>/base_footprint
     odom_topic: wheelodom
     bt_loop_duration: 10
     default_server_timeout: 20
@@ -198,8 +198,8 @@ local_costmap:
     ros__parameters:
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
-      robot_base_frame: base_footprint
+      global_frame: <robot_namespace>/odom
+      robot_base_frame: <robot_namespace>/base_footprint
       rolling_window: true
       width: 3
       height: 3
@@ -244,7 +244,7 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_footprint
+      robot_base_frame: <robot_namespace>/base_footprint
       footprint_padding: 0.01
       footprint: "[[0.365,0.365],[0.365,-0.365],[-0.365,-0.365],[-0.365,0.365]]"
       resolution: 0.05
@@ -326,9 +326,9 @@ behavior_server:
       plugin: "nav2_behaviors::Wait"
     assisted_teleop:
       plugin: "nav2_behaviors::AssistedTeleop"
-    local_frame: odom
+    local_frame: <robot_namespace>/odom
     global_frame: map
-    robot_base_frame: base_footprint
+    robot_base_frame: <robot_namespace>/base_footprint
     transform_tolerance: 0.1
     simulate_ahead_time: 2.0
     max_rotational_vel: 1.0
@@ -387,8 +387,8 @@ velocity_smoother:
 
 collision_monitor:
   ros__parameters:
-    base_frame_id: "base_footprint"
-    odom_frame_id: "odom"
+    base_frame_id: <robot_namespace>/base_footprint
+    odom_frame_id: <robot_namespace>/odom
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
     state_topic: "collision_monitor_state"
@@ -432,8 +432,8 @@ docking_server:
     undock_linear_tolerance: 0.05
     undock_angular_tolerance: 0.1
     max_retries: 3
-    base_frame: "base_footprint"
-    fixed_frame: "odom"
+    base_frame: <robot_namespace>/base_footprint
+    fixed_frame: <robot_namespace>/odom
     enable_stamped_cmd_vel: true
     dock_backwards: false
     dock_prestaging_tolerance: 0.5
@@ -479,10 +479,10 @@ docking_server:
 
 loopback_simulator:
   ros__parameters:
-    base_frame_id: "base_footprint"
-    odom_frame_id: "odom"
-    map_frame_id: "map"
-    scan_frame_id: "base_scan"  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
+    base_frame_id: <robot_namespace>/base_footprint
+    odom_frame_id: <robot_namespace>/odom
+    map_frame_id: map
+    scan_frame_id: <robot_namespace>/laser  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
     update_duration: 0.02
     scan_range_min: 0.05
     scan_range_max: 30.0
