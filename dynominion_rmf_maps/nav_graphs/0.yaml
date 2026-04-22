@@ -5,16 +5,16 @@ levels:
     lanes:
     - - 0
       - 1
-      - {dock_name: charger_1}
+      - {}
     - - 1
       - 0
-      - {undock_name: charger_1}
+      - {}
     - - 1
       - 2
-      - {undock_name: charger_1}
+      - {}
     - - 2
       - 1
-      - {dock_name: charger_1}
+      - {}
     - - 2
       - 3
       - {}
@@ -23,22 +23,22 @@ levels:
       - {}
     - - 3
       - 4
-      - {dock_name: charger_2}
+      - {}
     - - 4
       - 3
-      - {undock_name: charger_2}
+      - {}
     - - 4
       - 5
-      - {undock_name: charger_2}
+      - {}
     - - 5
       - 4
-      - {dock_name: charger_2}
+      - {}
     - - 4
       - 1
-      - {dock_name: charger_1, undock_name: charger_2}
+      - {}
     - - 1
       - 4
-      - {dock_name: charger_2, undock_name: charger_1}
+      - {}
     - - 6
       - 0
       - {}
@@ -47,16 +47,16 @@ levels:
       - {}
     - - 6
       - 1
-      - {dock_name: charger_1}
+      - {}
     - - 1
       - 6
-      - {undock_name: charger_1}
+      - {}
     - - 6
       - 4
-      - {dock_name: charger_2}
+      - {}
     - - 4
       - 6
-      - {undock_name: charger_2}
+      - {}
     - - 7
       - 2
       - {}

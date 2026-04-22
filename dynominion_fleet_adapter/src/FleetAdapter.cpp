@@ -9,41 +9,70 @@
 #include <yaml-cpp/yaml.h>
 #include <filesystem>
 
-class FleetAdapterNode : public rclcpp::Node
+class FleetAdapterNode
 {
 public:
-  FleetAdapterNode()
-  : Node("dynominion_fleet_adapter")
+  FleetAdapterNode(
+    const rclcpp::Node::SharedPtr& node,
+    const std::shared_ptr<rmf_fleet_adapter::agv::Adapter>& adapter)
+  : node_(node), adapter_(adapter)
   {}
 
   void init()
   {
-    declare_parameter("config_file", "");
-    declare_parameter("nav_graph_path", "");
+    node_->declare_parameter("config_file", "");
+    node_->declare_parameter("nav_graph_path", "");
 
-    std::string config_file = get_parameter("config_file").as_string();
+    std::string config_file = node_->get_parameter("config_file").as_string();
     if (config_file.empty())
     {
-      RCLCPP_ERROR(get_logger(), "Config file not provided!");
+      RCLCPP_ERROR(node_->get_logger(), "Config file not provided!");
       return;
     }
 
-    YAML::Node config = YAML::LoadFile(config_file);
-    fleet_name_ = config["fleet_manager"]["fleet_name"].as<std::string>();
-    
-    // Initialize RMF adapter
-    adapter_ = rmf_fleet_adapter::agv::Adapter::init_and_make("dynominion_fleet_adapter");
-    if (!adapter_)
+    RCLCPP_INFO(node_->get_logger(), "Loading config file: %s", config_file.c_str());
+    YAML::Node config;
+    try
     {
-      RCLCPP_ERROR(get_logger(), "Failed to create RMF adapter!");
+       config = YAML::LoadFile(config_file);
+    }
+    catch (const std::exception& e)
+    {
+      RCLCPP_ERROR(node_->get_logger(), "Failed to load YAML file: %s", e.what());
       return;
     }
 
-    // Load Nav Graph
-    std::string graph_path = config["fleet_manager"]["nav_graph_path"].as<std::string>();
+    if (!config["fleet_manager"])
+    {
+      RCLCPP_ERROR(node_->get_logger(), "Config file missing 'fleet_manager' section!");
+      return;
+    }
+
+    fleet_name_ = config["fleet_manager"]["fleet_name"].as<std::string>();
+    RCLCPP_INFO(node_->get_logger(), "Initializing fleet: %s", fleet_name_.c_str());
     
+    // Load Nav Graph
+    std::string graph_path = node_->get_parameter("nav_graph_path").as_string();
+    if (graph_path.empty() && config["fleet_manager"]["nav_graph_path"])
+    {
+      graph_path = config["fleet_manager"]["nav_graph_path"].as<std::string>();
+    }
+    
+    if (graph_path.empty())
+    {
+       RCLCPP_ERROR(node_->get_logger(), "Nav graph path is empty!");
+       return;
+    }
+    RCLCPP_INFO(node_->get_logger(), "Loading nav graph: %s", graph_path.c_str());
+
     // Vehicle Traits
     auto profile_node = config["fleet_manager"]["robot_profile"];
+    if (!profile_node)
+    {
+       RCLCPP_ERROR(node_->get_logger(), "Missing 'robot_profile' in config!");
+       return;
+    }
+
     auto footprint = rmf_traffic::geometry::make_final_convex<rmf_traffic::geometry::Circle>(
       profile_node["footprint_radius"].as<double>());
     
@@ -57,7 +86,7 @@ public:
     // Read graph
     auto graph = std::make_shared<rmf_traffic::agv::Graph>(
       rmf_fleet_adapter::agv::parse_graph(graph_path, *traits));
-    RCLCPP_INFO(get_logger(), "Successfuly loaded graph with %zu waypoints", graph->num_waypoints());
+    RCLCPP_INFO(node_->get_logger(), "Successfuly loaded graph with %zu waypoints", graph->num_waypoints());
 
     // Fleet Configuration
     std::unordered_map<std::string, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration> robot_configs;
@@ -87,15 +116,23 @@ public:
     );
 
     // EasyFullControl registration
+    RCLCPP_INFO(node_->get_logger(), "Adding easy fleet...");
     easy_fleet_ = adapter_->add_easy_fleet(fleet_config);
+    if (!easy_fleet_)
+    {
+      RCLCPP_ERROR(node_->get_logger(), "Failed to add easy fleet!");
+      return;
+    }
 
     // Register Robots
+    RCLCPP_INFO(node_->get_logger(), "Registering %zu robots...", robots.size());
     for (auto it = robots.begin(); it != robots.end(); ++it)
     {
       std::string robot_name = it->first.as<std::string>();
+      RCLCPP_INFO(node_->get_logger(), "Registering robot: %s", robot_name.c_str());
       
       auto nav_handle = std::make_shared<Nav2RobotHandle>(
-        robot_name, shared_from_this());
+        robot_name, node_);
 
       rmf_fleet_adapter::agv::EasyFullControl::RobotCallbacks robot_callbacks(
         [nav_handle](auto dest, auto exec) { nav_handle->navigate(dest, std::move(exec)); },
@@ -110,15 +147,23 @@ public:
         robot_callbacks
       );
 
+      if (!robot_update_handle)
+      {
+         RCLCPP_ERROR(node_->get_logger(), "Failed to add robot: %s", robot_name.c_str());
+         continue;
+      }
+
       nav_handle->set_update_handle(robot_update_handle);
       robot_handles_.push_back(nav_handle);
     }
 
+    RCLCPP_INFO(node_->get_logger(), "Starting RMF adapter...");
     adapter_->start();
   }
 
 private:
   std::string fleet_name_;
+  rclcpp::Node::SharedPtr node_;
   std::shared_ptr<rmf_fleet_adapter::agv::Adapter> adapter_;
   std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl> easy_fleet_;
   std::vector<std::shared_ptr<Nav2RobotHandle>> robot_handles_;
@@ -127,8 +172,18 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<FleetAdapterNode>();
-  node->init();
+  auto adapter = rmf_fleet_adapter::agv::Adapter::init_and_make("dynominion_fleet_adapter");
+  if (!adapter)
+  {
+    std::cerr << "Failed to initialize RMF adapter" << std::endl;
+    return 1;
+  }
+  
+  auto node = adapter->node();
+  auto fleet_adapter_node = std::make_shared<FleetAdapterNode>(node, adapter);
+  fleet_adapter_node->init();
+  
+  RCLCPP_INFO(node->get_logger(), "Node initialization complete, spinning...");
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

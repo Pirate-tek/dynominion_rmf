@@ -6,7 +6,7 @@ __pycache__/**
 build/
 install/
 log/
-
+filter_sim_logs.py
 # TF Views and frames outputs
 frames*
 *.gv
