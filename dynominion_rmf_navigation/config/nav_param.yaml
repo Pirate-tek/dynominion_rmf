@@ -10,7 +10,7 @@ amcl:
     beam_skip_error_threshold: 0.9
     beam_skip_threshold: 0.3
     do_beamskip: false
-    global_frame_id: "/map"
+    global_frame_id: "map"
     lambda_short: 0.1
     laser_likelihood_max_dist: 2.0
     laser_max_range: 100.0
@@ -46,7 +46,7 @@ amcl:
 
 bt_navigator:
   ros__parameters:
-    global_frame: /map
+    global_frame: map
     robot_base_frame: <robot_namespace>/base_footprint
     odom_topic: wheelodom
     bt_loop_duration: 10
@@ -243,7 +243,7 @@ global_costmap:
     ros__parameters:
       update_frequency: 1.0
       publish_frequency: 1.0
-      global_frame: /map
+      global_frame: map
       robot_base_frame: <robot_namespace>/base_footprint
       footprint_padding: 0.01
       footprint: "[[0.365,0.365],[0.365,-0.365],[-0.365,-0.365],[-0.365,0.365]]"
@@ -327,7 +327,7 @@ behavior_server:
     assisted_teleop:
       plugin: "nav2_behaviors::AssistedTeleop"
     local_frame: <robot_namespace>/odom
-    global_frame: /map
+    global_frame: map
     robot_base_frame: <robot_namespace>/base_footprint
     transform_tolerance: 0.1
     simulate_ahead_time: 2.0
@@ -481,7 +481,7 @@ loopback_simulator:
   ros__parameters:
     base_frame_id: <robot_namespace>/base_footprint
     odom_frame_id: <robot_namespace>/odom
-    map_frame_id: /map
+    map_frame_id: map
     scan_frame_id: <robot_namespace>/laser  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
     update_duration: 0.02
     scan_range_min: 0.05

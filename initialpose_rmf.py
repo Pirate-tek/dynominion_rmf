@@ -45,7 +45,7 @@ class MultiInitialPosePublisher(Node):
             msg = PoseWithCovarianceStamped()
 
             # Header
-            msg.header.frame_id = '/map'
+            msg.header.frame_id = 'map'
             msg.header.stamp = self.get_clock().now().to_msg()
 
             # Position
