@@ -4,15 +4,15 @@ fleet_manager:
   nominal_elevation: 0.0
   robots:
     dynominion1:
-      charger: "charger_1"
+      charger: "charger_main"
     dynominion2:
-      charger: "charger_2"
+      charger: "charger_main"
     dynominion3:
-      charger: "charger_1"
+      charger: "charger_main"
     dynominion4:
-      charger: "charger_2"
+      charger: "charger_main"
     dynominion5:
-      charger: "charger_1"
+      charger: "charger_main"
   robot_profile:
     footprint_radius: 0.4
     max_linear_speed: 1.0

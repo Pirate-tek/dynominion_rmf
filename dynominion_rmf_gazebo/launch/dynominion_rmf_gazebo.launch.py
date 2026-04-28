@@ -34,7 +34,7 @@ def generate_launch_description():
     )
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
-    world = LaunchConfiguration('world', default="cafe.world")
+    world = LaunchConfiguration('world', default="new_env.world")
     robot_name = LaunchConfiguration('robot_name', default="dynominion1")
     config_file = LaunchConfiguration('config', default="gz_bridge.yaml")
     
@@ -174,7 +174,7 @@ def generate_launch_description():
         stdout_linebuf_envvar,
         gz_resource_path,
         DeclareLaunchArgument('use_sim_time', default_value='True'),
-        DeclareLaunchArgument('world', default_value='cafe.world'),
+        DeclareLaunchArgument('world', default_value='new_env.world'),
         DeclareLaunchArgument('robot_name', default_value='dynominion1'),
         DeclareLaunchArgument('x', default_value='0.0'),
         DeclareLaunchArgument('y', default_value='0.0'),

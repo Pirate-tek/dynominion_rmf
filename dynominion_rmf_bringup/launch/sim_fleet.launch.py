@@ -55,11 +55,11 @@ def generate_launch_description():
     # 2. Navigation instances per robot
     # Positions match multi_robot_gazebo.launch.py spawns exactly
     robots = [
-        {'name': 'dynominion1', 'x':  0.0, 'y':  0.0, 'yaw': 0.0},
-        {'name': 'dynominion2', 'x':  2.0, 'y':  3.0, 'yaw': 0.0},
-        {'name': 'dynominion3', 'x': -2.0, 'y':  3.0, 'yaw': 0.0},
-        {'name': 'dynominion4', 'x':  3.0, 'y': -2.0, 'yaw': 0.0},
-        {'name': 'dynominion5', 'x': -3.0, 'y': -2.0, 'yaw': 0.0},
+        {'name': 'dynominion1', 'x': 1.48, 'y': -5.6, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x': 1.48, 'y': -9.5, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': 7.89, 'y': -9.5, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x': 7.92, 'y': -15.9, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': 1.63, 'y': -16.6, 'yaw': 0.0},
     ]
 
     nav_instances = []
@@ -138,9 +138,9 @@ def generate_launch_description():
 
     # 4. Fleet Adapter
     # Fleet config path
-    fleet_config_file = '/home/jazzy/rough_ws/src/dynominion_fleet_adapter/config/fleet_config.yaml'
+    fleet_config_file = os.path.join(pkg_adapter, 'config', 'fleet_config.yaml')
     # Nav graph path (usually 0.yaml in maps package)
-    nav_graph_path = '/home/jazzy/rough_ws/src/dynominion_rmf_maps/nav_graphs/0.yaml'
+    nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
 
     fleet_adapter_node = Node(
         package='dynominion_fleet_adapter',
@@ -192,6 +192,17 @@ def generate_launch_description():
         output='screen'
     )
 
+    # 7. Initial Pose Publisher (Fix 2: Automatic Initialization)
+    initial_pose_publisher = ExecuteProcess(
+        cmd=['python3', os.path.join(os.path.dirname(os.path.dirname(pkg_bringup)), 'initialpose_rmf.py')],
+        output='screen'
+    )
+    # Give robots plenty of time to spawn and Nav2/AMCL to start (Base delay is 20s + stagger)
+    initial_pose_timer = TimerAction(
+        period=NAV_BASE_DELAY + len(robots) * NAV_STAGGER + 15.0,
+        actions=[initial_pose_publisher]
+    )
+
     # Create Launch Description
     ld = LaunchDescription()
     ld.add_action(map_server_node)
@@ -206,5 +217,6 @@ def generate_launch_description():
     ld.add_action(schedule_visualizer)
     ld.add_action(nav_graph_visualizer)
     ld.add_action(rviz_node)
+    ld.add_action(initial_pose_timer)
 
     return ld
