@@ -7,7 +7,7 @@ from launch.actions import (DeclareLaunchArgument, IncludeLaunchDescription,
 from launch.event_handlers import (OnProcessStart, OnProcessExit)
 from launch.launch_description_sources import PythonLaunchDescriptionSource, AnyLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetRemap
 from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import RewrittenYaml
 
@@ -48,6 +48,7 @@ def generate_launch_description():
         package='rmf_building_map_tools',
         executable='building_map_server',
         arguments=[building_map_file],
+        remappings=[('/map', '/building_map')],
         parameters=[{'use_sim_time': use_sim_time}],
         output='screen'
     )
@@ -185,16 +186,19 @@ def generate_launch_description():
     )
 
     # 5. RMF Visualization
-    rmf_visualization_launch = IncludeLaunchDescription(
-        AnyLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('rmf_visualization'), 'visualization.launch.xml')
-        ),
-        launch_arguments={
-            'use_sim_time': use_sim_time,
-            'map_name': 'L1',
-            'viz_config_file': os.path.join(pkg_bringup, 'rviz', 'fleet_view.rviz')
-        }.items()
-    )
+    rmf_visualization_group = GroupAction([
+        SetRemap(src='/map', dst='/building_map'),
+        IncludeLaunchDescription(
+            AnyLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('rmf_visualization'), 'visualization.launch.xml')
+            ),
+            launch_arguments={
+                'use_sim_time': use_sim_time,
+                'map_name': 'L1',
+                'viz_config_file': os.path.join(pkg_bringup, 'rviz', 'fleet_view.rviz')
+            }.items()
+        )
+    ])
 
     # Create Launch Description
     ld = LaunchDescription()
@@ -210,6 +214,6 @@ def generate_launch_description():
     ld.add_action(dispatcher_node)
     ld.add_action(blockade_node)
     ld.add_action(fleet_adapter_timer)
-    ld.add_action(rmf_visualization_launch)
+    ld.add_action(rmf_visualization_group)
 
     return ld
