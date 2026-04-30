@@ -5,7 +5,7 @@ from launch.actions import (DeclareLaunchArgument, IncludeLaunchDescription,
                             RegisterEventHandler, TimerAction, GroupAction,
                             ExecuteProcess)
 from launch.event_handlers import (OnProcessStart, OnProcessExit)
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource, AnyLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -41,6 +41,29 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time},
                     {'autostart': True},
                     {'node_names': ['map_server']}]
+    )
+
+    building_map_file = os.path.join(pkg_maps, 'building', 'new_env.building.yaml')
+    building_map_server_node = Node(
+        package='rmf_building_map_tools',
+        executable='building_map_server',
+        arguments=[building_map_file],
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
+    door_supervisor_node = Node(
+        package='rmf_fleet_adapter',
+        executable='door_supervisor',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
+    lift_supervisor_node = Node(
+        package='rmf_fleet_adapter',
+        executable='lift_supervisor',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
     )
     
     # 1. Gazebo & Spawns
@@ -162,51 +185,24 @@ def generate_launch_description():
     )
 
     # 5. RMF Visualization
-    schedule_visualizer = Node(
-        package='rmf_visualization_schedule',
-        executable='schedule_visualizer_node',
-        name='schedule_visualizer',
-        output='screen',
-        parameters=[rmf_config_file]
-    )
-
-    nav_graph_visualizer = Node(
-        package='rmf_visualization_navgraphs',
-        executable='navgraph_visualizer_node',
-        name='navgraph_visualizer',
-        output='screen',
-        parameters=[{
-            'nav_graph_file': nav_graph_path,
-            'use_sim_time': use_sim_time
-        }]
-    )
-    
-    # 6. RViz
-    # We could start a new RViz instance with a fleet view
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2_fleet',
-        arguments=['-d', os.path.join(pkg_bringup, 'rviz', 'fleet_view.rviz')],
-        parameters=[{'use_sim_time': use_sim_time}],
-        output='screen'
-    )
-
-    # 7. Initial Pose Publisher (Fix 2: Automatic Initialization)
-    initial_pose_publisher = ExecuteProcess(
-        cmd=['python3', os.path.join(os.path.dirname(os.path.dirname(pkg_bringup)), 'initialpose_rmf.py')],
-        output='screen'
-    )
-    # Give robots plenty of time to spawn and Nav2/AMCL to start (Base delay is 20s + stagger)
-    initial_pose_timer = TimerAction(
-        period=NAV_BASE_DELAY + len(robots) * NAV_STAGGER + 15.0,
-        actions=[initial_pose_publisher]
+    rmf_visualization_launch = IncludeLaunchDescription(
+        AnyLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('rmf_visualization'), 'visualization.launch.xml')
+        ),
+        launch_arguments={
+            'use_sim_time': use_sim_time,
+            'map_name': 'L1',
+            'viz_config_file': os.path.join(pkg_bringup, 'rviz', 'fleet_view.rviz')
+        }.items()
     )
 
     # Create Launch Description
     ld = LaunchDescription()
     ld.add_action(map_server_node)
     ld.add_action(map_lifecycle_node)
+    ld.add_action(building_map_server_node)
+    ld.add_action(door_supervisor_node)
+    ld.add_action(lift_supervisor_node)
     ld.add_action(sim_gazebo)
     for nav in nav_instances:
         ld.add_action(nav)
@@ -214,9 +210,6 @@ def generate_launch_description():
     ld.add_action(dispatcher_node)
     ld.add_action(blockade_node)
     ld.add_action(fleet_adapter_timer)
-    ld.add_action(schedule_visualizer)
-    ld.add_action(nav_graph_visualizer)
-    ld.add_action(rviz_node)
-    ld.add_action(initial_pose_timer)
+    ld.add_action(rmf_visualization_launch)
 
     return ld

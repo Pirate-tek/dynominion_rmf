@@ -89,19 +89,18 @@ public:
     RCLCPP_INFO(node_->get_logger(), "Successfuly loaded graph with %zu waypoints", graph->num_waypoints());
 
     // Fleet Configuration
-    std::unordered_map<std::string, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration> robot_configs;
     auto robots = config["fleet_manager"]["robots"];
     for (auto it = robots.begin(); it != robots.end(); ++it)
     {
       std::string robot_name = it->first.as<std::string>();
       std::string charger_name = it->second["charger"].as<std::string>();
-      robot_configs.emplace(robot_name, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration({charger_name}));
+      robot_configs_.emplace(robot_name, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration({charger_name}));
     }
 
     rmf_fleet_adapter::agv::EasyFullControl::FleetConfiguration fleet_config(
       fleet_name_,
       std::nullopt,
-      robot_configs,
+      robot_configs_,
       traits,
       graph,
       nullptr, // battery system
@@ -124,49 +123,88 @@ public:
       return;
     }
 
-    // Register Robots
-    RCLCPP_INFO(node_->get_logger(), "Registering %zu robots...", robots.size());
-    for (auto it = robots.begin(); it != robots.end(); ++it)
+    // Initialize Robot Handles (but don't add to RMF yet)
+    auto robots_cfg = config["fleet_manager"]["robots"];
+    for (auto it = robots_cfg.begin(); it != robots_cfg.end(); ++it)
     {
       std::string robot_name = it->first.as<std::string>();
-      RCLCPP_INFO(node_->get_logger(), "Registering robot: %s", robot_name.c_str());
+      RCLCPP_INFO(node_->get_logger(), "Initializing handle for robot: %s", robot_name.c_str());
       
-      auto nav_handle = std::make_shared<Nav2RobotHandle>(
-        robot_name, node_);
-
-      rmf_fleet_adapter::agv::EasyFullControl::RobotCallbacks robot_callbacks(
-        [nav_handle](auto dest, auto exec) { nav_handle->navigate(dest, std::move(exec)); },
-        [nav_handle](auto ident) { nav_handle->stop(ident); },
-        nullptr
-      );
-
-      auto robot_update_handle = easy_fleet_->add_robot(
-        robot_name,
-        rmf_fleet_adapter::agv::EasyFullControl::RobotState("L1", Eigen::Vector3d(0.0, 0.0, 0.0), 1.0),
-        robot_configs.at(robot_name),
-        robot_callbacks
-      );
-
-      if (!robot_update_handle)
-      {
-         RCLCPP_ERROR(node_->get_logger(), "Failed to add robot: %s", robot_name.c_str());
-         continue;
-      }
-
-      nav_handle->set_update_handle(robot_update_handle);
-      robot_handles_.push_back(nav_handle);
+      auto nav_handle = std::make_shared<Nav2RobotHandle>(robot_name, node_);
+      nav_handle->set_level_name("L1"); // TODO: Make this dynamic from config or building map
+      pending_robots_.push_back(nav_handle);
     }
+
+    // Registration Timer (Check every 1s if robots are localized)
+    registration_timer_ = node_->create_wall_timer(
+      std::chrono::seconds(1),
+      std::bind(&FleetAdapterNode::check_registration, this));
 
     RCLCPP_INFO(node_->get_logger(), "Starting RMF adapter...");
     adapter_->start();
   }
 
 private:
+  void check_registration()
+  {
+    auto it = pending_robots_.begin();
+    while (it != pending_robots_.end())
+    {
+      auto nav_handle = *it;
+      if (nav_handle->is_ready())
+      {
+        std::string robot_name = nav_handle->name();
+        RCLCPP_INFO(node_->get_logger(), "Robot [%s] is localized. Registering with RMF...", robot_name.c_str());
+
+        rmf_fleet_adapter::agv::EasyFullControl::RobotCallbacks robot_callbacks(
+          [nav_handle](auto dest, auto exec) { nav_handle->navigate(dest, std::move(exec)); },
+          [nav_handle](auto ident) { nav_handle->stop(ident); },
+          nullptr
+        );
+
+        auto robot_update_handle = easy_fleet_->add_robot(
+          robot_name,
+          nav_handle->get_state(),
+          robot_configs_.at(robot_name),
+          robot_callbacks
+        );
+
+        if (robot_update_handle)
+        {
+          nav_handle->set_update_handle(robot_update_handle);
+          robot_handles_.push_back(nav_handle);
+          it = pending_robots_.erase(it);
+          RCLCPP_INFO(node_->get_logger(), "Successfully registered [%s]", robot_name.c_str());
+        }
+        else
+        {
+          RCLCPP_ERROR(node_->get_logger(), "Failed to add robot [%s] to RMF fleet!", robot_name.c_str());
+          ++it;
+        }
+      }
+      else
+      {
+        ++it;
+      }
+    }
+
+    if (pending_robots_.empty() && registration_timer_)
+    {
+      RCLCPP_INFO(node_->get_logger(), "All robots registered. Stopping registration timer.");
+      registration_timer_->cancel();
+      registration_timer_ = nullptr;
+    }
+  }
+
   std::string fleet_name_;
   rclcpp::Node::SharedPtr node_;
   std::shared_ptr<rmf_fleet_adapter::agv::Adapter> adapter_;
   std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl> easy_fleet_;
+  
+  std::unordered_map<std::string, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration> robot_configs_;
   std::vector<std::shared_ptr<Nav2RobotHandle>> robot_handles_;
+  std::vector<std::shared_ptr<Nav2RobotHandle>> pending_robots_;
+  rclcpp::TimerBase::SharedPtr registration_timer_;
 };
 
 int main(int argc, char** argv)

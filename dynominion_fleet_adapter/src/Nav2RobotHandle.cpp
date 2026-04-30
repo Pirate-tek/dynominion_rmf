@@ -14,13 +14,17 @@ Nav2RobotHandle::Nav2RobotHandle(
     node_, "/" + name_ + "/navigate_to_pose");
 
   // Telemetry subscribers
-  odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(
-    "/" + name_ + "/odom", 10,
-    std::bind(&Nav2RobotHandle::odom_callback, this, std::placeholders::_1));
+  amcl_pose_sub_ = node_->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+    "/" + name_ + "/amcl_pose", rclcpp::QoS(10).transient_local(),
+    std::bind(&Nav2RobotHandle::amcl_pose_callback, this, std::placeholders::_1));
 
   battery_sub_ = node_->create_subscription<sensor_msgs::msg::BatteryState>(
     "/" + name_ + "/battery_state", 10,
     std::bind(&Nav2RobotHandle::battery_callback, this, std::placeholders::_1));
+
+  // TF Initialization
+  tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
+  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
   // RMF update loop (500ms)
   update_timer_ = node_->create_wall_timer(
@@ -33,6 +37,50 @@ Nav2RobotHandle::Nav2RobotHandle(
 void Nav2RobotHandle::set_update_handle(const std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl::EasyRobotUpdateHandle>& update_handle)
 {
   update_handle_ = update_handle;
+}
+
+bool Nav2RobotHandle::is_ready()
+{
+  // Check if we have a valid transform map -> base_footprint
+  std::string base_frame = name_ + "/base_footprint";
+  if (!tf_buffer_->canTransform("map", base_frame, tf2::TimePointZero))
+  {
+    return false;
+  }
+
+  // Check AMCL covariance if available
+  if (!last_amcl_pose_)
+  {
+    return false;
+  }
+
+  double cov_x = last_amcl_pose_->pose.covariance[0];
+  double cov_y = last_amcl_pose_->pose.covariance[7];
+  double cov_yaw = last_amcl_pose_->pose.covariance[35];
+
+  // Covariance threshold for "localized" (0.1m^2 for position, 0.05 rad^2 for yaw)
+  if (cov_x > 0.1 || cov_y > 0.1 || cov_yaw > 0.05)
+  {
+    RCLCPP_DEBUG(node_->get_logger(), "[%s] Localization covariance too high: x=%.3f, y=%.3f, yaw=%.3f",
+      name_.c_str(), cov_x, cov_y, cov_yaw);
+    return false;
+  }
+
+  return true;
+}
+
+rmf_fleet_adapter::agv::EasyFullControl::RobotState Nav2RobotHandle::get_state()
+{
+  std::string base_frame = name_ + "/base_footprint";
+  auto tf = tf_buffer_->lookupTransform("map", base_frame, tf2::TimePointZero);
+
+  Eigen::Vector3d position(
+    tf.transform.translation.x,
+    tf.transform.translation.y,
+    tf2::getYaw(tf.transform.rotation)
+  );
+
+  return rmf_fleet_adapter::agv::EasyFullControl::RobotState(level_name_, position, last_battery_soc_);
 }
 
 void Nav2RobotHandle::navigate(
@@ -103,9 +151,9 @@ void Nav2RobotHandle::stop(rmf_fleet_adapter::agv::EasyFullControl::ConstActivit
   }
 }
 
-void Nav2RobotHandle::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
+void Nav2RobotHandle::amcl_pose_callback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg)
 {
-  last_odom_ = msg;
+  last_amcl_pose_ = msg;
 }
 
 void Nav2RobotHandle::battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr msg)
@@ -115,17 +163,13 @@ void Nav2RobotHandle::battery_callback(const sensor_msgs::msg::BatteryState::Sha
 
 void Nav2RobotHandle::update_loop()
 {
-  if (!last_odom_ || !update_handle_)
+  if (!update_handle_)
     return;
 
-  Eigen::Vector3d position(
-    last_odom_->pose.pose.position.x,
-    last_odom_->pose.pose.position.y,
-    tf2::getYaw(last_odom_->pose.pose.orientation)
-  );
-
-  update_handle_->update(
-    rmf_fleet_adapter::agv::EasyFullControl::RobotState("L1", position, last_battery_soc_),
-    nullptr
-  );
+  try {
+    update_handle_->update(get_state(), nullptr);
+  } catch (const std::exception& e) {
+    RCLCPP_ERROR_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
+      "[%s] TF lookup failed: %s", name_.c_str(), e.what());
+  }
 }

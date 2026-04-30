@@ -7,7 +7,20 @@ def generate_launch_description():
     pkg_bringup = get_package_share_directory('dynominion_rmf_bringup')
     config_file = os.path.join(pkg_bringup, 'config', 'rmf_config.yaml')
 
+    pkg_maps = get_package_share_directory('dynominion_rmf_maps')
+    building_map_file = os.path.join(pkg_maps, 'building', 'new_env.building.yaml')
+
     return LaunchDescription([
+        # RMF Building Map Server
+        Node(
+            package='rmf_building_map_tools',
+            executable='building_map_server',
+            name='building_map_server',
+            output='screen',
+            arguments=[building_map_file],
+            parameters=[config_file]
+        ),
+
         # RMF Traffic Schedule
         Node(
             package='rmf_traffic_ros2',
