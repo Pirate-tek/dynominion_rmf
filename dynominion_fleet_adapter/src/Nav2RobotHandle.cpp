@@ -45,12 +45,14 @@ bool Nav2RobotHandle::is_ready()
   std::string base_frame = name_ + "/base_footprint";
   if (!tf_buffer_->canTransform("map", base_frame, tf2::TimePointZero))
   {
+    RCLCPP_DEBUG(node_->get_logger(), "[%s] Waiting for transform map -> %s", name_.c_str(), base_frame.c_str());
     return false;
   }
 
   // Check AMCL covariance if available
   if (!last_amcl_pose_)
   {
+    RCLCPP_DEBUG(node_->get_logger(), "[%s] Waiting for AMCL pose...", name_.c_str());
     return false;
   }
 
@@ -61,13 +63,15 @@ bool Nav2RobotHandle::is_ready()
   // Covariance threshold for "localized" (0.1m^2 for position, 0.05 rad^2 for yaw)
   if (cov_x > 0.1 || cov_y > 0.1 || cov_yaw > 0.05)
   {
-    RCLCPP_DEBUG(node_->get_logger(), "[%s] Localization covariance too high: x=%.3f, y=%.3f, yaw=%.3f",
+    RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 5000,
+      "[%s] Localization covariance too high: x=%.3f, y=%.3f, yaw=%.3f",
       name_.c_str(), cov_x, cov_y, cov_yaw);
     return false;
   }
 
   return true;
 }
+
 
 rmf_fleet_adapter::agv::EasyFullControl::RobotState Nav2RobotHandle::get_state()
 {

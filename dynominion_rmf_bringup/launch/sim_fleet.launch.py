@@ -81,10 +81,8 @@ def generate_launch_description():
     robots = [
         {'name': 'dynominion1', 'x': 1.48, 'y': -5.6, 'yaw': 0.0},
         {'name': 'dynominion2', 'x': 1.48, 'y': -9.5, 'yaw': 0.0},
-        {'name': 'dynominion3', 'x': 7.89, 'y': -9.5, 'yaw': 0.0},
-        {'name': 'dynominion4', 'x': 7.92, 'y': -15.9, 'yaw': 0.0},
-        {'name': 'dynominion5', 'x': 1.63, 'y': -16.6, 'yaw': 0.0},
     ]
+
 
     nav_instances = []
     # Stagger matches Gazebo spawn: robot i spawns at i*5s.
@@ -141,15 +139,16 @@ def generate_launch_description():
         executable='rmf_traffic_schedule',
         name='rmf_traffic_schedule',
         output='screen',
-        parameters=[rmf_config_file] # Fix 3: Sync Time/Parameters
+        parameters=[rmf_config_file, {'use_sim_time': True}] # Fix 3: Sync Time/Parameters
     )
+
     
     dispatcher_node = Node(
         package='rmf_task_ros2',
         executable='rmf_task_dispatcher',
         name='rmf_task_dispatcher',
         output='screen',
-        parameters=[rmf_config_file] # Fix 3: Sync Time/Parameters
+        parameters=[rmf_config_file, {'use_sim_time': True}] # Fix 3: Sync Time/Parameters
     )
     
     blockade_node = Node(
@@ -157,7 +156,7 @@ def generate_launch_description():
         executable='rmf_traffic_blockade',
         name='rmf_traffic_blockade',
         output='screen',
-        parameters=[rmf_config_file] # Fix 3: Sync Time/Parameters
+        parameters=[rmf_config_file, {'use_sim_time': True}] # Fix 3: Sync Time/Parameters
     )
 
     # 4. Fleet Adapter
@@ -171,13 +170,15 @@ def generate_launch_description():
         executable='fleet_adapter_node',
         name='dynominion_fleet_adapter',
         output='screen',
-        parameters=[{
-            'config_file': fleet_config_file,
-            'nav_graph_path': nav_graph_path,
-            'use_sim_time': use_sim_time
-        }],
-        arguments=['--ros-args', '--log-level', 'debug']
+        arguments=[
+            '--ros-args',
+            '--log-level', 'debug',
+            '-p', f'config_file:={fleet_config_file}',
+            '-p', f'nav_graph_path:={nav_graph_path}',
+            '-p', 'use_sim_time:=True'
+        ]
     )
+
 
     # Fleet Adapter with a delay to ensure schedule is up
     fleet_adapter_timer = TimerAction(

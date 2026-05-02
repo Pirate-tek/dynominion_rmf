@@ -17,10 +17,8 @@ def generate_launch_description():
     robots = [
         {'name': 'dynominion1', 'x': '1.48', 'y': '-5.6', 'z': '0.5'},
         {'name': 'dynominion2', 'x': '1.48', 'y': '-9.5', 'z': '0.5'},
-        {'name': 'dynominion3', 'x': '7.89', 'y': '-9.5', 'z': '0.5'},
-        {'name': 'dynominion4', 'x': '7.92', 'y': '-15.9', 'z': '0.5'},
-        {'name': 'dynominion5', 'x': '1.63', 'y': '-16.6', 'z': '0.5'},
     ]
+
 
     # Launch configuration variables
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
@@ -38,9 +36,13 @@ def generate_launch_description():
     clock_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/world/new_env/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
+        ],
         output='screen'
     )
+
     ld.add_action(clock_bridge)
 
     # Loop through the robots and add spawn actions
