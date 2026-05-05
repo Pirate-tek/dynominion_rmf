@@ -1,7 +1,5 @@
-import os
-from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
     pkg_bringup = get_package_share_directory('dynominion_rmf_bringup')
@@ -10,7 +8,14 @@ def generate_launch_description():
     pkg_maps = get_package_share_directory('dynominion_rmf_maps')
     building_map_file = os.path.join(pkg_maps, 'building', 'new_env.building.yaml')
 
+    use_sim_time = LaunchConfiguration('use_sim_time', default='True')
+
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='True',
+            description='Use simulation (Gazebo) clock if true'),
+
         # RMF Building Map Server
         Node(
             package='rmf_building_map_tools',
@@ -18,7 +23,7 @@ def generate_launch_description():
             name='building_map_server',
             output='screen',
             arguments=[building_map_file],
-            parameters=[config_file]
+            parameters=[config_file, {'use_sim_time': use_sim_time}]
         ),
 
         # RMF Traffic Schedule
@@ -27,7 +32,7 @@ def generate_launch_description():
             executable='rmf_traffic_schedule',
             name='rmf_traffic_schedule',
             output='screen',
-            parameters=[config_file]
+            parameters=[config_file, {'use_sim_time': use_sim_time}]
         ),
         
         # RMF Task Dispatcher
@@ -36,7 +41,7 @@ def generate_launch_description():
             executable='rmf_task_dispatcher',
             name='rmf_task_dispatcher',
             output='screen',
-            parameters=[config_file]
+            parameters=[config_file, {'use_sim_time': use_sim_time}]
         ),
 
         # RMF Traffic Blockade
@@ -45,6 +50,6 @@ def generate_launch_description():
             executable='rmf_traffic_blockade',
             name='rmf_traffic_blockade',
             output='screen',
-            parameters=[config_file]
+            parameters=[config_file, {'use_sim_time': use_sim_time}]
         )
     ])

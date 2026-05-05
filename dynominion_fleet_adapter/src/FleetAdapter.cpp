@@ -8,13 +8,72 @@
 #include <dynominion_fleet_adapter/Nav2RobotHandle.hpp>
 #include <yaml-cpp/yaml.h>
 #include <filesystem>
+#include <Eigen/Dense>
+
+using namespace rmf_fleet_adapter::agv;
+
+// Helper to compute transformation between RMF and robot coordinates
+Transformation compute_transformation(
+  const std::string& level,
+  const YAML::Node& coords,
+  const rclcpp::Logger& logger)
+{
+  auto rmf_node = coords["rmf"];
+  auto robot_node = coords["robot"];
+
+  if (!rmf_node || !robot_node || rmf_node.size() < 2 || robot_node.size() < 2)
+  {
+    RCLCPP_WARN(logger, "Not enough points for transformation on level [%s]. Using default.", level.c_str());
+    return Transformation(0.0, 1.0, Eigen::Vector2d::Zero());
+  }
+
+  int n = std::min((int)rmf_node.size(), (int)robot_node.size());
+  Eigen::MatrixXd A(2 * n, 4);
+  Eigen::VectorXd B(2 * n);
+
+  for (int i = 0; i < n; ++i)
+  {
+    double x = rmf_node[i][0].as<double>();
+    double y = rmf_node[i][1].as<double>();
+    double xp = robot_node[i][0].as<double>();
+    double yp = robot_node[i][1].as<double>();
+
+    A(2 * i, 0) = x;
+    A(2 * i, 1) = -y;
+    A(2 * i, 2) = 1.0;
+    A(2 * i, 3) = 0.0;
+
+    A(2 * i + 1, 0) = y;
+    A(2 * i + 1, 1) = x;
+    A(2 * i + 1, 2) = 0.0;
+    A(2 * i + 1, 3) = 1.0;
+
+    B(2 * i) = xp;
+    B(2 * i + 1) = yp;
+  }
+
+  Eigen::Vector4d sol = A.colPivHouseholderQr().solve(B);
+  double ar = sol(0);
+  double ai = sol(1);
+  double br = sol(2);
+  double bi = sol(3);
+
+  double rotation = std::atan2(ai, ar);
+  double scale = std::sqrt(ar * ar + ai * ai);
+  Eigen::Vector2d translation(br, bi);
+
+  RCLCPP_INFO(logger, "Computed transformation for [%s]: rot=%.3f, scale=%.3f, trans=(%.3f, %.3f)",
+    level.c_str(), rotation, scale, br, bi);
+
+  return Transformation(rotation, scale, translation);
+}
 
 class FleetAdapterNode
 {
 public:
-  FleetAdapterNode(
+   FleetAdapterNode(
     const rclcpp::Node::SharedPtr& node,
-    const std::shared_ptr<rmf_fleet_adapter::agv::Adapter>& adapter)
+    const std::shared_ptr<Adapter>& adapter)
   : node_(node), adapter_(adapter)
   {}
 
@@ -26,7 +85,7 @@ public:
     std::string config_file = node_->get_parameter("config_file").as_string();
     if (config_file.empty())
     {
-      RCLCPP_ERROR(node_->get_logger(), "Config file not provided!");
+      RCLCPP_ERROR(node_->get_logger(), "Config file path is empty!");
       return;
     }
 
@@ -34,7 +93,7 @@ public:
     YAML::Node config;
     try
     {
-       config = YAML::LoadFile(config_file);
+      config = YAML::LoadFile(config_file);
     }
     catch (const std::exception& e)
     {
@@ -42,80 +101,94 @@ public:
       return;
     }
 
-    if (!config["fleet_manager"])
+    // Parse RMF Fleet Info
+    auto rmf_fleet_node = config["rmf_fleet"];
+    if (!rmf_fleet_node)
     {
-      RCLCPP_ERROR(node_->get_logger(), "Config file missing 'fleet_manager' section!");
+      RCLCPP_ERROR(node_->get_logger(), "Config missing 'rmf_fleet' section!");
       return;
     }
 
-    fleet_name_ = config["fleet_manager"]["fleet_name"].as<std::string>();
-    RCLCPP_INFO(node_->get_logger(), "Initializing fleet: %s", fleet_name_.c_str());
+    std::string fleet_name = rmf_fleet_node["name"].as<std::string>();
+    RCLCPP_INFO(node_->get_logger(), "Initializing fleet: %s", fleet_name.c_str());
+
+    // Vehicle Traits
+    auto limits_node = rmf_fleet_node["limits"];
+    auto profile_node = rmf_fleet_node["profile"];
     
-    // Load Nav Graph
+    auto footprint = rmf_traffic::geometry::make_final_convex<rmf_traffic::geometry::Circle>(
+      profile_node["footprint_radius"].as<double>());
+    
+    auto traits = std::make_shared<rmf_traffic::agv::VehicleTraits>(
+      rmf_traffic::agv::VehicleTraits::Limits{limits_node["max_linear_speed"].as<double>(), limits_node["max_linear_acceleration"].as<double>()},
+      rmf_traffic::agv::VehicleTraits::Limits{limits_node["max_angular_speed"].as<double>(), limits_node["max_angular_acceleration"].as<double>()},
+      rmf_traffic::Profile(footprint)
+    );
+    traits->set_differential(rmf_traffic::agv::VehicleTraits::Differential(Eigen::Vector2d::UnitX(), true));
+
+    // Nav Graph
     std::string graph_path = node_->get_parameter("nav_graph_path").as_string();
-    if (graph_path.empty() && config["fleet_manager"]["nav_graph_path"])
-    {
-      graph_path = config["fleet_manager"]["nav_graph_path"].as<std::string>();
-    }
-    
     if (graph_path.empty())
     {
        RCLCPP_ERROR(node_->get_logger(), "Nav graph path is empty!");
        return;
     }
-    RCLCPP_INFO(node_->get_logger(), "Loading nav graph: %s", graph_path.c_str());
-
-    // Vehicle Traits
-    auto profile_node = config["fleet_manager"]["robot_profile"];
-    if (!profile_node)
-    {
-       RCLCPP_ERROR(node_->get_logger(), "Missing 'robot_profile' in config!");
-       return;
-    }
-
-    auto footprint = rmf_traffic::geometry::make_final_convex<rmf_traffic::geometry::Circle>(
-      profile_node["footprint_radius"].as<double>());
-    
-    auto traits = std::make_shared<rmf_traffic::agv::VehicleTraits>(
-      rmf_traffic::agv::VehicleTraits::Limits{profile_node["max_linear_speed"].as<double>(), profile_node["max_linear_acceleration"].as<double>()},
-      rmf_traffic::agv::VehicleTraits::Limits{profile_node["max_angular_speed"].as<double>(), profile_node["max_angular_acceleration"].as<double>()},
-      rmf_traffic::Profile(footprint)
-    );
-    traits->set_differential(rmf_traffic::agv::VehicleTraits::Differential(Eigen::Vector2d::UnitX(), profile_node["can_reverse"].as<bool>()));
-
-    // Read graph
     auto graph = std::make_shared<rmf_traffic::agv::Graph>(
-      rmf_fleet_adapter::agv::parse_graph(graph_path, *traits));
-    RCLCPP_INFO(node_->get_logger(), "Successfuly loaded graph with %zu waypoints", graph->num_waypoints());
+      parse_graph(graph_path, *traits));
+    RCLCPP_INFO(node_->get_logger(), "Loaded graph with %zu waypoints", graph->num_waypoints());
 
-    // Fleet Configuration
-    auto robots = config["fleet_manager"]["robots"];
-    for (auto it = robots.begin(); it != robots.end(); ++it)
+    // Robot Configurations (Chargers)
+    auto robots_node = rmf_fleet_node["robots"];
+    if (robots_node)
     {
-      std::string robot_name = it->first.as<std::string>();
-      std::string charger_name = it->second["charger"].as<std::string>();
-      robot_configs_.emplace(robot_name, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration({charger_name}));
+      for (auto it = robots_node.begin(); it != robots_node.end(); ++it)
+      {
+        std::string r_name = it->first.as<std::string>();
+        std::string charger = it->second["charger"].as<std::string>();
+        robot_configs_.emplace(r_name, EasyFullControl::RobotConfiguration({charger}));
+        RCLCPP_INFO(node_->get_logger(), "Configured robot [%s] with charger [%s]", r_name.c_str(), charger.c_str());
+      }
     }
 
-    rmf_fleet_adapter::agv::EasyFullControl::FleetConfiguration fleet_config(
-      fleet_name_,
-      std::nullopt,
+    EasyFullControl::FleetConfiguration fleet_config(
+      fleet_name,
+      std::nullopt, // transformations (added below)
       robot_configs_,
       traits,
       graph,
-      nullptr, // battery system
-      nullptr, // motion sink
-      nullptr, // ambient sink
-      nullptr, // tool sink
-      0.2,     // recharge threshold
-      0.9,     // recharge soc
-      false,   // account for drain
-      {},      // task consideration
-      {}       // action consideration
+      nullptr, // battery_system
+      nullptr, // motion_sink
+      nullptr, // ambient_sink
+      nullptr, // tool_sink
+      0.2,     // recharge_threshold
+      0.9,     // recharge_soc
+      false,   // account_for_battery_drain
+      {},      // task_consideration
+      {},      // action_consideration
+      nullptr, // finishing_request
+      false,   // skip_wait_until
+      std::nullopt, // server_uri
+      std::chrono::seconds(10), // min_hold_time
+      std::chrono::seconds(2),  // update_interval
+      true,    // publish_fleet_state
+      0.1,     // max_merge_waypoint_distance
+      0.1,     // max_merge_lane_distance
+      0.5      // min_lane_width
     );
 
-    // EasyFullControl registration
-    RCLCPP_INFO(node_->get_logger(), "Adding easy fleet...");
+    // Add transformations from reference_coordinates
+    auto ref_coords = config["reference_coordinates"];
+    if (ref_coords)
+    {
+      for (auto it = ref_coords.begin(); it != ref_coords.end(); ++it)
+      {
+        std::string level = it->first.as<std::string>();
+        Transformation tf = compute_transformation(level, it->second, node_->get_logger());
+        fleet_config.add_robot_coordinate_transformation(level, tf);
+      }
+    }
+
+    // Add fleet to adapter
     easy_fleet_ = adapter_->add_easy_fleet(fleet_config);
     if (!easy_fleet_)
     {
@@ -123,24 +196,18 @@ public:
       return;
     }
 
-    // Initialize Robot Handles (but don't add to RMF yet)
-    auto robots_cfg = config["fleet_manager"]["robots"];
-    for (auto it = robots_cfg.begin(); it != robots_cfg.end(); ++it)
+    // Initialize Robot Handles
+    for (const auto& [name, cfg] : robot_configs_)
     {
-      std::string robot_name = it->first.as<std::string>();
-      RCLCPP_INFO(node_->get_logger(), "Initializing handle for robot: %s", robot_name.c_str());
-      
-      auto nav_handle = std::make_shared<Nav2RobotHandle>(robot_name, node_);
-      nav_handle->set_level_name("L1"); // TODO: Make this dynamic from config or building map
+      auto nav_handle = std::make_shared<Nav2RobotHandle>(name, node_);
       pending_robots_.push_back(nav_handle);
     }
 
-    // Registration Timer (Check every 1s if robots are localized)
+    // Registration Timer
     registration_timer_ = node_->create_wall_timer(
       std::chrono::seconds(1),
       std::bind(&FleetAdapterNode::check_registration, this));
 
-    RCLCPP_INFO(node_->get_logger(), "Starting RMF adapter...");
     adapter_->start();
   }
 
@@ -154,31 +221,29 @@ private:
       if (nav_handle->is_ready())
       {
         std::string robot_name = nav_handle->name();
-        RCLCPP_INFO(node_->get_logger(), "Robot [%s] is localized. Registering with RMF...", robot_name.c_str());
+        RCLCPP_INFO(node_->get_logger(), "Robot [%s] is ready. Registering...", robot_name.c_str());
 
-        rmf_fleet_adapter::agv::EasyFullControl::RobotCallbacks robot_callbacks(
+        EasyFullControl::RobotCallbacks callbacks(
           [nav_handle](auto dest, auto exec) { nav_handle->navigate(dest, std::move(exec)); },
           [nav_handle](auto ident) { nav_handle->stop(ident); },
           nullptr
         );
 
-        auto robot_update_handle = easy_fleet_->add_robot(
+        auto handle = easy_fleet_->add_robot(
           robot_name,
           nav_handle->get_state(),
           robot_configs_.at(robot_name),
-          robot_callbacks
+          callbacks
         );
 
-        if (robot_update_handle)
+        if (handle)
         {
-          nav_handle->set_update_handle(robot_update_handle);
-          robot_handles_.push_back(nav_handle);
+          nav_handle->set_update_handle(handle);
           it = pending_robots_.erase(it);
-          RCLCPP_INFO(node_->get_logger(), "Successfully registered [%s]", robot_name.c_str());
         }
         else
         {
-          RCLCPP_ERROR(node_->get_logger(), "Failed to add robot [%s] to RMF fleet!", robot_name.c_str());
+          RCLCPP_ERROR(node_->get_logger(), "Failed to add robot [%s]", robot_name.c_str());
           ++it;
         }
       }
@@ -190,19 +255,15 @@ private:
 
     if (pending_robots_.empty() && registration_timer_)
     {
-      RCLCPP_INFO(node_->get_logger(), "All robots registered. Stopping registration timer.");
       registration_timer_->cancel();
       registration_timer_ = nullptr;
     }
   }
 
-  std::string fleet_name_;
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<rmf_fleet_adapter::agv::Adapter> adapter_;
-  std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl> easy_fleet_;
-  
-  std::unordered_map<std::string, rmf_fleet_adapter::agv::EasyFullControl::RobotConfiguration> robot_configs_;
-  std::vector<std::shared_ptr<Nav2RobotHandle>> robot_handles_;
+  std::shared_ptr<Adapter> adapter_;
+  std::shared_ptr<EasyFullControl> easy_fleet_;
+  std::unordered_map<std::string, EasyFullControl::RobotConfiguration> robot_configs_;
   std::vector<std::shared_ptr<Nav2RobotHandle>> pending_robots_;
   rclcpp::TimerBase::SharedPtr registration_timer_;
 };
@@ -210,18 +271,14 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto adapter = rmf_fleet_adapter::agv::Adapter::init_and_make("dynominion_fleet_adapter");
+  auto adapter = Adapter::init_and_make("fleet_adapter_node");
   if (!adapter)
-  {
-    std::cerr << "Failed to initialize RMF adapter" << std::endl;
     return 1;
-  }
   
   auto node = adapter->node();
   auto fleet_adapter_node = std::make_shared<FleetAdapterNode>(node, adapter);
   fleet_adapter_node->init();
   
-  RCLCPP_INFO(node->get_logger(), "Node initialization complete, spinning...");
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

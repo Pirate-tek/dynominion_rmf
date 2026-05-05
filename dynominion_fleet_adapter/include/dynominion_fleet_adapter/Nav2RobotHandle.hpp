@@ -65,6 +65,7 @@ private:
 
   geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr last_amcl_pose_;
   double last_battery_soc_ = 1.0;
+  rclcpp::Time start_time_;
 
   std::unique_ptr<rmf_fleet_adapter::agv::EasyFullControl::CommandExecution> active_execution_;
   GoalHandleNav::SharedPtr active_goal_handle_;

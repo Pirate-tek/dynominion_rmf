@@ -132,50 +132,22 @@ def generate_launch_description():
             )
         )
 
-    # 3. RMF Core Nodes
-    # We define them here to use the handles for event registration
-    schedule_node = Node(
-        package='rmf_traffic_ros2',
-        executable='rmf_traffic_schedule',
-        name='rmf_traffic_schedule',
-        output='screen',
-        parameters=[rmf_config_file, {'use_sim_time': True}] # Fix 3: Sync Time/Parameters
-    )
-
-    
-    dispatcher_node = Node(
-        package='rmf_task_ros2',
-        executable='rmf_task_dispatcher',
-        name='rmf_task_dispatcher',
-        output='screen',
-        parameters=[rmf_config_file, {'use_sim_time': True}] # Fix 3: Sync Time/Parameters
-    )
-    
-    blockade_node = Node(
-        package='rmf_traffic_ros2',
-        executable='rmf_traffic_blockade',
-        name='rmf_traffic_blockade',
-        output='screen',
-        parameters=[rmf_config_file, {'use_sim_time': True}] # Fix 3: Sync Time/Parameters
-    )
 
     # 4. Fleet Adapter
     # Fleet config path
-    fleet_config_file = os.path.join(pkg_adapter, 'config', 'fleet_config.yaml')
+    fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
     # Nav graph path (usually 0.yaml in maps package)
     nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
 
     fleet_adapter_node = Node(
         package='dynominion_fleet_adapter',
         executable='fleet_adapter_node',
-        name='dynominion_fleet_adapter',
+        name='fleet_adapter_node',
         output='screen',
-        arguments=[
-            '--ros-args',
-            '--log-level', 'debug',
-            '-p', f'config_file:={fleet_config_file}',
-            '-p', f'nav_graph_path:={nav_graph_path}',
-            '-p', 'use_sim_time:=True'
+        parameters=[
+            {'config_file': fleet_config_file},
+            {'nav_graph_path': nav_graph_path},
+            {'use_sim_time': True}
         ]
     )
 
@@ -211,9 +183,7 @@ def generate_launch_description():
     ld.add_action(sim_gazebo)
     for nav in nav_instances:
         ld.add_action(nav)
-    ld.add_action(schedule_node)
-    ld.add_action(dispatcher_node)
-    ld.add_action(blockade_node)
+    # RMF Core nodes are now expected to be launched via rmf_core.launch.py
     ld.add_action(fleet_adapter_timer)
     ld.add_action(rmf_visualization_group)
 
