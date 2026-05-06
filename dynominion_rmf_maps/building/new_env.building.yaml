@@ -1,99 +1,313 @@
-coordinate_system: reference_image
+coordinate_system: cartesian_meters
 crowd_sim:
   agent_groups:
-    - {agents_name: [], agents_number: 0, group_id: 0, profile_selector: external_agent, state_selector: external_static, x: 0, y: 0}
+  - agents_name: []
+    agents_number: 0
+    group_id: 0
+    profile_selector: external_agent
+    state_selector: external_static
+    x: 0
+    y: 0
   agent_profiles:
-    - {ORCA_tau: 1, ORCA_tauObst: 0.40000000000000002, class: 1, max_accel: 0, max_angle_vel: 0, max_neighbors: 10, max_speed: 0, name: external_agent, neighbor_dist: 5, obstacle_set: 1, pref_speed: 0, r: 0.25}
+  - {ORCA_tau: 1, ORCA_tauObst: 0.4, class: 1, max_accel: 0, max_angle_vel: 0, max_neighbors: 10,
+    max_speed: 0, name: external_agent, neighbor_dist: 5, obstacle_set: 1, pref_speed: 0,
+    r: 0.25}
   enable: 0
   goal_sets: []
   model_types: []
   obstacle_set: {class: 1, file_name: L1_navmesh.nav, type: nav_mesh}
   states:
-    - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ""}
+  - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ''}
   transitions: []
-  update_time_step: 0.10000000000000001
+  update_time_step: 0.1
 graphs:
-  {}
+  0: {name: fleet_graph}
 levels:
   L1:
-    drawing:
-      filename: dynominion_map.png
+    drawing: {filename: dynominion_map.png}
     elevation: 0
     floors:
-      - parameters: {ceiling_scale: [3, 1], ceiling_texture: [1, blue_linoleum], indoor: [2, 0], texture_name: [1, blue_linoleum], texture_rotation: [3, 0], texture_scale: [3, 1]}
-        vertices: [16, 17, 18, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15]
+    - parameters:
+        ceiling_scale: [3, 1]
+        ceiling_texture: [1, blue_linoleum]
+        indoor: [2, 0]
+        texture_name: [1, blue_linoleum]
+        texture_rotation: [3, 0]
+        texture_scale: [3, 1]
+      vertices: [16, 17, 18, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15]
     lanes:
-      - [25, 26, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [26, 27, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [27, 28, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [28, 29, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [29, 30, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [30, 31, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [31, 32, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-      - [32, 27, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], mutex: [1, ""], orientation: [1, ""], speed_limit: [3, 0]}]
-    layers:
-      {}
+    - - 25
+      - 26
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 26
+      - 27
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 27
+      - 28
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 28
+      - 29
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 29
+      - 30
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 30
+      - 31
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 31
+      - 32
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    - - 32
+      - 27
+      - bidirectional: [4, true]
+        demo_mock_floor_name: [1, '']
+        demo_mock_lift_name: [1, '']
+        graph_idx: [2, 0]
+        mutex: [1, '']
+        orientation: [1, '']
+        speed_limit: [3, 0]
+    layers: {}
     measurements:
-      - [20, 21, {distance: [3, 9.5]}]
+    - - 20
+      - 21
+      - distance: [3, 9.5]
     vertices:
-      - [143.726, 17.077000000000002, 0, ""]
-      - [184.80799999999999, 17.478999999999999, 0, ""]
-      - [184.40700000000001, 343.19299999999998, 0, ""]
-      - [189.75899999999999, 343.59500000000003, 0, ""]
-      - [190.02699999999999, 432.98500000000001, 0, ""]
-      - [184.94200000000001, 432.98500000000001, 0, ""]
-      - [184.53999999999999, 445.29700000000003, 0, ""]
-      - [1.8680000000000001, 445.55000000000001, 0, ""]
-      - [1.4159999999999999, 274.64600000000002, 0, ""]
-      - [14.183999999999999, 274.61000000000001, 0, ""]
-      - [14.148999999999999, 272.60000000000002, 0, ""]
-      - [1.3100000000000001, 272.63499999999999, 0, ""]
-      - [1.5920000000000001, 228.227, 0, ""]
-      - [22.614000000000001, 228.50899999999999, 0, ""]
-      - [23.158000000000001, 208.542, 0, ""]
-      - [1.754, 208.542, 0, ""]
-      - [2.0350000000000001, 76.744, 0, ""]
-      - [119.349, 75.864000000000004, 0, ""]
-      - [119.869, 15.115, 0, ""]
-      - [143.31200000000001, 75.225999999999999, 0, ""]
-      - [0.68300000000000005, 241.70500000000001, 0, ""]
-      - [184.786, 243.65000000000001, 0, ""]
-      - [68.759, 77.468999999999994, 0, ""]
-      - [84.200999999999993, 146.05000000000001, 0, ""]
-      - [74.209000000000003, 159.221, 0, ""]
-      - [28.827999999999999, 108.872, 0, charger_main, {is_charger: [4, true]}]
-      - [28.827999999999999, 184.477, 0, lobby_waypoint]
-      - [152.91200000000001, 184.477, 0, hub_center]
-      - [153.49000000000001, 309.13799999999998, 0, room_entry]
-      - [64.611000000000004, 376.08600000000001, 0, room_inside]
-      - [31.713999999999999, 322.98899999999998, 0, corridor_bottom]
-      - [40.948, 226.03100000000001, 0, bottom_zone]
-      - [149.44999999999999, 107.718, 0, corridor_north]
+    - [-4.446885787976733, -0.8648568216393937, 0, '']
+    - [-6.566055155082088, -0.8855935454012184, 0, '']
+    - [-6.545370015209048, -17.687188677998307, 0, '']
+    - [-6.821446994244823, -17.707925401759987, 0, '']
+    - [-6.835271476752229, -22.319009324780968, 0, '']
+    - [-6.572967396334267, -22.319009324780946, 0, '']
+    - [-6.552230672572559, -22.954110177899125, 0, '']
+    - [2.8707016731717956, -22.96716090205683, 0, '']
+    - [2.894017591430468, -14.15126777329548, 0, '']
+    - [2.235394484493094, -14.149410753257177, 0, '']
+    - [2.2371999206414888, -14.045727134448898, 0, '']
+    - [2.8994854837656225, -14.047532570597244, 0, '']
+    - [2.8849388267983085, -11.756795185503663, 0, '']
+    - [1.8005422921775804, -11.771341842470878, 0, '']
+    - [1.772480656042322, -10.741366311752014, 0, '']
+    - [2.87658223662562, -10.741366311751925, 0, '']
+    - [2.862087163547901, -3.9427127835461007, 0, '']
+    - [-3.1894253025588575, -3.897318960386739, 0, '']
+    - [-3.216248925335378, -0.7636492295488251, 0, '']
+    - [-4.425530057535386, -3.8644084385959503, 0, '']
+    - [2.9318285827668844, -12.452042854308635, 0, '']
+    - [-6.564920309502163, -12.552373520270635, 0, '']
+    - [-0.579796309767362, -3.9801111037632912, 0, '']
+    - [-1.3763547384424348, -7.517785860723883, 0, '']
+    - [-0.8609285100183333, -8.197197275312828, 0, '']
+    - - 1.4800000000006448
+      - -5.600000000000153
+      - 0
+      - charger_main
+      - is_charger: [4, true]
+    - [1.4800000000009554, -9.500000000000165, 0, lobby_waypoint]
+    - [-4.920735401096872, -9.500000000000675, 0, hub_center]
+    - [-4.9505508894899855, -15.930499305602172, 0, room_entry]
+    - [-0.365826334235416, -19.383937570266852, 0, room_inside]
+    - [1.3311288935932177, -16.644987765359627, 0, corridor_bottom]
+    - [0.8548032537541834, -11.643516963164032, 0, bottom_zone]
+    - [-4.742151974075163, -5.540472190993309, 0, corridor_north]
     walls:
-      - [0, 1, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [1, 2, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [2, 3, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [3, 4, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [4, 5, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [5, 6, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [6, 7, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [7, 8, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [8, 9, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [9, 10, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [10, 11, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [11, 12, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [12, 13, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [13, 14, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [14, 15, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [15, 16, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [16, 17, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [17, 18, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [18, 0, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [0, 19, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [22, 23, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
-      - [23, 24, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+    - - 0
+      - 1
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 1
+      - 2
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 2
+      - 3
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 3
+      - 4
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 4
+      - 5
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 5
+      - 6
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 6
+      - 7
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 7
+      - 8
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 8
+      - 9
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 9
+      - 10
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 10
+      - 11
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 11
+      - 12
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 12
+      - 13
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 13
+      - 14
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 14
+      - 15
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 15
+      - 16
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 16
+      - 17
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 17
+      - 18
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 18
+      - 0
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 0
+      - 19
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 22
+      - 23
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
+    - - 23
+      - 24
+      - alpha: [3, 1]
+        texture_height: [3, 2.5]
+        texture_name: [1, default]
+        texture_scale: [3, 1]
+        texture_width: [3, 1]
 lifts: {}
 name: new_env
 reference_coordinates:
-  - [143.726, 17.077, 2.1703, 10.3472]
-  - [1.310, 272.635, -4.9505, -2.4308]
+- [28.828, 108.872, 1.48, -5.6]
+- [28.828, 184.477, 1.48, -9.5]

@@ -271,7 +271,7 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto adapter = Adapter::init_and_make("fleet_adapter_node");
+  auto adapter = Adapter::make("dynominion_fleet_adapter");
   if (!adapter)
     return 1;
   
@@ -279,7 +279,11 @@ int main(int argc, char** argv)
   auto fleet_adapter_node = std::make_shared<FleetAdapterNode>(node, adapter);
   fleet_adapter_node->init();
   
-  rclcpp::spin(node);
+  // The RMF adapter handles spinning the node in its own background thread.
+  while (rclcpp::ok())
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
   rclcpp::shutdown();
   return 0;
 }

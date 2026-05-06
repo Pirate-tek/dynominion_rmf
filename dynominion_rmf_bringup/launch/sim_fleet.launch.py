@@ -48,7 +48,7 @@ def generate_launch_description():
         package='rmf_building_map_tools',
         executable='building_map_server',
         arguments=[building_map_file],
-        remappings=[('/map', '/building_map')],
+        remappings=[('/map', '/floorplan')],
         parameters=[{'use_sim_time': use_sim_time}],
         output='screen'
     )
@@ -135,32 +135,34 @@ def generate_launch_description():
 
     # 4. Fleet Adapter
     # Fleet config path
-    fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
-    # Nav graph path (usually 0.yaml in maps package)
-    nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
+    # fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
+    # # Nav graph path (usually 0.yaml in maps package)
+    # nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
 
-    fleet_adapter_node = Node(
-        package='dynominion_fleet_adapter',
-        executable='fleet_adapter_node',
-        name='fleet_adapter_node',
-        output='screen',
-        parameters=[
-            {'config_file': fleet_config_file},
-            {'nav_graph_path': nav_graph_path},
-            {'use_sim_time': True}
-        ]
-    )
+    # fleet_adapter_node = Node(
+    #     package='dynominion_fleet_adapter',
+    #     executable='fleet_adapter_node',
+    #     name='dynominion_fleet_adapter',
+    #     output='screen',
+    #     arguments=[
+    #         '--ros-args',
+    #         '-p', f'config_file:={fleet_config_file}',
+    #         '-p', f'nav_graph_path:={nav_graph_path}',
+    #         '-p', 'use_sim_time:=true'
+    #     ]
+    # )
 
 
-    # Fleet Adapter with a delay to ensure schedule is up
-    fleet_adapter_timer = TimerAction(
-        period=15.0,
-        actions=[fleet_adapter_node]
-    )
+    # # Fleet Adapter with a delay to ensure schedule is up
+    # fleet_adapter_timer = TimerAction(
+    #     period=15.0,
+    #     actions=[fleet_adapter_node]
+    # )
 
     # 5. RMF Visualization
     rmf_visualization_group = GroupAction([
-        SetRemap(src='/map', dst='/building_map'),
+        SetRemap(src='/map', dst='/floorplan'),
+        SetRemap(src='/floorplan', dst='/floorplan_grid'),
         IncludeLaunchDescription(
             AnyLaunchDescriptionSource(
                 os.path.join(get_package_share_directory('rmf_visualization'), 'visualization.launch.xml')
@@ -184,7 +186,7 @@ def generate_launch_description():
     for nav in nav_instances:
         ld.add_action(nav)
     # RMF Core nodes are now expected to be launched via rmf_core.launch.py
-    ld.add_action(fleet_adapter_timer)
+    # ld.add_action(fleet_adapter_timer)
     ld.add_action(rmf_visualization_group)
 
     return ld
