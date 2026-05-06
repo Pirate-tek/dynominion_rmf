@@ -20,10 +20,9 @@ def generate_launch_description():
             default_value='True',
             description='Use simulation (Gazebo) clock if true'),
 
-        # RMF Building Map Server
+        # RMF Building Map Server (Patched)
         Node(
-            package='rmf_building_map_tools',
-            executable='building_map_server',
+            executable=os.path.join(pkg_bringup, 'scripts', 'building_map_server_patched.py'),
             name='building_map_server',
             output='screen',
             arguments=[building_map_file],

@@ -12,7 +12,7 @@ find_package(rmf_traffic_ros2 REQUIRED)
 find_package(rmf_task_ros2 REQUIRED)
 find_package(rmf_fleet_adapter REQUIRED)
 
-install(DIRECTORY launch config rviz
+install(DIRECTORY launch config rviz scripts
   DESTINATION share/${PROJECT_NAME}
 )
 

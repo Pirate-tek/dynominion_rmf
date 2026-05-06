@@ -17,7 +17,7 @@ crowd_sim:
   model_types: []
   obstacle_set: {class: 1, file_name: L1_navmesh.nav, type: nav_mesh}
   states:
-  - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ''}
+  - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ../nav_graphs/0.yaml}
   transitions: []
   update_time_step: 0.1
 graphs:
@@ -309,5 +309,7 @@ levels:
 lifts: {}
 name: new_env
 reference_coordinates:
-- [28.828, 108.872, 1.48, -5.6]
-- [28.828, 184.477, 1.48, -9.5]
+- [2.006,   -22.0063, -4.85, -10.9]
+- [-6.0017, -22.0063,  4.24, -10.9]
+- [2.0006,   -3.0009, -4.87,  7.33]
+- [-6.0017,     0.0,   4.25,  10.3]

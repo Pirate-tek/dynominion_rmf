@@ -13,6 +13,7 @@
 using namespace rmf_fleet_adapter::agv;
 
 // Helper to compute transformation between RMF and robot coordinates
+// This implements the same algorithm as the 'nudged' Python library
 Transformation compute_transformation(
   const std::string& level,
   const YAML::Node& coords,
@@ -28,42 +29,57 @@ Transformation compute_transformation(
   }
 
   int n = std::min((int)rmf_node.size(), (int)robot_node.size());
-  Eigen::MatrixXd A(2 * n, 4);
-  Eigen::VectorXd B(2 * n);
-
+  
+  double sum_x = 0, sum_y = 0;
+  double sum_xp = 0, sum_yp = 0;
+  
   for (int i = 0; i < n; ++i)
   {
-    double x = rmf_node[i][0].as<double>();
-    double y = rmf_node[i][1].as<double>();
-    double xp = robot_node[i][0].as<double>();
-    double yp = robot_node[i][1].as<double>();
-
-    A(2 * i, 0) = x;
-    A(2 * i, 1) = -y;
-    A(2 * i, 2) = 1.0;
-    A(2 * i, 3) = 0.0;
-
-    A(2 * i + 1, 0) = y;
-    A(2 * i + 1, 1) = x;
-    A(2 * i + 1, 2) = 0.0;
-    A(2 * i + 1, 3) = 1.0;
-
-    B(2 * i) = xp;
-    B(2 * i + 1) = yp;
+    sum_x += rmf_node[i][0].as<double>();
+    sum_y += rmf_node[i][1].as<double>();
+    sum_xp += robot_node[i][0].as<double>();
+    sum_yp += robot_node[i][1].as<double>();
   }
-
-  Eigen::Vector4d sol = A.colPivHouseholderQr().solve(B);
-  double ar = sol(0);
-  double ai = sol(1);
-  double br = sol(2);
-  double bi = sol(3);
-
-  double rotation = std::atan2(ai, ar);
-  double scale = std::sqrt(ar * ar + ai * ai);
-  Eigen::Vector2d translation(br, bi);
+  
+  double mean_x = sum_x / n;
+  double mean_y = sum_y / n;
+  double mean_xp = sum_xp / n;
+  double mean_yp = sum_yp / n;
+  
+  double s_uu_vv = 0;
+  double s_uup_vvp = 0;
+  double s_uvp_vup = 0;
+  
+  for (int i = 0; i < n; ++i)
+  {
+    double u = rmf_node[i][0].as<double>() - mean_x;
+    double v = rmf_node[i][1].as<double>() - mean_y;
+    double up = robot_node[i][0].as<double>() - mean_xp;
+    double vp = robot_node[i][1].as<double>() - mean_yp;
+    
+    s_uu_vv += u*u + v*v;
+    s_uup_vvp += u*up + v*vp;
+    s_uvp_vup += u*vp - v*up;
+  }
+  
+  if (s_uu_vv < 1e-9)
+  {
+    RCLCPP_WARN(logger, "Points are too close to compute transformation for level [%s].", level.c_str());
+    return Transformation(0.0, 1.0, Eigen::Vector2d(mean_xp - mean_x, mean_yp - mean_y));
+  }
+  
+  double a = s_uup_vvp / s_uu_vv;
+  double b = s_uvp_vup / s_uu_vv;
+  
+  double tx = mean_xp - (a * mean_x - b * mean_y);
+  double ty = mean_yp - (b * mean_x + a * mean_y);
+  
+  double rotation = std::atan2(b, a);
+  double scale = std::sqrt(a * a + b * b);
+  Eigen::Vector2d translation(tx, ty);
 
   RCLCPP_INFO(logger, "Computed transformation for [%s]: rot=%.3f, scale=%.3f, trans=(%.3f, %.3f)",
-    level.c_str(), rotation, scale, br, bi);
+    level.c_str(), rotation, scale, tx, ty);
 
   return Transformation(rotation, scale, translation);
 }
@@ -171,9 +187,9 @@ public:
       std::chrono::seconds(10), // min_hold_time
       std::chrono::seconds(2),  // update_interval
       true,    // publish_fleet_state
-      0.1,     // max_merge_waypoint_distance
-      0.1,     // max_merge_lane_distance
-      0.5      // min_lane_width
+      2.0,     // max_merge_waypoint_distance
+      2.0,     // max_merge_lane_distance
+      0.3      // min_lane_width
     );
 
     // Add transformations from reference_coordinates

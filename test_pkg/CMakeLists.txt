@@ -12,6 +12,7 @@ install(DIRECTORY
   launch
   building
   rviz
+  config
   DESTINATION share/${PROJECT_NAME}
 )
 
