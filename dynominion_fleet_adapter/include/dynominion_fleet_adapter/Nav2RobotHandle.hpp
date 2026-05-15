@@ -14,10 +14,6 @@
 #include <string>
 #include <optional>
 
-#include <tf2_ros/transform_listener.h>
-#include <tf2_ros/buffer.h>
-#include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
-
 class Nav2RobotHandle
 {
 public:
@@ -37,6 +33,9 @@ public:
   rmf_fleet_adapter::agv::EasyFullControl::RobotState get_state();
   void set_level_name(const std::string& level_name) { level_name_ = level_name; }
 
+  // Goal 6/7: update cached state from Manager poll
+  void update_state(const Eigen::Vector3d& pose, double battery, bool localized);
+
   // Callbacks for RMF EasyFullControl (Jazzy API)
   void navigate(
     rmf_fleet_adapter::agv::EasyFullControl::Destination destination,
@@ -45,27 +44,17 @@ public:
   void stop(rmf_fleet_adapter::agv::EasyFullControl::ConstActivityIdentifierPtr identifier);
 
 private:
-  void amcl_pose_callback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg);
-  void battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr msg);
-  void update_loop();
-
   std::string name_;
   std::string level_name_ = "L1";
   std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl::EasyRobotUpdateHandle> update_handle_;
   rclcpp::Node::SharedPtr node_;
 
   rclcpp_action::Client<NavigateToPose>::SharedPtr nav_client_;
-  rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr amcl_pose_sub_;
-  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub_;
-  rclcpp::TimerBase::SharedPtr update_timer_;
 
-  // TF members
-  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-  std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
-
-  geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr last_amcl_pose_;
-  double last_battery_soc_ = 1.0;
-  rclcpp::Time start_time_;
+  // Cached state from Process 2 (FleetManagerNode)
+  Eigen::Vector3d cached_pose_ = Eigen::Vector3d::Zero();
+  double cached_battery_ = 1.0;
+  bool is_localized_ = false;
 
   std::unique_ptr<rmf_fleet_adapter::agv::EasyFullControl::CommandExecution> active_execution_;
   GoalHandleNav::SharedPtr active_goal_handle_;

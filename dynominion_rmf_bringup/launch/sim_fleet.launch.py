@@ -43,15 +43,6 @@ def generate_launch_description():
                     {'node_names': ['map_server']}]
     )
 
-    building_map_file = os.path.join(pkg_maps, 'building', 'new_env.building.yaml')
-    building_map_server_node = Node(
-        package='rmf_building_map_tools',
-        executable='building_map_server',
-        arguments=[building_map_file],
-        remappings=[('/map', '/floorplan')],
-        parameters=[{'use_sim_time': use_sim_time}],
-        output='screen'
-    )
 
     door_supervisor_node = Node(
         package='rmf_fleet_adapter',
@@ -79,8 +70,11 @@ def generate_launch_description():
     # 2. Navigation instances per robot
     # Positions match multi_robot_gazebo.launch.py spawns exactly
     robots = [
-        {'name': 'dynominion1', 'x': 1.48, 'y': -5.6, 'yaw': 0.0},
-        {'name': 'dynominion2', 'x': 1.48, 'y': -9.5, 'yaw': 0.0},
+        {'name': 'dynominion1', 'x': 1.487486, 'y': -5.617650, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x': 1.487486, 'y': -9.518767, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': 7.890055, 'y': -9.518767, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x': 7.711421, 'y': -5.558105, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': 2.112862, 'y': -11.662898, 'yaw': 0.0},
     ]
 
 
@@ -133,60 +127,23 @@ def generate_launch_description():
         )
 
 
-    # 4. Fleet Adapter
-    # Fleet config path
-    # fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
-    # # Nav graph path (usually 0.yaml in maps package)
-    # nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
-
-    # fleet_adapter_node = Node(
-    #     package='dynominion_fleet_adapter',
-    #     executable='fleet_adapter_node',
-    #     name='dynominion_fleet_adapter',
-    #     output='screen',
-    #     arguments=[
-    #         '--ros-args',
-    #         '-p', f'config_file:={fleet_config_file}',
-    #         '-p', f'nav_graph_path:={nav_graph_path}',
-    #         '-p', 'use_sim_time:=true'
-    #     ]
-    # )
+    # 4. Fleet Adapter (Process 1 — Goal 6)
+    # High-level: RMF task bidding, traffic scheduling, status polling.
+    fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
+    nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
+    fleet_node_params = os.path.join(pkg_adapter, 'config', 'fleet_node_params.yaml')
 
 
-    # # Fleet Adapter with a delay to ensure schedule is up
-    # fleet_adapter_timer = TimerAction(
-    #     period=15.0,
-    #     actions=[fleet_adapter_node]
-    # )
 
-    # 5. RMF Visualization
-    rmf_visualization_group = GroupAction([
-        SetRemap(src='/map', dst='/floorplan'),
-        SetRemap(src='/floorplan', dst='/floorplan_grid'),
-        IncludeLaunchDescription(
-            AnyLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('rmf_visualization'), 'visualization.launch.xml')
-            ),
-            launch_arguments={
-                'use_sim_time': use_sim_time,
-                'map_name': 'L1',
-                'viz_config_file': os.path.join(pkg_bringup, 'rviz', 'fleet_view.rviz')
-            }.items()
-        )
-    ])
 
     # Create Launch Description
     ld = LaunchDescription()
     ld.add_action(map_server_node)
     ld.add_action(map_lifecycle_node)
-    ld.add_action(building_map_server_node)
     ld.add_action(door_supervisor_node)
     ld.add_action(lift_supervisor_node)
     ld.add_action(sim_gazebo)
     for nav in nav_instances:
         ld.add_action(nav)
-    # RMF Core nodes are now expected to be launched via rmf_core.launch.py
-    # ld.add_action(fleet_adapter_timer)
-    ld.add_action(rmf_visualization_group)
 
     return ld

@@ -15,8 +15,11 @@ def generate_launch_description():
     
     # Define robots to spawn
     robots = [
-        {'name': 'dynominion1', 'x': '1.48', 'y': '-5.6', 'z': '0.5'},
-        {'name': 'dynominion2', 'x': '1.48', 'y': '-9.5', 'z': '0.5'},
+        {'name': 'dynominion1', 'x': '1.487486', 'y': '-5.617650', 'z': '0.5'},
+        {'name': 'dynominion2', 'x': '1.487486', 'y': '-9.518767', 'z': '0.5'},
+        {'name': 'dynominion3', 'x': '7.890055', 'y': '-9.518767', 'z': '0.5'},
+        {'name': 'dynominion4', 'x': '7.711421', 'y': '-5.558105', 'z': '0.5'},
+        {'name': 'dynominion5', 'x': '2.112862', 'y': '-11.662898', 'z': '0.5'},
     ]
 
 

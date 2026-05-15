@@ -24,7 +24,12 @@ graphs:
   0: {name: fleet_graph}
 levels:
   L1:
-    drawing: {filename: dynominion_map.png}
+    drawing:
+      filename: dynominion_map.png
+      x: 0.0
+      y: 0.0
+      yaw: 0.0
+      scale: 0.05
     elevation: 0
     floors:
     - parameters:
@@ -309,7 +314,7 @@ levels:
 lifts: {}
 name: new_env
 reference_coordinates:
-- [2.006,   -22.0063, -4.85, -10.9]
-- [-6.0017, -22.0063,  4.24, -10.9]
-- [2.0006,   -3.0009, -4.87,  7.33]
-- [-6.0017,     0.0,   4.25,  10.3]
+- [0.0, 0.0, 0.0, 0.0]
+- [10.0, 0.0, 10.0, 0.0]
+- [0.0, 10.0, 0.0, 10.0]
+- [10.0, 10.0, 10.0, 10.0]

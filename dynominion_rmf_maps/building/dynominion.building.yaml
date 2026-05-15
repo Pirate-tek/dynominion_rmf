@@ -13,37 +13,15 @@ crowd_sim:
   transitions: []
   update_time_step: 0.10000000000000001
 graphs:
-  {}
+  0:
+    default_lane_width: 1
+    name: fleet_graph
 levels:
   L1:
     drawing:
-      filename: ../maps/dynominion_map.png
+      filename: dynominion_map.png
     elevation: 0
-    lanes:
-      - [0, 1, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [1, 2, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [2, 3, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [3, 4, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [4, 5, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [4, 1, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [6, 0, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [6, 1, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [6, 4, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [7, 2, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [7, 3, {bidirectional: [4, true], graph_idx: [2, 0]}]
-      - [7, 6, {bidirectional: [4, true], graph_idx: [2, 0]}]
     layers:
       {}
-    measurements:
-      - [0, 1, {distance: [3, 7.0418]}]
-    vertices:
-      - [3.061, -9.246, 0, entry_point]
-      - [3.167, -2.205, 0, charger_1, {is_charger: [4, true], is_parking: [4, true], dock_name: [1, "charger_1"]}]
-      - [1.004, 5.876, 0, table_1]
-      - [-3.043, 8.876, 0, table_2]
-      - [-2.741, -0.575, 0, charger_2, {is_charger: [4, true], is_parking: [4, true], dock_name: [1, "charger_2"]}]
-      - [-3.948, 5.653, 0, exit_point]
-      - [0.0, -2.0, 0, waiting_zone_1, {is_parking: [4, true]}]
-      - [0.0, 3.0, 0, waiting_zone_2, {is_parking: [4, true]}]
 lifts: {}
 name: dynominion

@@ -2,17 +2,26 @@ fleet_manager:
   fleet_name: "dynominion_fleet"
   nav_graph_path: "nav_graphs/0.yaml"
   nominal_elevation: 0.0
+
+fleet_identity:
+  fleet_name: "dynominion_fleet"
+  fleet_type: "differential"
+  supported_tasks:
+    - "compose"
+    - "patrol"
+    - "go_to_place"
+
   robots:
     dynominion1:
       charger: "charger_main"
     dynominion2:
-      charger: "charger_main"
+      charger: "lobby_waypoint"
     dynominion3:
-      charger: "charger_main"
+      charger: "hub_center"
     dynominion4:
-      charger: "charger_main"
+      charger: "corridor_north"
     dynominion5:
-      charger: "charger_main"
+      charger: "bottom_zone"
   robot_profile:
     footprint_radius: 0.4
     max_linear_speed: 1.0

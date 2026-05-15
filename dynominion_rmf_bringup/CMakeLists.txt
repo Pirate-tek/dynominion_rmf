@@ -12,8 +12,18 @@ find_package(rmf_traffic_ros2 REQUIRED)
 find_package(rmf_task_ros2 REQUIRED)
 find_package(rmf_fleet_adapter REQUIRED)
 
-install(DIRECTORY launch config rviz scripts
+install(DIRECTORY launch config rviz
   DESTINATION share/${PROJECT_NAME}
+)
+
+install(DIRECTORY scripts
+  DESTINATION share/${PROJECT_NAME}
+  USE_SOURCE_PERMISSIONS
+)
+
+install(PROGRAMS
+  scripts/building_map_server_patched.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
