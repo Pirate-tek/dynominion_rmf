@@ -116,6 +116,8 @@ struct RobotContext
   std::shared_ptr<EasyFullControl::EasyRobotUpdateHandle> update_handle;
 
   bool registered = false;
+
+  rmf_fleet_adapter::agv::EasyFullControl::ConstActivityIdentifierPtr current_activity;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -396,6 +398,7 @@ private:
         // Goal 7: RosTopicClient registers result callback for poll detection
         [ctx_cap, node_cap](auto dest, auto exec)
         {
+          ctx_cap->current_activity = exec.identifier();
           // Validate via RMFHandler
           auto opt_task_id = ctx_cap->rmf_handler->on_navigate(dest);
 
@@ -413,16 +416,18 @@ private:
           ctx_cap->http_client->navigate(
             pos.x(), pos.y(), dest.yaw(),
             dest.name(), synth_id,
-            [exec_moved = std::move(exec)](bool success) mutable
+            [exec_moved = std::move(exec), ctx_cap](bool success) mutable
             {
               if (success)
                 exec_moved.finished();
+              ctx_cap->current_activity = nullptr;
             });
         },
 
         // stop / interrupt
         [ctx_cap](auto ident)
         {
+          ctx_cap->current_activity = nullptr;
           // Goal 2: update StateGuard + publish STOP sentinel to fleet_manager
           ctx_cap->rmf_handler->on_stop(ident);
           // Goal 7: clear pending result callback in HttpRobotClient
@@ -435,6 +440,7 @@ private:
           const nlohmann::json & /*description*/,
           rmf_fleet_adapter::agv::RobotUpdateHandle::ActionExecution action_exec)
         {
+          ctx_cap->current_activity = action_exec.identifier();
           handle_custom_action(ctx_cap, category, std::move(action_exec));
         }
       );
@@ -537,6 +543,8 @@ private:
         ctx->name.c_str(), category.c_str());
       action_exec.finished();
     }
+    
+    ctx->current_activity = nullptr;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -629,7 +637,7 @@ private:
           pos_vec,
           report.battery_soc);
 
-        ctx->update_handle->update(state, nullptr);
+        ctx->update_handle->update(state, ctx->current_activity);
 
         RCLCPP_INFO_THROTTLE(node_->get_logger(), *node_->get_clock(), 2000,
           "[FleetAdapterNode][%s] Pushing telemetry to RMF: (%.2f, %.2f, %.2f)",

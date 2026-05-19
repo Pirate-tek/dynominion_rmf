@@ -1,0 +1,46 @@
+/**:
+  ros__parameters:
+    # ─────────────────────────────────────────────────────────────────────
+    # Goal 1 — Fleet Identity & Task Validation Layer (FleetValidator)
+    #
+    # These parameters are read and validated by FleetValidator on node
+    # startup. If any field is missing, empty, or wrong type, the adapter
+    # will refuse to enter the RMF schedule and log a FATAL error.
+    # ─────────────────────────────────────────────────────────────────────
+    fleet_identity:
+      # Human-readable fleet name — must match the name declared in the
+      # RMF traffic editor building map and the integration_config.yaml.
+      fleet_name: "dynominion_fleet"
+
+      # Fleet drive type identifier.
+      # Supported values: differential | omnidirectional | holonomic
+      fleet_type: "differential"
+
+      # Exhaustive list of RMF task types this fleet is permitted to execute.
+      # Any task type NOT in this list will be rejected by FleetValidator
+      # before reaching the navigation stack.
+      supported_tasks:
+        - "go_to_place"
+        - "patrol"
+        - "compose"
+
+    # ─────────────────────────────────────────────────────────────────────
+    # Goal 3 (future) — Custom Navigation Controller tuning
+    # Declared here now so future parameters are co-located.
+    # ─────────────────────────────────────────────────────────────────────
+    navigation:
+      # Maximum heading error (rad) before a pre-rotation is issued.
+      heading_error_threshold: 0.35        # ~20 degrees
+
+      # Radius (m) at which the controller switches to approach speed.
+      approach_radius: 0.5
+
+      # Maximum linear speed (m/s) in the approach zone.
+      approach_speed_limit: 0.2
+
+      # Radius (m) at which a waypoint is considered reached.
+      arrival_threshold: 0.15
+
+      # ROS2 topic on which obstacle detection signals are received.
+      # Format: <robot_namespace>/obstacle_detected
+      obstacle_topic_suffix: "obstacle_detected"
