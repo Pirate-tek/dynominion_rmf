@@ -19,6 +19,7 @@
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/empty.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 
 #include <rmf_fleet_adapter/agv/EasyFullControl.hpp>
 
@@ -162,7 +163,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr obstacle_sub_;
 
   /// Publisher: /<robot_name>/cmd_vel  (for pre-rotation commands)
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_pub_;
 
   /// 50 Hz control loop timer.
   rclcpp::TimerBase::SharedPtr control_timer_;

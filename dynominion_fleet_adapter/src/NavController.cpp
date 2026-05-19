@@ -65,7 +65,7 @@ NavController::NavController(
   // ── cmd_vel publisher ────────────────────────────────────────────────────
   // Used for pre-rotation and approach speed commands.
   // Topic: /<robot_name>/cmd_vel
-  cmd_vel_pub_ = node_->create_publisher<geometry_msgs::msg::Twist>(
+  cmd_vel_pub_ = node_->create_publisher<geometry_msgs::msg::TwistStamped>(
     "/" + robot_name_ + "/cmd_vel", 10);
 
   // ── Obstacle subscriber ──────────────────────────────────────────────────
@@ -386,8 +386,8 @@ void NavController::control_tick()
     while (yaw_err >  M_PI) yaw_err -= 2.0 * M_PI;
     while (yaw_err < -M_PI) yaw_err += 2.0 * M_PI;
 
-    constexpr double kAngularGain = 1.5;
-    constexpr double kYawTol      = 0.05;  // rad
+    constexpr double kAngularGain = 0.8;
+    constexpr double kYawTol      = 0.12;  // rad
 
     if (std::abs(yaw_err) <= kYawTol)
     {
@@ -531,10 +531,12 @@ double NavController::compute_distance(double tx, double ty) const
 
 void NavController::publish_cmd_vel(double linear_x, double angular_z)
 {
-  geometry_msgs::msg::Twist twist;
-  twist.linear.x  = linear_x;
-  twist.angular.z = angular_z;
-  cmd_vel_pub_->publish(twist);
+  geometry_msgs::msg::TwistStamped twist_stamped;
+  twist_stamped.header.stamp = node_->now();
+  twist_stamped.header.frame_id = robot_name_ + "/base_footprint";
+  twist_stamped.twist.linear.x  = linear_x;
+  twist_stamped.twist.angular.z = angular_z;
+  cmd_vel_pub_->publish(twist_stamped);
 }
 
 }  // namespace dynominion_fleet_adapter
