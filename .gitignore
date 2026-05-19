@@ -15,3 +15,7 @@ frames*
 
 # Ignore .md files in the directory
 *.md
+
+# RMF Traffic Schedule cache
+.rmf_schedule_node.yaml
+
