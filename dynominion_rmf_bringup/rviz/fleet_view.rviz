@@ -56,7 +56,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /map
+        Value: /floorplan
       Update Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -1345,7 +1345,7 @@ Visualization Manager:
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Name: MarkerArray
+      Name: Map Markers
       Namespaces:
         {}
       Topic:
@@ -1353,11 +1353,11 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /waypoints
+        Value: /map_markers
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
-      Name: RMF Markers
+      Name: Schedule Markers
       Namespaces:
         {}
       Topic:
@@ -1365,7 +1365,31 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /rmf_visualization/markers
+        Value: /schedule_markers
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Fleet Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /fleet_markers
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Building Systems
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /building_systems_markers
       Value: true
   Enabled: true
   Global Options:

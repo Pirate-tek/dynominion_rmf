@@ -12,11 +12,11 @@ class MultiInitialPosePublisher(Node):
         super().__init__('multi_initial_pose_publisher')
 
         self.robots = [
-            {'name': 'dynominion1', 'x': 0.0,  'y': 0.0,  'yaw': 0.0},
-            {'name': 'dynominion2', 'x': 2.0,  'y': 3.0,  'yaw': 0.0},
-            {'name': 'dynominion3', 'x': -2.0, 'y': 3.0,  'yaw': 0.0},
-            {'name': 'dynominion4', 'x': 3.0,  'y': -2.0, 'yaw': 0.0},
-            {'name': 'dynominion5', 'x': -3.0, 'y': -2.0, 'yaw': 0.0},
+            {'name': 'dynominion1', 'x': 1.487486, 'y': -5.617650, 'yaw': 0.0},
+            {'name': 'dynominion2', 'x': 1.487486, 'y': -9.518767, 'yaw': 0.0},
+            {'name': 'dynominion3', 'x': 7.890055, 'y': -9.518767, 'yaw': 0.0},
+            {'name': 'dynominion4', 'x': 7.711421, 'y': -5.558105, 'yaw': 0.0},
+            {'name': 'dynominion5', 'x': 2.112862, 'y': -11.662898, 'yaw': 0.0},
         ]
 
         # ✅ FIX: avoid conflict with Node internals

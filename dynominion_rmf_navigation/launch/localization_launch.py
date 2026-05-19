@@ -177,9 +177,11 @@ def generate_launch_description():
                 parameters=[
                     configured_params,
                     {
-                        'initial_pose_x':   initial_pose_x,
-                        'initial_pose_y':   initial_pose_y,
-                        'initial_pose_yaw': initial_pose_yaw,
+                        'initial_pose': {
+                            'x': initial_pose_x,
+                            'y': initial_pose_y,
+                            'yaw': initial_pose_yaw,
+                        },
                         'set_initial_pose': True,
                     }
                 ],
@@ -255,9 +257,9 @@ def generate_launch_description():
                         parameters=[
                             configured_params,
                             {
-                                'initial_pose_x':   initial_pose_x,
-                                'initial_pose_y':   initial_pose_y,
-                                'initial_pose_yaw': initial_pose_yaw,
+                                'initial_pose.x':   initial_pose_x,
+                                'initial_pose.y':   initial_pose_y,
+                                'initial_pose.yaw': initial_pose_yaw,
                                 'set_initial_pose': True,
                             }
                         ],

@@ -13,26 +13,34 @@ Nav2RobotHandle::Nav2RobotHandle(
   nav_client_ = rclcpp_action::create_client<NavigateToPose>(
     node_, "/" + name_ + "/navigate_to_pose");
 
-  // Telemetry subscribers
-  odom_sub_ = node_->create_subscription<nav_msgs::msg::Odometry>(
-    "/" + name_ + "/odom", 10,
-    std::bind(&Nav2RobotHandle::odom_callback, this, std::placeholders::_1));
-
-  battery_sub_ = node_->create_subscription<sensor_msgs::msg::BatteryState>(
-    "/" + name_ + "/battery_state", 10,
-    std::bind(&Nav2RobotHandle::battery_callback, this, std::placeholders::_1));
-
-  // RMF update loop (500ms)
-  update_timer_ = node_->create_wall_timer(
-    std::chrono::milliseconds(500),
-    std::bind(&Nav2RobotHandle::update_loop, this));
-
-  RCLCPP_INFO(node_->get_logger(), "Initialized Nav2RobotHandle for %s", name_.c_str());
+  RCLCPP_INFO(node_->get_logger(), 
+    "[Nav2RobotHandle][%s] Initialized (Industrial decoupled mode).", name_.c_str());
 }
 
 void Nav2RobotHandle::set_update_handle(const std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl::EasyRobotUpdateHandle>& update_handle)
 {
   update_handle_ = update_handle;
+}
+
+bool Nav2RobotHandle::is_ready()
+{
+  // Goal 6: Readiness is now determined by whether the FleetManager
+  // has reported a valid localization via its HTTP state endpoint.
+  return is_localized_;
+}
+
+void Nav2RobotHandle::update_state(const Eigen::Vector3d& pose, double battery, bool localized)
+{
+  cached_pose_ = pose;
+  cached_battery_ = battery;
+  is_localized_ = localized;
+}
+
+
+rmf_fleet_adapter::agv::EasyFullControl::RobotState Nav2RobotHandle::get_state()
+{
+  return rmf_fleet_adapter::agv::EasyFullControl::RobotState(
+    level_name_, cached_pose_, cached_battery_);
 }
 
 void Nav2RobotHandle::navigate(
@@ -103,29 +111,5 @@ void Nav2RobotHandle::stop(rmf_fleet_adapter::agv::EasyFullControl::ConstActivit
   }
 }
 
-void Nav2RobotHandle::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
-{
-  last_odom_ = msg;
-}
-
-void Nav2RobotHandle::battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr msg)
-{
-  last_battery_soc_ = msg->percentage;
-}
-
-void Nav2RobotHandle::update_loop()
-{
-  if (!last_odom_ || !update_handle_)
-    return;
-
-  Eigen::Vector3d position(
-    last_odom_->pose.pose.position.x,
-    last_odom_->pose.pose.position.y,
-    tf2::getYaw(last_odom_->pose.pose.orientation)
-  );
-
-  update_handle_->update(
-    rmf_fleet_adapter::agv::EasyFullControl::RobotState("L1", position, last_battery_soc_),
-    nullptr
-  );
-}
+// Goal 6: telemetry is now polled via HttpRobotClient in FleetAdapterNode.
+// update_loop and direct ROS callbacks are removed.

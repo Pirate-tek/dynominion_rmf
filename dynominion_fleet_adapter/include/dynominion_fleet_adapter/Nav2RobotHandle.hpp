@@ -24,7 +24,17 @@ public:
     const std::string& name,
     const rclcpp::Node::SharedPtr& node);
 
+  const std::string& name() const { return name_; }
+
   void set_update_handle(const std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl::EasyRobotUpdateHandle>& update_handle);
+
+  // New methods for event-based initialization
+  bool is_ready();
+  rmf_fleet_adapter::agv::EasyFullControl::RobotState get_state();
+  void set_level_name(const std::string& level_name) { level_name_ = level_name; }
+
+  // Goal 6/7: update cached state from Manager poll
+  void update_state(const Eigen::Vector3d& pose, double battery, bool localized);
 
   // Callbacks for RMF EasyFullControl (Jazzy API)
   void navigate(
@@ -34,21 +44,17 @@ public:
   void stop(rmf_fleet_adapter::agv::EasyFullControl::ConstActivityIdentifierPtr identifier);
 
 private:
-  void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
-  void battery_callback(const sensor_msgs::msg::BatteryState::SharedPtr msg);
-  void update_loop();
-
   std::string name_;
+  std::string level_name_ = "L1";
   std::shared_ptr<rmf_fleet_adapter::agv::EasyFullControl::EasyRobotUpdateHandle> update_handle_;
   rclcpp::Node::SharedPtr node_;
 
   rclcpp_action::Client<NavigateToPose>::SharedPtr nav_client_;
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
-  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub_;
-  rclcpp::TimerBase::SharedPtr update_timer_;
 
-  nav_msgs::msg::Odometry::SharedPtr last_odom_;
-  double last_battery_soc_ = 1.0;
+  // Cached state from Process 2 (FleetManagerNode)
+  Eigen::Vector3d cached_pose_ = Eigen::Vector3d::Zero();
+  double cached_battery_ = 1.0;
+  bool is_localized_ = false;
 
   std::unique_ptr<rmf_fleet_adapter::agv::EasyFullControl::CommandExecution> active_execution_;
   GoalHandleNav::SharedPtr active_goal_handle_;

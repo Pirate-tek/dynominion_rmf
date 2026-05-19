@@ -5,9 +5,9 @@ from launch.actions import (DeclareLaunchArgument, IncludeLaunchDescription,
                             RegisterEventHandler, TimerAction, GroupAction,
                             ExecuteProcess)
 from launch.event_handlers import (OnProcessStart, OnProcessExit)
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource, AnyLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetRemap
 from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import RewrittenYaml
 
@@ -42,6 +42,21 @@ def generate_launch_description():
                     {'autostart': True},
                     {'node_names': ['map_server']}]
     )
+
+
+    door_supervisor_node = Node(
+        package='rmf_fleet_adapter',
+        executable='door_supervisor',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
+    lift_supervisor_node = Node(
+        package='rmf_fleet_adapter',
+        executable='lift_supervisor',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
     
     # 1. Gazebo & Spawns
     # Using existing multi_robot_gazebo.launch.py
@@ -55,12 +70,13 @@ def generate_launch_description():
     # 2. Navigation instances per robot
     # Positions match multi_robot_gazebo.launch.py spawns exactly
     robots = [
-        {'name': 'dynominion1', 'x':  0.0, 'y':  0.0, 'yaw': 0.0},
-        {'name': 'dynominion2', 'x':  2.0, 'y':  3.0, 'yaw': 0.0},
-        {'name': 'dynominion3', 'x': -2.0, 'y':  3.0, 'yaw': 0.0},
-        {'name': 'dynominion4', 'x':  3.0, 'y': -2.0, 'yaw': 0.0},
-        {'name': 'dynominion5', 'x': -3.0, 'y': -2.0, 'yaw': 0.0},
+        {'name': 'dynominion1', 'x': 1.487486, 'y': -5.617650, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x': 1.487486, 'y': -9.518767, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': 7.890055, 'y': -9.518767, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x': 7.711421, 'y': -5.558105, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': 2.112862, 'y': -11.662898, 'yaw': 0.0},
     ]
+
 
     nav_instances = []
     # Stagger matches Gazebo spawn: robot i spawns at i*5s.
@@ -110,101 +126,24 @@ def generate_launch_description():
             )
         )
 
-    # 3. RMF Core Nodes
-    # We define them here to use the handles for event registration
-    schedule_node = Node(
-        package='rmf_traffic_ros2',
-        executable='rmf_traffic_schedule',
-        name='rmf_traffic_schedule',
-        output='screen',
-        parameters=[rmf_config_file] # Fix 3: Sync Time/Parameters
-    )
-    
-    dispatcher_node = Node(
-        package='rmf_task_ros2',
-        executable='rmf_task_dispatcher',
-        name='rmf_task_dispatcher',
-        output='screen',
-        parameters=[rmf_config_file] # Fix 3: Sync Time/Parameters
-    )
-    
-    blockade_node = Node(
-        package='rmf_traffic_ros2',
-        executable='rmf_traffic_blockade',
-        name='rmf_traffic_blockade',
-        output='screen',
-        parameters=[rmf_config_file] # Fix 3: Sync Time/Parameters
-    )
 
-    # 4. Fleet Adapter
-    # Fleet config path
-    fleet_config_file = '/home/jazzy/rough_ws/src/dynominion_fleet_adapter/config/fleet_config.yaml'
-    # Nav graph path (usually 0.yaml in maps package)
-    nav_graph_path = '/home/jazzy/rough_ws/src/dynominion_rmf_maps/nav_graphs/0.yaml'
+    # 4. Fleet Adapter (Process 1 — Goal 6)
+    # High-level: RMF task bidding, traffic scheduling, status polling.
+    fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
+    nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
+    fleet_node_params = os.path.join(pkg_adapter, 'config', 'fleet_node_params.yaml')
 
-    fleet_adapter_node = Node(
-        package='dynominion_fleet_adapter',
-        executable='fleet_adapter_node',
-        name='dynominion_fleet_adapter',
-        output='screen',
-        parameters=[{
-            'config_file': fleet_config_file,
-            'nav_graph_path': nav_graph_path,
-            'use_sim_time': use_sim_time
-        }],
-        arguments=['--ros-args', '--log-level', 'debug']
-    )
 
-    # Fleet Adapter with a delay to ensure schedule is up
-    fleet_adapter_timer = TimerAction(
-        period=15.0,
-        actions=[fleet_adapter_node]
-    )
 
-    # 5. RMF Visualization
-    schedule_visualizer = Node(
-        package='rmf_visualization_schedule',
-        executable='schedule_visualizer_node',
-        name='schedule_visualizer',
-        output='screen',
-        parameters=[rmf_config_file]
-    )
-
-    nav_graph_visualizer = Node(
-        package='rmf_visualization_navgraphs',
-        executable='navgraph_visualizer_node',
-        name='navgraph_visualizer',
-        output='screen',
-        parameters=[{
-            'nav_graph_file': nav_graph_path,
-            'use_sim_time': use_sim_time
-        }]
-    )
-    
-    # 6. RViz
-    # We could start a new RViz instance with a fleet view
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2_fleet',
-        arguments=['-d', os.path.join(pkg_bringup, 'rviz', 'fleet_view.rviz')],
-        parameters=[{'use_sim_time': use_sim_time}],
-        output='screen'
-    )
 
     # Create Launch Description
     ld = LaunchDescription()
     ld.add_action(map_server_node)
     ld.add_action(map_lifecycle_node)
+    ld.add_action(door_supervisor_node)
+    ld.add_action(lift_supervisor_node)
     ld.add_action(sim_gazebo)
     for nav in nav_instances:
         ld.add_action(nav)
-    ld.add_action(schedule_node)
-    ld.add_action(dispatcher_node)
-    ld.add_action(blockade_node)
-    ld.add_action(fleet_adapter_timer)
-    ld.add_action(schedule_visualizer)
-    ld.add_action(nav_graph_visualizer)
-    ld.add_action(rviz_node)
 
     return ld

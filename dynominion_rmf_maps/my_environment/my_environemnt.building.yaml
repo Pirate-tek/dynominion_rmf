@@ -7,21 +7,14 @@ crowd_sim:
   enable: 0
   goal_sets: []
   model_types: []
-  obstacle_set: {class: 1, file_name: L1_navmesh.nav, type: nav_mesh}
+  obstacle_set: {class: 1, type: nav_mesh}
   states:
     - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ""}
   transitions: []
   update_time_step: 0.10000000000000001
 graphs:
-  0:
-    default_lane_width: 1
-    name: fleet_graph
+  {}
 levels:
-  L1:
-    drawing:
-      filename: dynominion_map.png
-    elevation: 0
-    layers:
-      {}
+  {}
 lifts: {}
-name: dynominion
+name: my_environemnt

@@ -1,0 +1,44 @@
+rmf_fleet:
+  # Describes robot limits and physical profile
+  name: "dynominion_fleet"
+  limits:
+    max_linear_speed: 1.0
+    max_linear_acceleration: 1.0
+    max_angular_speed: 1.0
+    max_angular_acceleration: 1.0
+  profile:
+    footprint_radius: 0.4
+    vicinity_radius: 0.6
+  robots:
+    dynominion1:
+      charger: "charger_main"
+    dynominion2:
+      charger: "lobby_waypoint"
+    dynominion3:
+      charger: "hub_center"
+    dynominion4:
+      charger: "corridor_north"
+    dynominion5:
+      charger: "bottom_zone"
+
+fleet_manager:
+  # Connection details for the fleet API server
+  ip: "127.0.0.1"
+  port: 8000
+  user: "admin"
+  password: "password"
+
+reference_coordinates:
+  # Mapping between RMF (Traffic Editor) and Nav2/RViz coordinates
+  # Format: rmf: [x, y]  robot: [x, y]  (all in meters)
+  L1:
+    rmf:
+      - [0.0, 0.0]
+      - [10.0, 0.0]
+      - [0.0, 10.0]
+      - [10.0, 10.0]
+    robot:
+      - [0.0, 0.0]
+      - [10.0, 0.0]
+      - [0.0, 10.0]
+      - [10.0, 10.0]

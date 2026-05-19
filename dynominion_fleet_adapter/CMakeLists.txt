@@ -21,12 +21,27 @@ find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
+# dynominion_fleet_msgs was removed in favor of HTTP REST API
 
 include_directories(include ${EIGEN3_INCLUDE_DIRS})
 
+# ── Shared source list ───────────────────────────────────────────────────────
+# Sources used by both executables (shared functionality)
+set(SHARED_SOURCES
+  src/Nav2RobotHandle.cpp
+  src/FleetValidator.cpp        # Goal 1 — Fleet Identity & Task Validation
+  src/RMFHandler.cpp            # Goal 2 — RMF Handler & Topic Bridge
+  src/Nav2Handler.cpp           # Goal 4 — Nav2 action client manager
+  src/NavController.cpp         # Goal 3 — Custom Navigation Controller
+  src/RobotStateMachine.cpp     # Goal 5 — Robot lifecycle state machine
+)
+
+# ── Process 1: fleet_adapter_node ────────────────────────────────────────────
+# High-level: RMF task bidding, traffic scheduling, status polling.
 add_executable(fleet_adapter_node
   src/FleetAdapter.cpp
-  src/Nav2RobotHandle.cpp
+  src/HttpRobotClient.cpp       # Goal 7 — AbstractRobotClient concrete impl (REST)
+  ${SHARED_SOURCES}
 )
 
 target_link_libraries(fleet_adapter_node
@@ -45,12 +60,43 @@ ament_target_dependencies(fleet_adapter_node
   geometry_msgs
   sensor_msgs
   nav_msgs
+  std_msgs
+  tf2
+  tf2_geometry_msgs
+)
+
+# ── Process 2: fleet_manager_node ────────────────────────────────────────────
+# Goal 6 — Low-level: Nav stack, state machine, polling service.
+# A crash here does NOT take down fleet_adapter_node (RMF stays alive).
+add_executable(fleet_manager_node
+  src/FleetManagerNode.cpp
+  ${SHARED_SOURCES}
+)
+
+target_link_libraries(fleet_manager_node
+  yaml-cpp
+  Eigen3::Eigen
+  rmf_fleet_adapter::rmf_fleet_adapter
+  rmf_traffic::rmf_traffic
+  rmf_traffic_ros2::rmf_traffic_ros2
+  rmf_utils::rmf_utils
+)
+
+ament_target_dependencies(fleet_manager_node
+  rclcpp
+  rclcpp_action
+  nav2_msgs
+  geometry_msgs
+  sensor_msgs
+  nav_msgs
+  std_msgs
   tf2
   tf2_geometry_msgs
 )
 
 install(TARGETS
   fleet_adapter_node
+  fleet_manager_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

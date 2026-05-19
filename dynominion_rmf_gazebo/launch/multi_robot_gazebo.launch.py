@@ -15,30 +15,37 @@ def generate_launch_description():
     
     # Define robots to spawn
     robots = [
-        {'name': 'dynominion1', 'x': '0.0', 'y': '0.0', 'z': '0.5'},
-        {'name': 'dynominion2', 'x': '2.0', 'y': '3.0', 'z': '0.5'},
-        {'name': 'dynominion3', 'x': '-2.0', 'y': '3.0', 'z': '0.5'},
-        {'name': 'dynominion4', 'x': '3.0', 'y': '-2.0', 'z': '0.5'},
-        {'name': 'dynominion5', 'x': '-3.0', 'y': '-2.0', 'z': '0.5'},
+        {'name': 'dynominion1', 'x': '1.487486', 'y': '-5.617650', 'z': '0.5'},
+        {'name': 'dynominion2', 'x': '1.487486', 'y': '-9.518767', 'z': '0.5'},
+        {'name': 'dynominion3', 'x': '7.890055', 'y': '-9.518767', 'z': '0.5'},
+        {'name': 'dynominion4', 'x': '7.711421', 'y': '-5.558105', 'z': '0.5'},
+        {'name': 'dynominion5', 'x': '2.112862', 'y': '-11.662898', 'z': '0.5'},
     ]
+
 
     # Launch configuration variables
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
-    world = LaunchConfiguration('world', default='cafe.world')
+    #world = LaunchConfiguration('world', default='cafe.world')
+    world = LaunchConfiguration('world', default='new_env.world')
 
     ld = LaunchDescription()
 
     # Declare the launch arguments
     ld.add_action(DeclareLaunchArgument('use_sim_time', default_value='True'))
-    ld.add_action(DeclareLaunchArgument('world', default_value='cafe.world'))
+    #ld.add_action(DeclareLaunchArgument('world', default_value='cafe.world'))
+    ld.add_action(DeclareLaunchArgument('world', default_value='new_env.world'))
 
     # Global bridge for clock
     clock_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/world/new_env/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
+        ],
         output='screen'
     )
+
     ld.add_action(clock_bridge)
 
     # Loop through the robots and add spawn actions
