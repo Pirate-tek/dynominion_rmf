@@ -1,6 +1,4 @@
 #include <dynominion_fleet_adapter/RMFHandler.hpp>
-
-
 #include <sstream>
 
 namespace dynominion_fleet_adapter
@@ -75,7 +73,7 @@ void RMFHandler::on_stop(ActivityId /*identifier*/)
   std::lock_guard<std::mutex> lk(state_.mtx);
   state_.active_task_id.clear();
 
-  // Stop is passed via HTTP API now.
+  // Stop is handled by cancelling the active ROS2 action client goal.
 }
 
 // ---------------------------------------------------------------------------
@@ -111,7 +109,4 @@ RMFHandler::StateSnapshot RMFHandler::get_state_snapshot() const
     state_.localized
   };
 }
-
-
-
 }  // namespace dynominion_fleet_adapter

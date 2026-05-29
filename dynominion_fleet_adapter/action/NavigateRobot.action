@@ -1,0 +1,30 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# NavigateRobot.action
+#
+# Action sent by FleetAdapterNode → FleetManagerNode for each RMF navigate call.
+# Replaces the old HTTP POST /navigate + 5 Hz GET /state polling pattern.
+#
+# Goal:     FleetAdapter sends target pose + task_id
+# Feedback: FleetManager streams live pose + battery every control tick
+# Result:   FleetManager signals success/failure instantly on completion
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Goal ─────────────────────────────────────────────────────────────────────
+float64 x
+float64 y
+float64 yaw
+string  task_id
+
+---
+
+# ── Result ───────────────────────────────────────────────────────────────────
+bool   success
+string error_reason
+
+---
+
+# ── Feedback (streamed during navigation) ────────────────────────────────────
+float64 pose_x
+float64 pose_y
+float64 pose_yaw
+float64 battery_soc

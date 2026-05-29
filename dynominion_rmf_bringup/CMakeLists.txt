@@ -23,6 +23,7 @@ install(DIRECTORY scripts
 
 install(PROGRAMS
   scripts/building_map_server_patched.py
+  scripts/rmf_gui.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

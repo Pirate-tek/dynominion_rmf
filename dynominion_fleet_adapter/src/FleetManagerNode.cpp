@@ -8,7 +8,6 @@
 
 namespace dynominion_fleet_adapter
 {
-using json = nlohmann::json;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Construction
@@ -23,9 +22,7 @@ void FleetManagerNode::init()
 {
   RCLCPP_INFO(get_logger(), "[FleetManagerNode] Starting up...");
 
-  // ── Goal 1: Fleet Identity Validation ────────────────────────────────────
-  // FleetValidator reads fleet_identity.* parameters declared in
-  // fleet_node_params.yaml (same config used by fleet_adapter_node).
+  // ── Fleet Identity Validation ─────────────────────────────────────────────
   validator_ = std::make_shared<FleetValidator>(shared_from_this());
   if (!validator_->is_valid())
   {
@@ -66,31 +63,16 @@ void FleetManagerNode::init()
     return;
   }
 
-  // ── Build per-robot contexts ──────────────────────────────────────────────
   for (auto it = robots_node.begin(); it != robots_node.end(); ++it)
   {
     const std::string robot_name = it->first.as<std::string>();
     setup_robot(robot_name, fleet_name);
   }
 
-  setup_http_server();
-
-  // Start HTTP server in a separate thread
-  http_thread_ = std::thread([this]() {
-    RCLCPP_INFO(get_logger(), "[FleetManagerNode] Starting HTTP server on port 8080");
-    http_server_.listen("0.0.0.0", 8080);
-  });
-
   RCLCPP_INFO(get_logger(),
-    "[FleetManagerNode] Initialised. Managing %zu robot(s) in fleet '%s'.",
+    "[FleetManagerNode] Initialised. Managing %zu robot(s) in fleet '%s'. "
+    "Action servers ready on /<robot>/navigate_robot.",
     robots_.size(), fleet_name.c_str());
-}
-
-FleetManagerNode::~FleetManagerNode()
-{
-  http_server_.stop();
-  if (http_thread_.joinable())
-    http_thread_.join();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -104,33 +86,23 @@ void FleetManagerNode::setup_robot(
   auto ctx = std::make_shared<ManagedRobotContext>();
   ctx->name = robot_name;
 
-  // ── Goal 5: State Machine ─────────────────────────────────────────────────
-  ctx->state_machine = std::make_shared<RobotStateMachine>(
-    robot_name, get_logger());
-
-  // Wire state machine diagnostics to ROS logging
+  // ── State Machine ─────────────────────────────────────────────────────────
+  ctx->state_machine = std::make_shared<RobotStateMachine>(robot_name, get_logger());
   ctx->state_machine->set_transition_callback(
     [this, robot_name](RobotState from, RobotState to, const std::string & ctx_msg)
     {
-      // Publish a diagnostic-level event for any monitoring tools.
       RCLCPP_INFO(get_logger(),
         "[FleetManagerNode][%s] State: %s → %s  (%s)",
-        robot_name.c_str(),
-        to_string(from), to_string(to),
-        ctx_msg.c_str());
+        robot_name.c_str(), to_string(from), to_string(to), ctx_msg.c_str());
     });
 
-  // ── Goal 2: RMFHandler (StateGuard + topic bridge) ────────────────────────
-  ctx->rmf_handler = std::make_shared<RMFHandler>(
-    shared_from_this(), validator_, robot_name);
+  // ── RMFHandler ────────────────────────────────────────────────────────────
+  ctx->rmf_handler = std::make_shared<RMFHandler>(shared_from_this(), validator_, robot_name);
 
-  // ── Goal 4: Nav2Handler (action client) ──────────────────────────────────
-  ctx->nav2_handler = std::make_shared<Nav2Handler>(
-    shared_from_this(), robot_name);
+  // ── Nav2Handler ───────────────────────────────────────────────────────────
+  ctx->nav2_handler = std::make_shared<Nav2Handler>(shared_from_this(), robot_name);
 
-  // ── Telemetry Subscriptions ──────────────────────────────────────────────
-  // PROPERTY: Subscribes to Nav2/Robot telemetry to keep the state machine 
-  //           and RMF schedule current.
+  // ── Telemetry: AMCL pose ──────────────────────────────────────────────────
   ctx->pose_sub = create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "/" + robot_name + "/amcl_pose", rclcpp::QoS(10).transient_local(),
     [ctx](const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg)
@@ -141,27 +113,28 @@ void FleetManagerNode::setup_robot(
       tf2::fromMsg(o, q);
       double roll, pitch, yaw;
       tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
       ctx->rmf_handler->update_pose(p.x, p.y, yaw);
+
       if (ctx->nav_controller)
-      {
         ctx->nav_controller->update_pose(p.x, p.y, yaw);
-      }
     });
 
+  // ── Telemetry: battery ────────────────────────────────────────────────────
   ctx->battery_sub = create_subscription<sensor_msgs::msg::BatteryState>(
     "/" + robot_name + "/battery_state", 10,
     [ctx](const sensor_msgs::msg::BatteryState::SharedPtr msg)
     {
       ctx->rmf_handler->update_battery(msg->percentage);
+      ctx->latest_battery_soc = msg->percentage;
     });
 
-  // ── Goal 3: NavController (sequencer, 50 Hz control loop) ────────────────
+  // ── NavController ─────────────────────────────────────────────────────────
   ctx->nav_controller = std::make_shared<NavController>(
     shared_from_this(), ctx->rmf_handler, ctx->nav2_handler,
     robot_name, fleet_name);
 
-  // Connect NavController state-change hooks to the state machine.
-  // The NavController calls these lambdas on its completion/abort paths.
+  // Wire NavController state hooks → state machine
   ctx->nav_controller->set_on_task_started(
     [ctx](const std::string & task_id)
     {
@@ -174,6 +147,7 @@ void FleetManagerNode::setup_robot(
       ctx->state_machine->on_navigate_accepted();
     });
 
+  // Wire NavController completion → action result (event-driven, zero poll lag)
   ctx->nav_controller->set_on_task_finished(
     [ctx](bool success, const std::string & reason)
     {
@@ -181,110 +155,127 @@ void FleetManagerNode::setup_robot(
         ctx->state_machine->on_success();
       else
         ctx->state_machine->on_error(reason);
+
+      std::lock_guard<std::mutex> lk(ctx->goal_handle_mtx);
+      if (!ctx->current_goal_handle)
+        return;
+
+      auto result = std::make_shared<NavigateRobot::Result>();
+      result->success      = success;
+      result->error_reason = reason;
+
+      if (success)
+      {
+        RCLCPP_INFO(rclcpp::get_logger("fleet_manager_node"),
+          "[FleetManagerNode][%s] Task finished successfully — sending action result.",
+          ctx->name.c_str());
+        ctx->current_goal_handle->succeed(result);
+      }
+      else
+      {
+        RCLCPP_WARN(rclcpp::get_logger("fleet_manager_node"),
+          "[FleetManagerNode][%s] Task aborted: %s — sending action abort.",
+          ctx->name.c_str(), reason.c_str());
+        ctx->current_goal_handle->abort(result);
+      }
+      ctx->current_goal_handle = nullptr;
     });
 
+  // Wire NavController pose updates → action feedback
+  ctx->nav_controller->set_on_pose_update(
+    [ctx](double x, double y, double yaw)
+    {
+      std::lock_guard<std::mutex> lk(ctx->goal_handle_mtx);
+      if (!ctx->current_goal_handle)
+        return;
+      if (ctx->current_goal_handle->is_canceling())
+        return;
+
+      auto feedback = std::make_shared<NavigateRobot::Feedback>();
+      feedback->pose_x       = x;
+      feedback->pose_y       = y;
+      feedback->pose_yaw     = yaw;
+      feedback->battery_soc  = ctx->latest_battery_soc;
+      ctx->current_goal_handle->publish_feedback(feedback);
+    });
+
+  // ── Action server ─────────────────────────────────────────────────────────
+  setup_action_server(ctx);
 
   RCLCPP_INFO(get_logger(),
-    "[FleetManagerNode] Robot [%s] ready.", robot_name.c_str());
+    "[FleetManagerNode] Robot [%s] ready. Action server: /%s/navigate_robot",
+    robot_name.c_str(), robot_name.c_str());
 
   robots_.emplace(robot_name, ctx);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HTTP Server implementation
+// Action server — one per robot, replaces the entire HTTP server
 // ─────────────────────────────────────────────────────────────────────────────
 
-void FleetManagerNode::setup_http_server()
+void FleetManagerNode::setup_action_server(const std::shared_ptr<ManagedRobotContext> & ctx)
 {
-  // GET /v1/robots/{id}/state
-  http_server_.Get(R"(/v1/robots/([^/]+)/state)", [this](const httplib::Request& req, httplib::Response& res) {
-    std::string robot_name = req.matches[1];
-    auto it = robots_.find(robot_name);
-    if (it == robots_.end()) {
-      res.status = 404;
-      return;
-    }
-    const auto & ctx = it->second;
-    const auto snap = ctx->rmf_handler->get_state_snapshot();
+  const std::string action_name = "/" + ctx->name + "/navigate_robot";
 
-    json j;
-    j["success"] = true;
-    j["state"] = to_string(ctx->state_machine->state());
-    j["task_id"] = ctx->state_machine->active_task_id();
-    j["error_reason"] = ctx->state_machine->last_error_reason();
-    j["battery"] = snap.battery_soc;
-    
-    if (snap.pose.has_value()) {
-      j["pose"] = {(*snap.pose)[0], (*snap.pose)[1], (*snap.pose)[2]};
-    }
+  ctx->action_server = rclcpp_action::create_server<NavigateRobot>(
+    this, action_name,
 
-    res.set_content(j.dump(), "application/json");
-  });
+    // ── handle_goal: always accept ───────────────────────────────────────────
+    [ctx](const rclcpp_action::GoalUUID &, std::shared_ptr<const NavigateRobot::Goal> goal)
+      -> rclcpp_action::GoalResponse
+    {
+      RCLCPP_INFO(rclcpp::get_logger("fleet_manager_node"),
+        "[FleetManagerNode][%s] Goal received: task='%s' target=(%.2f, %.2f, %.2f).",
+        ctx->name.c_str(), goal->task_id.c_str(), goal->x, goal->y, goal->yaw);
+      return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+    },
 
-  // POST /v1/robots/{id}/navigate
-  http_server_.Post(R"(/v1/robots/([^/]+)/navigate)", [this](const httplib::Request& req, httplib::Response& res) {
-    std::string robot_name = req.matches[1];
-    auto it = robots_.find(robot_name);
-    if (it == robots_.end()) {
-      res.status = 404;
-      return;
-    }
-    
-    try {
-      json j = json::parse(req.body);
-      double x = j.at("x").get<double>();
-      double y = j.at("y").get<double>();
-      double yaw = j.at("yaw").get<double>();
-      std::string task_id = j.at("task_id").get<std::string>();
+    // ── handle_cancel: honour cancel → NavController.cancel_all() ──────────
+    [ctx](std::shared_ptr<NavigateGoalHandle> /*goal_handle*/)
+      -> rclcpp_action::CancelResponse
+    {
+      RCLCPP_INFO(rclcpp::get_logger("fleet_manager_node"),
+        "[FleetManagerNode][%s] Cancel requested.", ctx->name.c_str());
+      ctx->nav_controller->cancel_all();
+      return rclcpp_action::CancelResponse::ACCEPT;
+    },
 
-      RCLCPP_INFO(get_logger(),
-        "[FleetManagerNode][%s] HTTP NAVIGATE RECEIVED: target=(%.2f, %.2f) task='%s'",
-        robot_name.c_str(), x, y, task_id.c_str());
+    // ── handle_accepted: store handle, kick off navigation ──────────────────
+    [ctx](std::shared_ptr<NavigateGoalHandle> goal_handle)
+    {
+      const auto & goal = goal_handle->get_goal();
 
-      it->second->nav_controller->navigate(x, y, yaw, task_id);
-      
-      json resp;
-      resp["success"] = true;
-      res.set_content(resp.dump(), "application/json");
-    } catch (const std::exception& e) {
-      res.status = 400;
-      res.set_content(std::string("Invalid JSON: ") + e.what(), "text/plain");
-    }
-  });
+      {
+        std::lock_guard<std::mutex> lk(ctx->goal_handle_mtx);
+        // Preempt any previous goal that was never properly closed
+        if (ctx->current_goal_handle)
+        {
+          RCLCPP_WARN(rclcpp::get_logger("fleet_manager_node"),
+            "[FleetManagerNode][%s] Preempting previous goal.", ctx->name.c_str());
+          auto abort_result = std::make_shared<NavigateRobot::Result>();
+          abort_result->success = false;
+          abort_result->error_reason = "preempted by new goal";
+          ctx->current_goal_handle->abort(abort_result);
+        }
+        ctx->current_goal_handle = goal_handle;
+      }
 
-  // POST /v1/robots/{id}/stop
-  http_server_.Post(R"(/v1/robots/([^/]+)/stop)", [this](const httplib::Request& req, httplib::Response& res) {
-    std::string robot_name = req.matches[1];
-    auto it = robots_.find(robot_name);
-    if (it == robots_.end()) {
-      res.status = 404;
-      return;
-    }
-    it->second->nav_controller->cancel_all();
-    json resp;
-    resp["success"] = true;
-    res.set_content(resp.dump(), "application/json");
-  });
+      RCLCPP_INFO(rclcpp::get_logger("fleet_manager_node"),
+        "[FleetManagerNode][%s] Executing goal: task='%s' (%.2f, %.2f, %.2f).",
+        ctx->name.c_str(), goal->task_id.c_str(), goal->x, goal->y, goal->yaw);
 
-  // POST /v1/robots/{id}/recover
-  http_server_.Post(R"(/v1/robots/([^/]+)/recover)", [this](const httplib::Request& req, httplib::Response& res) {
-    std::string robot_name = req.matches[1];
-    auto it = robots_.find(robot_name);
-    if (it == robots_.end()) {
-      res.status = 404;
-      return;
-    }
-    it->second->state_machine->on_recover();
-    json resp;
-    resp["success"] = true;
-    res.set_content(resp.dump(), "application/json");
-  });
+      // Start navigation — completion fires through set_on_task_finished hook
+      ctx->nav_controller->navigate(goal->x, goal->y, goal->yaw, goal->task_id);
+    });
+
+  RCLCPP_INFO(get_logger(),
+    "[FleetManagerNode] Action server created: %s", action_name.c_str());
 }
 
 }  // namespace dynominion_fleet_adapter
 
 // ─────────────────────────────────────────────────────────────────────────────
-// main — fleet_manager_node executable (Goal 6, Process 2)
+// main — fleet_manager_node executable
 // ─────────────────────────────────────────────────────────────────────────────
 
 int main(int argc, char ** argv)
@@ -292,7 +283,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
 
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
-    "[fleet_manager_node] Starting Fleet Manager Node...");
+    "[fleet_manager_node] Starting Fleet Manager Node (ROS2 Action API)...");
 
   auto node = std::make_shared<dynominion_fleet_adapter::FleetManagerNode>();
   node->init();

@@ -24,8 +24,7 @@ void Nav2RobotHandle::set_update_handle(const std::shared_ptr<rmf_fleet_adapter:
 
 bool Nav2RobotHandle::is_ready()
 {
-  // Goal 6: Readiness is now determined by whether the FleetManager
-  // has reported a valid localization via its HTTP state endpoint.
+  // Readiness is determined by whether a valid localization pose has been received.
   return is_localized_;
 }
 
@@ -35,7 +34,6 @@ void Nav2RobotHandle::update_state(const Eigen::Vector3d& pose, double battery, 
   cached_battery_ = battery;
   is_localized_ = localized;
 }
-
 
 rmf_fleet_adapter::agv::EasyFullControl::RobotState Nav2RobotHandle::get_state()
 {
@@ -111,5 +109,4 @@ void Nav2RobotHandle::stop(rmf_fleet_adapter::agv::EasyFullControl::ConstActivit
   }
 }
 
-// Goal 6: telemetry is now polled via HttpRobotClient in FleetAdapterNode.
-// update_loop and direct ROS callbacks are removed.
+// FleetAdapter Side.

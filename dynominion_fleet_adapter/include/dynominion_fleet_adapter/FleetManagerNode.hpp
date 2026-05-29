@@ -2,26 +2,22 @@
 #define DYNOMINION_FLEET_ADAPTER__FLEET_MANAGER_NODE_HPP_
 
 /// @file FleetManagerNode.hpp
-/// @brief Goal 6 — Fleet Manager Node (Process 2 of 2).
+/// @brief Fleet Manager Node — Process 2 of 2.
 ///
 /// Owns all low-level robot interaction:
-///   - NavController   (waypoint sequencer, control loop)
+///   - NavController   (waypoint sequencer, 50 Hz control loop)
 ///   - Nav2Handler     (NavigateToPose action client)
 ///   - RobotStateMachine (lifecycle state tracking)
 ///
-/// Exposes a Web API (REST) for the FleetAdapterNode to poll and command:
-///   GET  /v1/robots/<robot>/state
-///   POST /v1/robots/<robot>/navigate
-///   POST /v1/robots/<robot>/stop
-///   POST /v1/robots/<robot>/recover
+/// Exposes a ROS2 Action server per robot:
+///   Action: /<robot_name>/navigate_robot  (NavigateRobot.action)
+///   - Goal:     target pose + task_id (sent by FleetAdapterNode)
+///   - Feedback: live pose + battery    (streamed during navigation)
+///   - Result:   success / error_reason (fired on completion — zero polling)
 ///
-/// Subscribes to path_request topics published by FleetAdapterNode for
-/// navigation commands (existing "Direct Injection" transport).
-///
-/// Architecture: Two-process decomposition (Goal 6).
-/// A crash in this node (and its Nav2 dependency) does NOT take down the
-/// FleetAdapterNode, allowing RMF to maintain the robot's ghost footprint
-/// in the traffic schedule and prevent collisions.
+/// Architecture: Two-process decomposition.
+/// A crash here (and its Nav2 dependency) does NOT take down FleetAdapterNode,
+/// allowing RMF to maintain the robot's ghost footprint in the traffic schedule.
 
 #include <dynominion_fleet_adapter/NavController.hpp>
 #include <dynominion_fleet_adapter/Nav2Handler.hpp>
@@ -29,22 +25,25 @@
 #include <dynominion_fleet_adapter/FleetValidator.hpp>
 #include <dynominion_fleet_adapter/RobotStateMachine.hpp>
 
-// Web API server
-#include <dynominion_fleet_adapter/thirdparty/httplib.h>
-#include <dynominion_fleet_adapter/thirdparty/json.hpp>
-#include <thread>
+// Generated ROS2 action type
+#include <dynominion_fleet_adapter/action/navigate_robot.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
 
 #include <string>
 #include <vector>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
 namespace dynominion_fleet_adapter
 {
+
+using NavigateRobot = dynominion_fleet_adapter::action::NavigateRobot;
+using NavigateGoalHandle = rclcpp_action::ServerGoalHandle<NavigateRobot>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Per-robot context owned by FleetManagerNode
@@ -59,10 +58,19 @@ struct ManagedRobotContext
   std::shared_ptr<NavController>      nav_controller;
   std::shared_ptr<RobotStateMachine>  state_machine;
 
+  // Telemetry subscriptions — AMCL pose + battery (on-robot topics)
   rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr pose_sub;
-  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_sub;
+  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr                battery_sub;
 
-  // HTTP API handles polling and commands now.
+  // Cached battery (updated by battery_sub, read when building feedback)
+  double latest_battery_soc{1.0};
+
+  // ── ROS2 Action server (replaces HTTP /navigate + /state polling) ─────────
+  rclcpp_action::Server<NavigateRobot>::SharedPtr action_server;
+
+  // Active goal handle — set when a goal is accepted, cleared on result
+  std::shared_ptr<NavigateGoalHandle> current_goal_handle;
+  std::mutex                          goal_handle_mtx;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -73,21 +81,19 @@ class FleetManagerNode : public rclcpp::Node
 {
 public:
   explicit FleetManagerNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
-  ~FleetManagerNode();
+  ~FleetManagerNode() = default;
 
   void init();
 
+private:
   /// Build one ManagedRobotContext per robot declared in the config.
   void setup_robot(const std::string & robot_name, const std::string & fleet_name);
 
-  /// Setup the HTTP Server
-  void setup_http_server();
+  /// Create the NavigateRobot action server for a single robot.
+  void setup_action_server(const std::shared_ptr<ManagedRobotContext> & ctx);
 
   std::shared_ptr<FleetValidator> validator_;
   std::unordered_map<std::string, std::shared_ptr<ManagedRobotContext>> robots_;
-
-  httplib::Server http_server_;
-  std::thread http_thread_;
 };
 
 }  // namespace dynominion_fleet_adapter

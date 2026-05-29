@@ -265,15 +265,17 @@ void NavController::on_nav2_result(Nav2Handler::GoalResult result)
 void NavController::on_nav2_pose(double x, double y, double yaw)
 {
   // Called from Nav2 feedback — NO task_mtx_ here (avoid lock inversion)
-  // Update pose atomically via RMFHandler's StateGuard (thread-safe)
   rmf_handler_->update_pose(x, y, yaw);
 
-  // Cache locally for control tick computations (task_mtx_ protects these)
   std::lock_guard<std::mutex> lk(task_mtx_);
   pose_x_    = x;
   pose_y_    = y;
   pose_yaw_  = yaw;
   pose_valid_ = true;
+
+  // Fire action feedback hook (called without the lock to avoid re-entrance)
+  if (on_pose_update_.has_value())
+    (*on_pose_update_)(x, y, yaw);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -308,6 +310,18 @@ void NavController::control_tick()
   }
   if (phase_ == Phase::CANCELLED)
     return;
+
+  // If Nav2 succeeded, immediately advance to WAITING_NAV2 to process completion
+  if (nav2_result_.has_value() && *nav2_result_ == Nav2Handler::GoalResult::SUCCEEDED)
+  {
+    if (phase_ != Phase::WAITING_NAV2 && phase_ != Phase::FINAL_ROTATION)
+    {
+      RCLCPP_INFO(node_->get_logger(),
+        "[NavController][%s] Nav2 reported success. Advancing to WAITING_NAV2.",
+        robot_name_.c_str());
+      phase_ = Phase::WAITING_NAV2;
+    }
+  }
 
   // ── Overlay rule 2: Obstacle — halt both axes ─────────────────────────────
   if (obstacle_detected_.load())
@@ -462,6 +476,11 @@ void NavController::update_pose(double x, double y, double yaw)
   pose_y_    = y;
   pose_yaw_  = yaw;
   pose_valid_ = true;
+
+  // Fire action feedback hook for AMCL-driven telemetry (outside lock scope).
+  // Releasing before firing prevents potential re-entrance deadlocks.
+  if (on_pose_update_.has_value())
+    (*on_pose_update_)(x, y, yaw);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
