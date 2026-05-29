@@ -248,7 +248,13 @@
       <pose>0 0 0.0 0 0 0</pose>
     </include>
     <rmf_charger_waypoints name="charger_waypoints">
-      <rmf_vertex name="charger_main" x="1.4874864487888286" y="-5.617650362582813" level="L1" />
+      <rmf_vertex name="A1" x="1.48" y="-9.51" level="L1" />
+      <rmf_vertex name="A2" x="1.48" y="-15.95" level="L1" />
+      <rmf_vertex name="D1" x="4.7" y="-5.55" level="L1" />
+      <rmf_vertex name="B1" x="7.89" y="-9.51" level="L1" />
+      <rmf_vertex name="B2" x="7.89" y="-15.95" level="L1" />
+      <rmf_vertex name="C1" x="6.4" y="-5.55" level="L1" />
+      <rmf_vertex name="C2" x="6.4" y="-19.4" level="L1" />
     </rmf_charger_waypoints>
   </world>
 </sdf>

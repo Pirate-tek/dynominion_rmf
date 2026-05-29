@@ -15,9 +15,6 @@ def generate_launch_description():
     nav_graph_path = os.path.join(pkg_maps, 'nav_graphs', '0.yaml')
 
     pkg_adapter = get_package_share_directory('dynominion_fleet_adapter')
-    fleet_config_file = os.path.join(pkg_adapter, 'config', 'integration_config.yaml')
-    fleet_node_params = os.path.join(pkg_adapter, 'config', 'fleet_node_params.yaml')
-
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
 
     # RMF Visualization
@@ -36,44 +33,55 @@ def generate_launch_description():
         )
     ])
 
-    fleet_adapter_node = Node(
-        package='dynominion_fleet_adapter',
-        executable='fleet_adapter_node',
-        name='dynominion_fleet_adapter',
-        output='screen',
-        parameters=[
-            fleet_node_params,   # Goal 1: fleet_identity.* params loaded here
-            {
-                'config_file': fleet_config_file,
-                'nav_graph_path': nav_graph_path,
-                'use_sim_time': use_sim_time,
-            }
-        ]
-    )
+    fleets = [
+        {
+            'name': 'dynominion_fleet1',
+            'params': os.path.join(pkg_adapter, 'config', 'fleet1_node_params.yaml'),
+            'config': os.path.join(pkg_adapter, 'config', 'fleet1_integration_config.yaml')
+        },
+        {
+            'name': 'dynominion_fleet2',
+            'params': os.path.join(pkg_adapter, 'config', 'fleet2_node_params.yaml'),
+            'config': os.path.join(pkg_adapter, 'config', 'fleet2_integration_config.yaml')
+        },
+        {
+            'name': 'dynominion_fleet3',
+            'params': os.path.join(pkg_adapter, 'config', 'fleet3_node_params.yaml'),
+            'config': os.path.join(pkg_adapter, 'config', 'fleet3_integration_config.yaml')
+        }
+    ]
 
-    fleet_adapter_timer = TimerAction(
-        period=15.0,
-        actions=[fleet_adapter_node]
-    )
-
-    fleet_manager_node = Node(
-        package='dynominion_fleet_adapter',
-        executable='fleet_manager_node',
-        name='dynominion_fleet_manager',
-        output='screen',
-        parameters=[
-            fleet_node_params,
-            {
-                'config_file': fleet_config_file,
-                'use_sim_time': use_sim_time,
-            }
-        ]
-    )
-
-    fleet_manager_timer = TimerAction(
-        period=13.0,
-        actions=[fleet_manager_node]
-    )
+    fleet_actions = []
+    for f in fleets:
+        f_manager = Node(
+            package='dynominion_fleet_adapter',
+            executable='fleet_manager_node',
+            name=f['name'] + '_manager',
+            output='screen',
+            parameters=[
+                f['params'],
+                {
+                    'config_file': f['config'],
+                    'use_sim_time': use_sim_time,
+                }
+            ]
+        )
+        f_adapter = Node(
+            package='dynominion_fleet_adapter',
+            executable='fleet_adapter_node',
+            name=f['name'] + '_adapter',
+            output='screen',
+            parameters=[
+                f['params'],
+                {
+                    'config_file': f['config'],
+                    'nav_graph_path': nav_graph_path,
+                    'use_sim_time': use_sim_time,
+                }
+            ]
+        )
+        fleet_actions.append(TimerAction(period=13.0, actions=[f_manager]))
+        fleet_actions.append(TimerAction(period=15.0, actions=[f_adapter]))
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -119,7 +127,6 @@ def generate_launch_description():
             parameters=[config_file, {'use_sim_time': use_sim_time}]
         ),
         
-        fleet_manager_timer,
-        fleet_adapter_timer,
+        *fleet_actions,
         rmf_visualization_group
     ])
