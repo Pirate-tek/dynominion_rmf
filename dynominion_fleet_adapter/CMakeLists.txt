@@ -5,10 +5,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+# ── Dependencies ──────────────────────────────────────────────────────────────
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 find_package(rmf_utils REQUIRED)
 find_package(rmf_traffic REQUIRED)
 find_package(rmf_traffic_ros2 REQUIRED)
@@ -17,33 +18,40 @@ find_package(nav2_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
-# dynominion_fleet_msgs was removed in favor of HTTP REST API
+
+# ── Generate custom action type ───────────────────────────────────────────────
+# NavigateRobot.action replaces the HTTP REST API between the two processes.
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "action/NavigateRobot.action"
+  DEPENDENCIES std_msgs
+)
+
+# Make generated headers visible to the rest of the build
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 include_directories(include ${EIGEN3_INCLUDE_DIRS})
 
-# ── Shared source list ───────────────────────────────────────────────────────
-# Sources used by both executables (shared functionality)
+# ── Shared sources ────────────────────────────────────────────────────────────
 set(SHARED_SOURCES
   src/Nav2RobotHandle.cpp
-  src/FleetValidator.cpp        # Goal 1 — Fleet Identity & Task Validation
-  src/RMFHandler.cpp            # Goal 2 — RMF Handler & Topic Bridge
-  src/Nav2Handler.cpp           # Goal 4 — Nav2 action client manager
-  src/NavController.cpp         # Goal 3 — Custom Navigation Controller
-  src/RobotStateMachine.cpp     # Goal 5 — Robot lifecycle state machine
+  src/FleetValidator.cpp
+  src/RMFHandler.cpp
+  src/Nav2Handler.cpp
+  src/NavController.cpp
+  src/RobotStateMachine.cpp
 )
 
-# ── Process 1: fleet_adapter_node ────────────────────────────────────────────
-# High-level: RMF task bidding, traffic scheduling, status polling.
+# ── Process 1: fleet_adapter_node ─────────────────────────────────────────────
+# RMF task bidding, traffic scheduling, event-driven status via ROS2 action.
 add_executable(fleet_adapter_node
   src/FleetAdapter.cpp
-  src/HttpRobotClient.cpp       # Goal 7 — AbstractRobotClient concrete impl (REST)
   ${SHARED_SOURCES}
 )
-
 target_link_libraries(fleet_adapter_node
   yaml-cpp
   Eigen3::Eigen
@@ -51,28 +59,19 @@ target_link_libraries(fleet_adapter_node
   rmf_traffic::rmf_traffic
   rmf_traffic_ros2::rmf_traffic_ros2
   rmf_utils::rmf_utils
+  "${cpp_typesupport_target}"
 )
-
 ament_target_dependencies(fleet_adapter_node
-  rclcpp
-  rclcpp_action
-  nav2_msgs
-  geometry_msgs
-  sensor_msgs
-  nav_msgs
-  std_msgs
-  tf2
-  tf2_geometry_msgs
+  rclcpp rclcpp_action nav2_msgs geometry_msgs
+  sensor_msgs nav_msgs std_msgs tf2 tf2_geometry_msgs
 )
 
-# ── Process 2: fleet_manager_node ────────────────────────────────────────────
-# Goal 6 — Low-level: Nav stack, state machine, polling service.
-# A crash here does NOT take down fleet_adapter_node (RMF stays alive).
+# ── Process 2: fleet_manager_node ─────────────────────────────────────────────
+# Nav stack, state machine, ROS2 action server (NavigateRobot).
 add_executable(fleet_manager_node
   src/FleetManagerNode.cpp
   ${SHARED_SOURCES}
 )
-
 target_link_libraries(fleet_manager_node
   yaml-cpp
   Eigen3::Eigen
@@ -80,29 +79,18 @@ target_link_libraries(fleet_manager_node
   rmf_traffic::rmf_traffic
   rmf_traffic_ros2::rmf_traffic_ros2
   rmf_utils::rmf_utils
+  "${cpp_typesupport_target}"
 )
-
 ament_target_dependencies(fleet_manager_node
-  rclcpp
-  rclcpp_action
-  nav2_msgs
-  geometry_msgs
-  sensor_msgs
-  nav_msgs
-  std_msgs
-  tf2
-  tf2_geometry_msgs
+  rclcpp rclcpp_action nav2_msgs geometry_msgs
+  sensor_msgs nav_msgs std_msgs tf2 tf2_geometry_msgs
 )
 
-install(TARGETS
-  fleet_adapter_node
-  fleet_manager_node
-  DESTINATION lib/${PROJECT_NAME}
-)
+install(TARGETS fleet_adapter_node fleet_manager_node
+  DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
-)
+install(DIRECTORY config action
+  DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

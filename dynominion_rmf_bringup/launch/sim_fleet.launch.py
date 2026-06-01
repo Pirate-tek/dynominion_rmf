@@ -70,11 +70,13 @@ def generate_launch_description():
     # 2. Navigation instances per robot
     # Positions match multi_robot_gazebo.launch.py spawns exactly
     robots = [
-        {'name': 'dynominion1', 'x': 1.487486, 'y': -5.617650, 'yaw': 0.0},
-        {'name': 'dynominion2', 'x': 1.487486, 'y': -9.518767, 'yaw': 0.0},
-        {'name': 'dynominion3', 'x': 7.890055, 'y': -9.518767, 'yaw': 0.0},
-        {'name': 'dynominion4', 'x': 7.711421, 'y': -5.558105, 'yaw': 0.0},
-        {'name': 'dynominion5', 'x': 2.112862, 'y': -11.662898, 'yaw': 0.0},
+        {'name': 'dynominion1', 'x': 1.48, 'y': -9.51, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x': 1.48, 'y': -15.95, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': 4.7, 'y': -5.55, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x': 7.89, 'y': -9.51, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': 7.89, 'y': -15.95, 'yaw': 0.0},
+        {'name': 'dynominion6', 'x': 6.4, 'y': -5.55, 'yaw': 0.0},
+        {'name': 'dynominion7', 'x': 6.4, 'y': -19.4, 'yaw': 0.0},
     ]
 
 

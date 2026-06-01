@@ -15,11 +15,13 @@ def generate_launch_description():
     
     # Define robots to spawn
     robots = [
-        {'name': 'dynominion1', 'x': '1.487486', 'y': '-5.617650', 'z': '0.5'},
-        {'name': 'dynominion2', 'x': '1.487486', 'y': '-9.518767', 'z': '0.5'},
-        {'name': 'dynominion3', 'x': '7.890055', 'y': '-9.518767', 'z': '0.5'},
-        {'name': 'dynominion4', 'x': '7.711421', 'y': '-5.558105', 'z': '0.5'},
-        {'name': 'dynominion5', 'x': '2.112862', 'y': '-11.662898', 'z': '0.5'},
+        {'name': 'dynominion1', 'x': '1.48', 'y': '-9.51', 'z': '0.5'},
+        {'name': 'dynominion2', 'x': '1.48', 'y': '-15.95', 'z': '0.5'},
+        {'name': 'dynominion3', 'x': '4.7', 'y': '-5.55', 'z': '0.5'},
+        {'name': 'dynominion4', 'x': '7.89', 'y': '-9.51', 'z': '0.5'},
+        {'name': 'dynominion5', 'x': '7.89', 'y': '-15.95', 'z': '0.5'},
+        {'name': 'dynominion6', 'x': '6.4', 'y': '-5.55', 'z': '0.5'},
+        {'name': 'dynominion7', 'x': '6.4', 'y': '-19.4', 'z': '0.5'},
     ]
 
 
@@ -69,9 +71,9 @@ def generate_launch_description():
             }.items()
         )
         
-        # Stagger the launches by 5 seconds each
+        # Stagger the launches by 15 seconds each
         staggered_spawn = TimerAction(
-            period=float(i * 10.0),
+            period=float(i * 15.0),
             actions=[spawn_robot]
         )
         ld.add_action(staggered_spawn)

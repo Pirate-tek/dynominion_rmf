@@ -65,7 +65,7 @@ NavController::NavController(
   // ── cmd_vel publisher ────────────────────────────────────────────────────
   // Used for pre-rotation and approach speed commands.
   // Topic: /<robot_name>/cmd_vel
-  cmd_vel_pub_ = node_->create_publisher<geometry_msgs::msg::Twist>(
+  cmd_vel_pub_ = node_->create_publisher<geometry_msgs::msg::TwistStamped>(
     "/" + robot_name_ + "/cmd_vel", 10);
 
   // ── Obstacle subscriber ──────────────────────────────────────────────────
@@ -265,15 +265,17 @@ void NavController::on_nav2_result(Nav2Handler::GoalResult result)
 void NavController::on_nav2_pose(double x, double y, double yaw)
 {
   // Called from Nav2 feedback — NO task_mtx_ here (avoid lock inversion)
-  // Update pose atomically via RMFHandler's StateGuard (thread-safe)
   rmf_handler_->update_pose(x, y, yaw);
 
-  // Cache locally for control tick computations (task_mtx_ protects these)
   std::lock_guard<std::mutex> lk(task_mtx_);
   pose_x_    = x;
   pose_y_    = y;
   pose_yaw_  = yaw;
   pose_valid_ = true;
+
+  // Fire action feedback hook (called without the lock to avoid re-entrance)
+  if (on_pose_update_.has_value())
+    (*on_pose_update_)(x, y, yaw);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -308,6 +310,18 @@ void NavController::control_tick()
   }
   if (phase_ == Phase::CANCELLED)
     return;
+
+  // If Nav2 succeeded, immediately advance to WAITING_NAV2 to process completion
+  if (nav2_result_.has_value() && *nav2_result_ == Nav2Handler::GoalResult::SUCCEEDED)
+  {
+    if (phase_ != Phase::WAITING_NAV2 && phase_ != Phase::FINAL_ROTATION)
+    {
+      RCLCPP_INFO(node_->get_logger(),
+        "[NavController][%s] Nav2 reported success. Advancing to WAITING_NAV2.",
+        robot_name_.c_str());
+      phase_ = Phase::WAITING_NAV2;
+    }
+  }
 
   // ── Overlay rule 2: Obstacle — halt both axes ─────────────────────────────
   if (obstacle_detected_.load())
@@ -386,8 +400,8 @@ void NavController::control_tick()
     while (yaw_err >  M_PI) yaw_err -= 2.0 * M_PI;
     while (yaw_err < -M_PI) yaw_err += 2.0 * M_PI;
 
-    constexpr double kAngularGain = 1.5;
-    constexpr double kYawTol      = 0.05;  // rad
+    constexpr double kAngularGain = 0.8;
+    constexpr double kYawTol      = 0.12;  // rad
 
     if (std::abs(yaw_err) <= kYawTol)
     {
@@ -462,6 +476,11 @@ void NavController::update_pose(double x, double y, double yaw)
   pose_y_    = y;
   pose_yaw_  = yaw;
   pose_valid_ = true;
+
+  // Fire action feedback hook for AMCL-driven telemetry (outside lock scope).
+  // Releasing before firing prevents potential re-entrance deadlocks.
+  if (on_pose_update_.has_value())
+    (*on_pose_update_)(x, y, yaw);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -531,10 +550,12 @@ double NavController::compute_distance(double tx, double ty) const
 
 void NavController::publish_cmd_vel(double linear_x, double angular_z)
 {
-  geometry_msgs::msg::Twist twist;
-  twist.linear.x  = linear_x;
-  twist.angular.z = angular_z;
-  cmd_vel_pub_->publish(twist);
+  geometry_msgs::msg::TwistStamped twist_stamped;
+  twist_stamped.header.stamp = node_->now();
+  twist_stamped.header.frame_id = robot_name_ + "/base_footprint";
+  twist_stamped.twist.linear.x  = linear_x;
+  twist_stamped.twist.angular.z = angular_z;
+  cmd_vel_pub_->publish(twist_stamped);
 }
 
 }  // namespace dynominion_fleet_adapter

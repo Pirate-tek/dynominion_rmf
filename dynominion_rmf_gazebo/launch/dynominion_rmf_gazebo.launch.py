@@ -163,7 +163,12 @@ def generate_launch_description():
             period=10.0,
             actions=[
                 joint_state_broadcaster_spawner,
-                diff_drive_base_controller_spawner,
+                RegisterEventHandler(
+                    event_handler=OnProcessExit(
+                        target_action=joint_state_broadcaster_spawner,
+                        on_exit=[diff_drive_base_controller_spawner],
+                    )
+                )
             ]
         ),
     ])

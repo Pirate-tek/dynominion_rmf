@@ -5,8 +5,8 @@
 /// @brief Goal 3 — Custom Navigation Controller.
 ///
 /// Waypoint execution engine that replaces direct Nav2 goal forwarding with a
-/// deliberate, rule-governed control loop. It receives navigation requests directly from
-/// FleetManagerNode via Web API, processes them, enforces heading pre-rotation, approach
+/// deliberate, rule-governed control loop. It receives navigation requests directly from the
+/// FleetManagerNode in-process, processes them, enforces heading pre-rotation, approach
 /// speed reduction, and three overlay rules (pause, obstacle, cancel).
 ///
 /// Waypoint advancement is gated on a successful Nav2Handler result — distance
@@ -19,6 +19,7 @@
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/empty.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 
 #include <rmf_fleet_adapter/agv/EasyFullControl.hpp>
 
@@ -84,7 +85,7 @@ public:
   void update_pose(double x, double y, double yaw);
 
   // ── Goal 5 — State Machine integration callbacks ───────────────────────
- 
+
   /// Register a callback invoked when a new task starts executing.
   using TaskStartedCallback  = std::function<void(const std::string & task_id)>;
   /// Register a callback invoked when a goal is accepted by Nav2.
@@ -93,11 +94,17 @@ public:
   /// @param success  true = arrived; false = aborted/cancelled.
   /// @param reason   empty on success; human-readable on failure.
   using TaskFinishedCallback = std::function<void(bool success, const std::string & reason)>;
- 
+
   void set_on_task_started(TaskStartedCallback cb)   { on_task_started_   = std::move(cb); }
   void set_on_task_accepted(TaskAcceptedCallback cb) { on_task_accepted_  = std::move(cb); }
   void set_on_task_finished(TaskFinishedCallback cb) { on_task_finished_  = std::move(cb); }
- 
+
+  /// Callback fired whenever the controller's pose cache is updated (from either
+  /// AMCL or Nav2 feedback). Used by the FleetManagerNode action server to push
+  /// live telemetry to FleetAdapter as action feedback (replaces HTTP polling).
+  using PoseUpdateCallback = std::function<void(double x, double y, double yaw)>;
+  void set_on_pose_update(PoseUpdateCallback cb) { on_pose_update_ = std::move(cb); }
+
 private:
   void on_nav2_accepted(bool accepted);
   // ── Internal control state machine ─────────────────────────────────────
@@ -162,7 +169,7 @@ private:
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr obstacle_sub_;
 
   /// Publisher: /<robot_name>/cmd_vel  (for pre-rotation commands)
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_pub_;
 
   /// 50 Hz control loop timer.
   rclcpp::TimerBase::SharedPtr control_timer_;
@@ -199,6 +206,7 @@ private:
   std::optional<TaskStartedCallback>  on_task_started_;
   std::optional<TaskAcceptedCallback> on_task_accepted_;
   std::optional<TaskFinishedCallback> on_task_finished_;
+  std::optional<PoseUpdateCallback>   on_pose_update_;
 };
 
 }  // namespace dynominion_fleet_adapter

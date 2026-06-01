@@ -54,11 +54,13 @@ def generate_launch_description():
 
     # 2. Navigation instances per robot
     robots = [
-        {'name': 'dynominion1', 'x': 1.48, 'y': -5.6, 'yaw': 0.0},
-        {'name': 'dynominion2', 'x': 1.48, 'y': -9.5, 'yaw': 0.0},
-        {'name': 'dynominion3', 'x': 7.89, 'y': -9.5, 'yaw': 0.0},
-        {'name': 'dynominion4', 'x': 7.92, 'y': -15.9, 'yaw': 0.0},
-        {'name': 'dynominion5', 'x': 1.63, 'y': -16.6, 'yaw': 0.0},
+        {'name': 'dynominion1', 'x': 1.48, 'y': -9.51, 'yaw': 0.0},
+        {'name': 'dynominion2', 'x': 1.48, 'y': -15.95, 'yaw': 0.0},
+        {'name': 'dynominion3', 'x': 4.7, 'y': -5.55, 'yaw': 0.0},
+        {'name': 'dynominion4', 'x': 7.89, 'y': -9.51, 'yaw': 0.0},
+        {'name': 'dynominion5', 'x': 7.89, 'y': -15.95, 'yaw': 0.0},
+        {'name': 'dynominion6', 'x': 6.4, 'y': -5.55, 'yaw': 0.0},
+        {'name': 'dynominion7', 'x': 6.4, 'y': -19.4, 'yaw': 0.0},
     ]
     nav_instances = []
     
