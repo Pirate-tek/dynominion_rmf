@@ -45,6 +45,14 @@ amcl:
       z: 0.0
       yaw: 0.0
 
+lifecycle_manager_localization:
+  ros__parameters:
+    bond_timeout: 40.0
+
+lifecycle_manager_navigation:
+  ros__parameters:
+    bond_timeout: 40.0
+
 bt_navigator:
   ros__parameters:
     global_frame: map

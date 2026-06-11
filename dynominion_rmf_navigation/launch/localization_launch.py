@@ -191,10 +191,11 @@ def generate_launch_description():
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
-                name=['lifecycle_manager_localization_', namespace],
+                name='lifecycle_manager_localization',
                 output='screen',
                 arguments=['--ros-args', '--log-level', log_level],
-                parameters=[{'autostart': autostart}, 
+                parameters=[configured_params,
+                            {'autostart': autostart}, 
                             {'node_names': PythonExpression(["['map_server', 'amcl'] if '", launch_map_server, "' == 'True' else ['amcl']"])}],
             ),
         ],
@@ -268,8 +269,9 @@ def generate_launch_description():
                     ComposableNode(
                         package='nav2_lifecycle_manager',
                         plugin='nav2_lifecycle_manager::LifecycleManager',
-                        name=['lifecycle_manager_localization_', namespace],
+                        name='lifecycle_manager_localization',
                         parameters=[
+                            configured_params,
                             {'autostart': autostart, 
                              'node_names': PythonExpression(["['map_server', 'amcl'] if '", launch_map_server, "' == 'True' else ['amcl']"])}
                         ],

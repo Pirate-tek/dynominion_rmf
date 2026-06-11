@@ -1,0 +1,34 @@
+rmf_fleet:
+  name: "dynominion_fleet2"
+  limits:
+    max_linear_speed: 1.0
+    max_linear_acceleration: 1.0
+    max_angular_speed: 1.0
+    max_angular_acceleration: 1.0
+  profile:
+    footprint_radius: 0.4
+    vicinity_radius: 0.6
+  robots:
+    dynominion4:
+      charger: "B1"
+    dynominion5:
+      charger: "B2"
+
+fleet_manager:
+  ip: "127.0.0.1"
+  port: 8000
+  user: "admin"
+  password: "password"
+
+reference_coordinates:
+  L1:
+    rmf:
+      - [0.0, 0.0]
+      - [10.0, 0.0]
+      - [0.0, 10.0]
+      - [10.0, 10.0]
+    robot:
+      - [0.0, 0.0]
+      - [10.0, 0.0]
+      - [0.0, 10.0]
+      - [10.0, 10.0]

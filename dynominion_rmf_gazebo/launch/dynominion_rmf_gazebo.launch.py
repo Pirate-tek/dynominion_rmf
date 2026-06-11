@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction, SetEnvironmentVariable, GroupAction, AppendEnvironmentVariable, RegisterEventHandler, TimerAction
 from launch.event_handlers import OnProcessExit
@@ -106,19 +107,27 @@ def generate_launch_description():
                    ],
     )
 
+    spawner_env = dict(os.environ)
+    spawner_env['ROS_HOME'] = PathJoinSubstitution(['/tmp/ros_home_', robot_name])
+
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-ros-args', '-r /joint_states:=joint_states'],
+        arguments=['joint_state_broadcaster',
+                   '--service-call-timeout', '60.0',
+                   '--controller-ros-args', '-r /joint_states:=joint_states'],
+        env=spawner_env
     )
 
     diff_drive_base_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=['diff_drive_base_controller', 
+                   '--service-call-timeout', '60.0',
                    '--controller-ros-args', '-r diff_drive_base_controller/cmd_vel:=cmd_vel',
                    '--controller-ros-args', '-r diff_drive_base_controller/odom:=odom'],
-        output='screen'
+        output='screen',
+        env=spawner_env
     )
 
     # Bridge

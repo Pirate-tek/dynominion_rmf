@@ -1,0 +1,15 @@
+/**:
+  ros__parameters:
+    fleet_identity:
+      fleet_name: "dynominion_fleet3"
+      fleet_type: "differential"
+      supported_tasks:
+        - "go_to_place"
+        - "patrol"
+        - "compose"
+    navigation:
+      heading_error_threshold: 0.35
+      approach_radius: 0.5
+      approach_speed_limit: 0.2
+      arrival_threshold: 0.15
+      obstacle_topic_suffix: "obstacle_detected"

@@ -21,12 +21,20 @@ bool RobotStateMachine::on_navigate(const std::string & task_id)
 {
   std::lock_guard<std::mutex> lk(mtx_);
 
-  if (state_ != RobotState::IDLE)
+  if (state_ != RobotState::IDLE && state_ != RobotState::NAVIGATING)
   {
     RCLCPP_WARN(logger_,
       "[StateMachine][%s] navigate() rejected — already in state %s (task='%s').",
       robot_name_.c_str(), to_string(state_), active_task_id_.c_str());
     return false;
+  }
+
+  if (state_ == RobotState::NAVIGATING)
+  {
+    RCLCPP_INFO(logger_,
+      "[StateMachine][%s] navigate() preempting task '%s' for task '%s'. Resetting to IDLE state first.",
+      robot_name_.c_str(), active_task_id_.c_str(), task_id.c_str());
+    state_ = RobotState::IDLE;
   }
 
   active_task_id_    = task_id;

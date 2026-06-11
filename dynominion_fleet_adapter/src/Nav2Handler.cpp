@@ -30,13 +30,28 @@ void Nav2Handler::send_goal(
   PoseCallback on_pose,
   AcceptedCallback on_accepted)
 {
+  std::lock_guard<std::mutex> lock(mutex_);
+
   if (active_)
   {
-    RCLCPP_WARN(node_->get_logger(),
-      "[Nav2Handler][%s] send_goal called while a goal is already active. Ignoring.",
+    RCLCPP_INFO(node_->get_logger(),
+      "[Nav2Handler][%s] send_goal called while a goal is already active. Queueing pending goal.",
       robot_name_.c_str());
-    if (on_accepted)
-      on_accepted(false);
+
+    if (active_goal_handle_)
+    {
+      RCLCPP_INFO(node_->get_logger(),
+        "[Nav2Handler][%s] Cancelling active Nav2 goal to clear way for pending goal.",
+        robot_name_.c_str());
+      action_client_->async_cancel_goal(active_goal_handle_);
+    }
+
+    pending_goal_ = std::make_unique<PendingGoal>(PendingGoal{
+      x, y, yaw,
+      std::move(on_result),
+      std::move(on_pose),
+      std::move(on_accepted)
+    });
     return;
   }
 
@@ -74,23 +89,51 @@ void Nav2Handler::send_goal(
   send_options.goal_response_callback =
     [this, on_accepted](const GoalHandle::SharedPtr & handle)
     {
+      AcceptedCallback local_on_accepted = on_accepted;
+      ResultCallback local_result_cb;
+      std::unique_ptr<PendingGoal> next_goal;
+
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (!handle)
+        {
+          RCLCPP_ERROR(node_->get_logger(),
+            "[Nav2Handler][%s] Goal was REJECTED by Nav2 server.", robot_name_.c_str());
+          active_ = false;
+          local_result_cb = std::move(pending_result_cb_);
+
+          if (pending_goal_)
+          {
+            next_goal = std::move(pending_goal_);
+          }
+        }
+        else
+        {
+          active_goal_handle_ = handle;
+          RCLCPP_DEBUG(node_->get_logger(),
+            "[Nav2Handler][%s] Goal accepted by Nav2.", robot_name_.c_str());
+        }
+      }
+
       if (!handle)
       {
-        RCLCPP_ERROR(node_->get_logger(),
-          "[Nav2Handler][%s] Goal was REJECTED by Nav2 server.", robot_name_.c_str());
-        active_ = false;
-        if (on_accepted)
-          on_accepted(false);
-        if (pending_result_cb_)
-          pending_result_cb_(GoalResult::ABORTED);
+        if (local_on_accepted)
+          local_on_accepted(false);
+        if (local_result_cb)
+          local_result_cb(GoalResult::ABORTED);
+
+        if (next_goal)
+        {
+          send_goal(next_goal->x, next_goal->y, next_goal->yaw,
+                    std::move(next_goal->on_result),
+                    std::move(next_goal->on_pose),
+                    std::move(next_goal->on_accepted));
+        }
       }
       else
       {
-        active_goal_handle_ = handle;
-        RCLCPP_DEBUG(node_->get_logger(),
-          "[Nav2Handler][%s] Goal accepted by Nav2.", robot_name_.c_str());
-        if (on_accepted)
-          on_accepted(true);
+        if (local_on_accepted)
+          local_on_accepted(true);
       }
     };
 
@@ -98,25 +141,44 @@ void Nav2Handler::send_goal(
     [this](GoalHandle::SharedPtr /*handle*/,
            const std::shared_ptr<const NavigateToPose::Feedback> feedback)
     {
-      // Extract current pose from feedback and forward to NavController/StateGuard
-      const auto & p = feedback->current_pose.pose.position;
-      const auto & o = feedback->current_pose.pose.orientation;
+      PoseCallback local_pose_cb;
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        local_pose_cb = pending_pose_cb_;
+      }
 
-      // Convert quaternion to yaw
-      tf2::Quaternion q_fb;
-      tf2::fromMsg(o, q_fb);
-      double roll, pitch, yaw_fb;
-      tf2::Matrix3x3(q_fb).getRPY(roll, pitch, yaw_fb);
+      if (local_pose_cb)
+      {
+        const auto & p = feedback->current_pose.pose.position;
+        const auto & o = feedback->current_pose.pose.orientation;
 
-      if (pending_pose_cb_)
-        pending_pose_cb_(p.x, p.y, yaw_fb);
+        // Convert quaternion to yaw
+        tf2::Quaternion q_fb;
+        tf2::fromMsg(o, q_fb);
+        double roll, pitch, yaw_fb;
+        tf2::Matrix3x3(q_fb).getRPY(roll, pitch, yaw_fb);
+
+        local_pose_cb(p.x, p.y, yaw_fb);
+      }
     };
 
   send_options.result_callback =
     [this](const GoalHandle::WrappedResult & result)
     {
-      active_            = false;
-      active_goal_handle_ = nullptr;
+      ResultCallback local_result_cb;
+      std::unique_ptr<PendingGoal> next_goal;
+
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        active_            = false;
+        active_goal_handle_ = nullptr;
+        local_result_cb    = std::move(pending_result_cb_);
+
+        if (pending_goal_)
+        {
+          next_goal = std::move(pending_goal_);
+        }
+      }
 
       GoalResult gr;
       switch (result.code)
@@ -138,8 +200,18 @@ void Nav2Handler::send_goal(
           break;
       }
 
-      if (pending_result_cb_)
-        pending_result_cb_(gr);
+      if (local_result_cb)
+        local_result_cb(gr);
+
+      if (next_goal)
+      {
+        RCLCPP_INFO(node_->get_logger(),
+          "[Nav2Handler][%s] Sending pending goal from queue.", robot_name_.c_str());
+        send_goal(next_goal->x, next_goal->y, next_goal->yaw,
+                  std::move(next_goal->on_result),
+                  std::move(next_goal->on_pose),
+                  std::move(next_goal->on_accepted));
+      }
     };
 
   action_client_->async_send_goal(goal_msg, send_options);
@@ -151,6 +223,8 @@ void Nav2Handler::send_goal(
 
 void Nav2Handler::cancel_goal()
 {
+  std::lock_guard<std::mutex> lock(mutex_);
+
   if (!active_ || !active_goal_handle_)
   {
     RCLCPP_DEBUG(node_->get_logger(),
@@ -167,9 +241,22 @@ void Nav2Handler::cancel_goal()
     {
       RCLCPP_INFO(node_->get_logger(),
         "[Nav2Handler][%s] Async cancel accepted by Nav2.", robot_name_.c_str());
-      // The result_callback will fire next with CANCELED, which triggers
-      // the pending_result_cb_ and notifies the NavController sequencer.
     });
+}
+
+// ---------------------------------------------------------------------------
+// clear_pending_goal
+// ---------------------------------------------------------------------------
+
+void Nav2Handler::clear_pending_goal()
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (pending_goal_)
+  {
+    RCLCPP_INFO(node_->get_logger(),
+      "[Nav2Handler][%s] Clearing pending goal from queue.", robot_name_.c_str());
+    pending_goal_.reset();
+  }
 }
 
 }  // namespace dynominion_fleet_adapter

@@ -177,7 +177,8 @@ void NavController::cancel_all()
     "[NavController][%s] Cancel requested — flushing queue.", robot_name_.c_str());
   publish_cmd_vel(0.0, 0.0);
 
-  // Async Nav2 cancel — non-blocking
+  // Clear queued goal & Async Nav2 cancel
+  nav2_handler_->clear_pending_goal();
   nav2_handler_->cancel_goal();
 }
 
@@ -220,21 +221,48 @@ void NavController::dispatch_next_waypoint()
     phase_ = Phase::TRANSLATING;
   }
 
+  std::string task_id_at_send = current_task_id_;
+
   // Send goal to Nav2Handler
   nav2_handler_->send_goal(
     target_x_, target_y_, target_yaw_,
-    [this](Nav2Handler::GoalResult result)
+    [this, task_id_at_send](Nav2Handler::GoalResult result)
     {
       std::lock_guard<std::mutex> lk(task_mtx_);
-      on_nav2_result(result);
+      if (current_task_id_ == task_id_at_send)
+      {
+        on_nav2_result(result);
+      }
+      else
+      {
+        RCLCPP_INFO(node_->get_logger(),
+          "[NavController][%s] Ignoring result callback for outdated task '%s' (current is '%s').",
+          robot_name_.c_str(), task_id_at_send.c_str(), current_task_id_.c_str());
+      }
     },
-    [this](double x, double y, double yaw)
+    [this, task_id_at_send](double x, double y, double yaw)
     {
-      on_nav2_pose(x, y, yaw);
+      bool valid = false;
+      {
+        std::lock_guard<std::mutex> lk(task_mtx_);
+        valid = (current_task_id_ == task_id_at_send);
+      }
+      if (valid)
+      {
+        on_nav2_pose(x, y, yaw);
+      }
     },
-    [this](bool accepted)
+    [this, task_id_at_send](bool accepted)
     {
-      on_nav2_accepted(accepted);
+      bool valid = false;
+      {
+        std::lock_guard<std::mutex> lk(task_mtx_);
+        valid = (current_task_id_ == task_id_at_send);
+      }
+      if (valid)
+      {
+        on_nav2_accepted(accepted);
+      }
     });
 }
 

@@ -73,7 +73,20 @@ public:
   /// @returns true if an active goal is in-flight.
   bool is_active() const { return active_; }
 
+  /// Clear any queued pending goal.
+  void clear_pending_goal();
+
 private:
+  struct PendingGoal
+  {
+    double x;
+    double y;
+    double yaw;
+    ResultCallback on_result;
+    PoseCallback on_pose;
+    AcceptedCallback on_accepted;
+  };
+
   rclcpp::Node::SharedPtr node_;
   std::string robot_name_;
 
@@ -84,6 +97,9 @@ private:
 
   ResultCallback pending_result_cb_;
   PoseCallback   pending_pose_cb_;
+
+  std::unique_ptr<PendingGoal> pending_goal_;
+  mutable std::mutex mutex_;
 };
 
 }  // namespace dynominion_fleet_adapter

@@ -27,6 +27,8 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <thread>
 #include <chrono>
+#include <optional>
+#include <mutex>
 
 using namespace rmf_fleet_adapter::agv;
 using NavigateRobot = dynominion_fleet_adapter::action::NavigateRobot;
@@ -366,7 +368,41 @@ private:
           goal.yaw     = dest.yaw();
           goal.task_id = task_id;
 
+          // We wrap the CommandExecution in a thread-safe shared wrapper to ensure
+          // finished() is called exactly once, whether accepted or rejected.
+          auto shared_exec = std::make_shared<std::optional<rmf_fleet_adapter::agv::EasyFullControl::CommandExecution>>(std::move(exec));
+          auto exec_mutex = std::make_shared<std::mutex>();
+          auto finish_exec = [shared_exec, exec_mutex]() {
+            std::lock_guard<std::mutex> lock(*exec_mutex);
+            if (shared_exec->has_value())
+            {
+              (*shared_exec)->finished();
+              shared_exec->reset();
+            }
+          };
+
           auto options = rclcpp_action::Client<NavigateRobot>::SendGoalOptions{};
+
+          // Goal accepted/rejected callback
+          options.goal_response_callback =
+            [ctx_cap, finish_exec](const NavGoalHandle::SharedPtr & handle)
+            {
+              if (!handle)
+              {
+                RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
+                  "[FleetAdapterNode][%s] Goal was REJECTED by Fleet Manager action server.",
+                  ctx_cap->name.c_str());
+                finish_exec();
+              }
+              else
+              {
+                std::lock_guard<std::mutex> lk(ctx_cap->goal_handle_mtx);
+                ctx_cap->current_goal_handle = handle;
+                RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
+                  "[FleetAdapterNode][%s] Goal accepted by Fleet Manager.",
+                  ctx_cap->name.c_str());
+              }
+            };
 
           // Feedback → push live telemetry to RMF (event-driven, no poll)
           options.feedback_callback =
@@ -386,7 +422,7 @@ private:
 
           // Result → exec.finished() called instantly on task completion
           options.result_callback =
-            [exec_moved = std::move(exec), ctx_cap](const NavGoalHandle::WrappedResult & result) mutable
+            [ctx_cap, finish_exec](const NavGoalHandle::WrappedResult & result)
             {
               std::lock_guard<std::mutex> lk(ctx_cap->goal_handle_mtx);
               ctx_cap->current_goal_handle = nullptr;
@@ -398,7 +434,6 @@ private:
                 RCLCPP_INFO(rclcpp::get_logger("rclcpp"),
                   "[FleetAdapterNode][%s] Navigation COMPLETE — notifying RMF.",
                   ctx_cap->name.c_str());
-                exec_moved.finished();
               }
               else
               {
@@ -406,8 +441,8 @@ private:
                   "[FleetAdapterNode][%s] Navigation FAILED: %s",
                   ctx_cap->name.c_str(),
                   result.result ? result.result->error_reason.c_str() : "unknown");
-                exec_moved.finished();   // still notify RMF; it will re-plan
               }
+              finish_exec();
             };
 
           ctx_cap->action_client->async_send_goal(goal, options);
